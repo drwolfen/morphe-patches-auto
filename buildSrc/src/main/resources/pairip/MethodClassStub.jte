@@ -1,4 +1,4 @@
-@import hoodles.morphe.codegen.pairip.*
+@import standardrepo.morphe.codegen.pairip.*
 @import java.util.List
 
 @param String packageName

@@ -24,7 +24,7 @@ plugins {
 
 settings {
     extensions {
-        defaultNamespace = "hoodles.morphe.extension"
+        defaultNamespace = "standardrepo.morphe.extension"
 
         // Must resolve to an absolute path (not relative),
         // otherwise the extensions in subfolders will fail to find the proguard config.

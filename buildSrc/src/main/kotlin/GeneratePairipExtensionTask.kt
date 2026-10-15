@@ -7,10 +7,10 @@ import gg.jte.ContentType
 import gg.jte.TemplateEngine
 import gg.jte.output.FileOutput
 import gg.jte.resolve.ResourceCodeResolver
-import hoodles.morphe.codegen.pairip.JavaCodegenData
-import hoodles.morphe.codegen.pairip.JavaField
-import hoodles.morphe.codegen.pairip.getClassFromFqcn
-import hoodles.morphe.codegen.pairip.getPackageFromFqcn
+import standardrepo.morphe.codegen.pairip.JavaCodegenData
+import standardrepo.morphe.codegen.pairip.JavaField
+import standardrepo.morphe.codegen.pairip.getClassFromFqcn
+import standardrepo.morphe.codegen.pairip.getPackageFromFqcn
 import kotlinx.serialization.json.Json
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
@@ -43,7 +43,7 @@ abstract class GeneratePairipExtensionTask : DefaultTask() {
             // Extension code
             val appExtRoot = genExtRoot.resolve(appName)
             val appExtMain = appExtRoot.resolve("src/main")
-            val appExtPairip = appExtMain.resolve("java/hoodles/morphe/extension/$appName/pairip")
+            val appExtPairip = appExtMain.resolve("java/standardrepo/morphe/extension/$appName/pairip")
             appExtPairip.mkdirs()
 
             writeResourceToFile(

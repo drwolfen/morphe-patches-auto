@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "patches": [
     {
       "name": "Enable Premium",
@@ -59,28 +59,10 @@
     {
       "name": "Enable Premium",
       "description": "Enables app features locked behind the subscription paywall.",
-      "default": true,
+      "default": false,
       "category": null,
       "dependencies": [],
-      "compatiblePackages": [
-        {
-          "packageName": "com.example.app",
-          "name": "Example App",
-          "description": null,
-          "apkFileType": null,
-          "appIconColor": "#FF0000",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "1.0.0",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": null,
-              "description": null
-            }
-          ]
-        }
-      ],
+      "compatiblePackages": null,
       "options": []
     },
     {

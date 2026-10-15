@@ -1,11 +1,11 @@
-@import hoodles.morphe.codegen.pairip.*
+@import standardrepo.morphe.codegen.pairip.*
 @import java.util.List
 @import java.util.Map
 
 @param String appName
 @param JavaCodegenData data
 
-package hoodles.morphe.extension.${appName}.pairip;
+package standardrepo.morphe.extension.${appName}.pairip;
 
 import android.util.Log;
 import java.lang.reflect.Method;

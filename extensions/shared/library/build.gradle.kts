@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "hoodles.morphe.extension.shared"
+    namespace = "standardrepo.morphe.extension.shared"
     compileSdk = 36
 
     defaultConfig {

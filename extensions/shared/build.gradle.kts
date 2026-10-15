@@ -1,5 +1,5 @@
 android {
-    namespace = "hoodles.morphe.extension"
+    namespace = "standardrepo.morphe.extension"
     compileSdk = 36
 
     defaultConfig {

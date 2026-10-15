@@ -1,4 +1,4 @@
-group = "hoodles.morphe"
+group = "standardrepo.morphe"
 
 // Resolved by crackpipe at build time (`-PpublishSource=...`) so the published manifest
 // never carries a placeholder owner/repo or the wrong forge host.
@@ -75,7 +75,7 @@ tasks {
         dependsOn(build)
 
         classpath = sourceSets["main"].runtimeClasspath
-        mainClass.set("hoodles.morphe.gate.VerifyMainKt")
+        mainClass.set("standardrepo.morphe.gate.VerifyMainKt")
         args = listOf(
             providers.gradleProperty("targetApk").orNull
                 ?: throw GradleException("verifyPatch requires -PtargetApk=<path>"),
