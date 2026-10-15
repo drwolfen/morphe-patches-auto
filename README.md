@@ -2,8 +2,14 @@
 
 Morphe patch source repository, maintained by an automated cracking pipeline.
 
-- **Add as source in Morphe:** Sources → **+** → Remote → paste this repository URL
-  (or open `https://morphe.software/add-source?github=OWNER/REPO`).
+- **Add as source in Morphe:** Sources → **+** → Remote → paste exactly:
+  `https://codeberg.org/StandardRepo/morphe-patches-auto/raw/branch/dev/patches-bundle.json`
+
+  Do **not** use `https://morphe.software/add-source?github=OWNER/REPO` for this repo: that
+  page only understands `github.com`/`gitlab.com` hosts and will render the wrong host. Morphe
+  Manager itself handles other hosts by falling back to the endpoint URL as-is, so point it
+  straight at the raw `patches-bundle.json`. Consequence of the non-GitHub host: no prerelease
+  toggle and no repo avatar/issue links (documented degraded UX, not a breakage).
 - Patches are generated automatically from Play Store APK analysis.
 - Machine-readable catalog: [`patches-list.json`](patches-list.json).
 - Update manifest consumed by Morphe: [`patches-bundle.json`](patches-bundle.json).
