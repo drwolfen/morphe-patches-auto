@@ -23,6 +23,13 @@ object Compat {
         targets = listOf(AppTarget("20261006"))
     )
 
+    val DUOLINGO = Compatibility(
+        name = "Com",
+        packageName = "com.duolingo",
+        appIconColor = 0xC75863,
+        targets = listOf(AppTarget("6.101.2", isExperimental = true))
+    )
+
     // Entries are appended by the crackpipe generator:
     // val APP_NAME = Compatibility(
     //     name = "App Name",
