@@ -1,10 +1,16 @@
 group = "hoodles.morphe"
 
+// Resolved by crackpipe at build time (`-PpublishSource=...`) so the published manifest
+// never carries a placeholder owner/repo or the wrong forge host.
+val publishSource: String = providers.gradleProperty("publishSource").orNull
+    ?: System.getenv("CRACKPIPE_PUBLISH_SOURCE")
+    ?: "git@github.com:OWNER/REPO.git"
+
 patches {
     about {
         name = "Crackpipe Auto Patches"
         description = "Automatically generated patches for use with Morphe"
-        source = "git@github.com:OWNER/REPO.git"
+        source = publishSource
         author = "crackpipe"
         contact = "na"
         website = "https://morphe.software"
