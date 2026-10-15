@@ -1,7 +1,34 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "patches": [
+    {
+      "name": "Enable Premium",
+      "description": "Auto-generated: unlocks features gated by com.bowerydigital.bend paywall checks.",
+      "default": true,
+      "category": null,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.bowerydigital.bend",
+          "name": "Bowerydigital",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#09069D",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "7.8.0",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
     {
       "name": "Enable Premium",
       "description": "Auto-generated: unlocks features gated by com.duolingo paywall checks.",

@@ -30,6 +30,13 @@ object Compat {
         targets = listOf(AppTarget("6.101.2", isExperimental = true))
     )
 
+    val BEND = Compatibility(
+        name = "Bowerydigital",
+        packageName = "com.bowerydigital.bend",
+        appIconColor = 0x09069D,
+        targets = listOf(AppTarget("7.8.0", isExperimental = true))
+    )
+
     // Entries are appended by the crackpipe generator:
     // val APP_NAME = Compatibility(
     //     name = "App Name",
