@@ -6,7 +6,10 @@ Morphe patch source repository, auto-maintained **for educational and research p
 > analysis, so each release targets the app version it was built against. Use at your own risk.
 
 - **Add as source in Morphe:** Sources → **+** → Remote → paste exactly:
-  `https://codeberg.org/StandardRepo/morphe-patches-auto/raw/branch/dev/patches-bundle.json`
+  `https://raw.githubusercontent.com/drwolfen/morphe-patches-auto/main/patches-bundle.json`
+  (or open `https://morphe.software/add-source?github=drwolfen/morphe-patches-auto`).
+  Releases + `.mpp` assets live on Codeberg; this GitHub endpoint is the mirror the Manager reads,
+  and it is the one that can actually offer you an upgrade.
 - Patches are generated automatically from Play Store / APKMirror APK analysis.
 - Machine-readable catalog: [`patches-list.json`](patches-list.json).
 - Update manifest consumed by Morphe: [`patches-bundle.json`](patches-bundle.json).
