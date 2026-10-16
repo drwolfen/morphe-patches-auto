@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.24.0",
+  "version": "0.25.0",
   "patches": [
     {
       "name": "Enable Premium",
@@ -43,14 +43,14 @@
           "signatures": null,
           "targets": [
             {
-              "version": "6.101.1",
+              "version": "6.101.2",
               "versionCodes": null,
               "isExperimental": true,
               "minSdk": null,
               "description": null
             },
             {
-              "version": "6.101.2",
+              "version": "6.101.1",
               "versionCodes": null,
               "isExperimental": true,
               "minSdk": null,
