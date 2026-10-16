@@ -94,6 +94,7 @@ tasks {
                 ?: throw GradleException("verifyPatch requires -PexpectedPackage=<pkg>"),
             providers.gradleProperty("expectedVersion").orNull
                 ?: throw GradleException("verifyPatch requires -PexpectedVersion=<ver>"),
+            providers.gradleProperty("expectedAppName").orNull.orEmpty(),
         )
     }
     // Used by gradle-semantic-release-plugin.

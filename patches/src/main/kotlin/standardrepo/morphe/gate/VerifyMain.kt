@@ -89,11 +89,15 @@ private fun dexDigests(apk: File): Map<String, ByteArray> {
 }
 
 fun main(args: Array<String>) {
-    require(args.size >= 4) { "usage: verifyPatch <apk> <libsDir> <expectedPackage> <expectedVersion>" }
+    require(args.size >= 4) { "usage: verifyPatch <apk> <libsDir> <expectedPackage> <expectedVersion> [expectedAppName]" }
     val apk = File(args[0])
     val libsDir = File(args[1])
     val expectedPackage = args[2]
     val expectedVersion = args[3]
+    // Optional: the human app name the Compat must declare for the target package. Morphe labels
+    // the app card in a source with this name and matches the source's app list by it, so a wrong
+    // name (e.g. "Com" instead of "Duolingo") hides the patch from the user.
+    val expectedAppName = args.getOrNull(4)?.takeUnless { it.isBlank() }
     require(apk.isFile) { "GATE FAIL apk not found: ${apk.absolutePath}" }
 
     val mpp = libsDir.listFiles { f ->
@@ -169,6 +173,20 @@ fun main(args: Array<String>) {
     if (applicable.isEmpty()) {
         println("GATE FAIL no patch in bundle declares $expectedPackage@$expectedVersion (Compat drift)")
         exitProcess(5)
+    }
+
+    // Manager parity: the Manager titles the app card in a source with this Compatibility `name`
+    // (SourceManagementDialogs.patchesByApp -> title = displayName ?: packageName) and searches the
+    // source's app list on it, so a wrong name hides the patch from the user. Assert it is the app
+    // name, not the vendor/TLD segment ("Com" for com.duolingo, "Urbandroid" for com.x.sleep).
+    val declaredAppNames = loaded.flatMap { it.compatibility.orEmpty() }
+        .filter { c -> c.packageName == expectedPackage }
+        .mapNotNull { it.name?.takeUnless(String::isBlank) }
+        .distinct()
+    println("GATE Compat app names for $expectedPackage=${expectedAppName ?: ""}=$declaredAppNames")
+    if (expectedAppName != null && expectedAppName.lowercase() !in declaredAppNames.map { it.lowercase() }) {
+        println("GATE FAIL Compat name for $expectedPackage is $declaredAppNames, expected \"$expectedAppName\"")
+        exitProcess(9)
     }
 
     val original = dexDigests(apk)
