@@ -20,23 +20,23 @@ object Compat {
     )
 
     val SLEEP = Compatibility(
-        name = "Urbandroid",
+        name = "Sleep",
         packageName = "com.urbandroid.sleep",
-        appIconColor = 0x263400,
+        appIconColor = 0x7EC381,
         targets = listOf(AppTarget("20261006"))
     )
 
     val DUOLINGO = Compatibility(
-        name = "Com",
+        name = "Duolingo",
         packageName = "com.duolingo",
-        appIconColor = 0xC75863,
-        targets = listOf(AppTarget("6.101.1", isExperimental = true))
+        appIconColor = 0x57CB01,
+        targets = listOf(AppTarget("6.101.2", isExperimental = true))
     )
 
     val BEND = Compatibility(
-        name = "Bowerydigital",
+        name = "Bend",
         packageName = "com.bowerydigital.bend",
-        appIconColor = 0x09069D,
+        appIconColor = 0x1573A7,
         targets = listOf(AppTarget("7.8.0", isExperimental = true))
     )
 

@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.19.0",
+  "version": "0.20.0",
   "patches": [
     {
       "name": "Enable Premium",
@@ -10,10 +10,10 @@
       "compatiblePackages": [
         {
           "packageName": "com.bowerydigital.bend",
-          "name": "Bowerydigital",
+          "name": "Bend",
           "description": null,
           "apkFileType": null,
-          "appIconColor": "#09069D",
+          "appIconColor": "#1573A7",
           "signatures": null,
           "targets": [
             {
@@ -36,14 +36,14 @@
       "compatiblePackages": [
         {
           "packageName": "com.duolingo",
-          "name": "Com",
+          "name": "Duolingo",
           "description": null,
           "apkFileType": null,
-          "appIconColor": "#C75863",
+          "appIconColor": "#57CB01",
           "signatures": null,
           "targets": [
             {
-              "version": "6.101.1",
+              "version": "6.101.2",
               "versionCodes": null,
               "isExperimental": true,
               "minSdk": null,
@@ -70,10 +70,10 @@
       "compatiblePackages": [
         {
           "packageName": "com.urbandroid.sleep",
-          "name": "Urbandroid",
+          "name": "Sleep",
           "description": null,
           "apkFileType": null,
-          "appIconColor": "#263400",
+          "appIconColor": "#7EC381",
           "signatures": null,
           "targets": [
             {

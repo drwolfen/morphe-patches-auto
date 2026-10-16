@@ -1,6 +1,6 @@
 /**
  * Copyright 2026 crackpipe
- * Auto-generated for com.duolingo v6.101.1 — do not edit by hand.
+ * Auto-generated for com.duolingo v6.101.2 — do not edit by hand.
  */
 
 package standardrepo.morphe.patches.duolingo.premium
