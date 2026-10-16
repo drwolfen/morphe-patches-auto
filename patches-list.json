@@ -1,0 +1,99 @@
+{
+  "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
+  "version": "0.23.0",
+  "patches": [
+    {
+      "name": "Enable Premium",
+      "description": "Auto-generated: unlocks features gated by com.bowerydigital.bend paywall checks.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.bowerydigital.bend",
+          "name": "Bend",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#1573A7",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "7.8.0",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Enable Premium",
+      "description": "Auto-generated: unlocks features gated by com.duolingo paywall checks.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.duolingo",
+          "name": "Duolingo",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#57CB01",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "6.101.1",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "6.101.2",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Enable Premium",
+      "description": "Enables app features locked behind the subscription paywall.",
+      "default": false,
+      "category": null,
+      "compatiblePackages": null,
+      "options": []
+    },
+    {
+      "name": "Enable Premium",
+      "description": "Auto-generated: unlocks features gated by com.urbandroid.sleep paywall checks.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.urbandroid.sleep",
+          "name": "Sleep",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#7EC381",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "20261006",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    }
+  ]
+}
