@@ -56,6 +56,11 @@ dependencies {
     compileOnly(libs.slf4j.api)
 }
 
+// android-all (robolectric) on the GATE JVM classpath only: it supplies dalvik.system.DexClassLoader
+// so the gate can drive the Manager's own `loadPatchesFromDex`. Kept out of the .mpp (compileOnly).
+val gateRuntime by configurations.creating
+dependencies.add(gateRuntime.name, libs.android.all)
+
 tasks {
     register<JavaExec>("generatePatchesList") {
         description = "Build patch with patch list"
@@ -69,12 +74,17 @@ tasks {
     // Stage-5 gate (crackpipe): apply this bundle's patches to a real APK with the
     // Morphe Patcher on the JVM and fail on fingerprint miss / no-op mutation.
     // Usage: ./gradlew :patches:verifyPatch -PtargetApk=... -PexpectedPackage=... -PexpectedVersion=...
+    // dependsOn `buildAndroid` (NOT `build`): buildAndroid is the task that merges the D8
+    // classes.dex into the .mpp, and `build` -> `jar` would re-write the jar and strip that
+    // dex again. Manager loads patches with loadPatchesFromDex -> the gate must read the
+    // same dex-bearing artifact the Manager downloads.
     register<JavaExec>("verifyPatch") {
         description = "Applies compiled patches to a target APK via Morphe Patcher (JVM fingerprint gate)."
 
-        dependsOn(build)
+        dependsOn("buildAndroid")
 
-        classpath = sourceSets["main"].runtimeClasspath
+
+        classpath = sourceSets["main"].runtimeClasspath + gateRuntime
         mainClass.set("standardrepo.morphe.gate.VerifyMainKt")
         args = listOf(
             providers.gradleProperty("targetApk").orNull

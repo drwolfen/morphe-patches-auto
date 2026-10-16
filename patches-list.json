@@ -1,13 +1,12 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.18.0",
+  "version": "0.19.0",
   "patches": [
     {
       "name": "Enable Premium",
       "description": "Auto-generated: unlocks features gated by com.bowerydigital.bend paywall checks.",
       "default": true,
       "category": null,
-      "dependencies": [],
       "compatiblePackages": [
         {
           "packageName": "com.bowerydigital.bend",
@@ -34,7 +33,6 @@
       "description": "Auto-generated: unlocks features gated by com.duolingo paywall checks.",
       "default": true,
       "category": null,
-      "dependencies": [],
       "compatiblePackages": [
         {
           "packageName": "com.duolingo",
@@ -61,7 +59,6 @@
       "description": "Enables app features locked behind the subscription paywall.",
       "default": false,
       "category": null,
-      "dependencies": [],
       "compatiblePackages": null,
       "options": []
     },
@@ -70,7 +67,6 @@
       "description": "Auto-generated: unlocks features gated by com.urbandroid.sleep paywall checks.",
       "default": true,
       "category": null,
-      "dependencies": [],
       "compatiblePackages": [
         {
           "packageName": "com.urbandroid.sleep",

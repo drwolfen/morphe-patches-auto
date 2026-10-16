@@ -19,14 +19,61 @@ package standardrepo.morphe.gate
 
 import app.morphe.patcher.Patcher
 import app.morphe.patcher.PatcherConfig
+import app.morphe.patcher.patch.Patch
 import app.morphe.patcher.patch.loadPatchesFromJar
+import app.morphe.patcher.patch.loadPatchesFromDex
+import com.android.tools.smali.dexlib2.dexbacked.DexBackedDexFile
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import java.io.File
+import java.lang.reflect.Modifier
+import java.net.URLClassLoader
+import java.nio.ByteBuffer
+import java.util.jar.JarFile
 import java.util.zip.ZipFile
 import kotlin.system.exitProcess
 
 private val DEX_RE = Regex("""classes\d*\.dex""")
+
+/** Every class descriptor carried by the bundle's `classes*.dex` entries — the exact set the
+ * Manager enumerates through `loadPatchesFromDex` (DexReadWrite.extractDexEntries -> dexlib2). */
+private fun dexClassDescriptors(mpp: File): Set<String> {
+    val out = mutableSetOf<String>()
+    ZipFile(mpp).use { z ->
+        z.entries().toList()
+            .filter { it.name.startsWith("classes") && it.name.endsWith(".dex") }
+            .forEach { entry ->
+                val bytes = z.getInputStream(entry).readBytes()
+                DexBackedDexFile(null, ByteBuffer.wrap(bytes)).classes.forEach { out += it.type }
+            }
+    }
+    return out
+}
+
+/** Class names in the bundle JAR that declare a patch exactly the way PatchLoader.Jar scans:
+ * a static field or a zero-arg static method whose type is [Patch]. */
+private fun patchDeclaringClasses(mpp: File): List<String> {
+    val names = JarFile(mpp).use { jar ->
+        jar.entries().toList()
+            .filter { it.name.endsWith(".class") && !it.name.startsWith("META-INF/versions/") }
+            .map { it.name.removeSuffix(".class").replace('/', '.') }
+    }
+    // The bundle is not on this task's classpath (PatchLoader builds its own loader), so make one
+    // that can see the .mpp, parented on the loader that has the patcher/library classes.
+    URLClassLoader(arrayOf(mpp.toURI().toURL()), Patch::class.java.classLoader).use { loader ->
+        return names.filter { name ->
+            runCatching {
+                val c = Class.forName(name, false, loader)
+                c.declaredFields.any { f ->
+                    Modifier.isStatic(f.modifiers) && Patch::class.java.isAssignableFrom(f.type)
+                } || c.declaredMethods.any { m ->
+                    Modifier.isStatic(m.modifiers) && m.parameterCount == 0 &&
+                        Patch::class.java.isAssignableFrom(m.returnType)
+                }
+            }.getOrDefault(false)
+        }
+    }
+}
 
 /** name -> raw bytes for every dex entry of [apk]. */
 private fun dexDigests(apk: File): Map<String, ByteArray> {
@@ -59,7 +106,53 @@ fun main(args: Array<String>) {
 
     println("GATE start apk=${apk.name} bundle=${mpp.name} target=$expectedPackage@$expectedVersion")
 
+    // Manager parity gate: Manager loads patches with `loadPatchesFromDex`, whose dex extractor
+    // (DexReadWrite.extractDexEntries) keeps ONLY zip entries whose name starts with `classes`
+    // and ends with `.dex`. A .mpp carrying just `.class` files (the bare `jar` output, i.e.
+    // before the plugin's D8 `buildAndroid` merge) makes the Manager list 0 patches and mark the
+    // source failed (the "!" badge). `generated/.../signature.dex` does NOT count — it does not
+    // start with `classes`. Assert the dex here so a stripped bundle never ships again.
+    val dexEntryNames = ZipFile(mpp).use { z ->
+        z.entries().toList().map { it.name }
+            .filter { it.startsWith("classes") && it.endsWith(".dex") }
+    }
+    println("GATE bundle dex entries=${dexEntryNames.size} ${dexEntryNames}")
+    if (dexEntryNames.isEmpty()) {
+        println("GATE FAIL bundle has no classes*.dex — Manager's loadPatchesFromDex finds no patches")
+        exitProcess(6)
+    }
+
     val loaded = loadPatchesFromJar(setOf(mpp))
+
+    // Stronger parity: the Manager's own loader, on the same artifact. Runs when android-all is
+    // on this task's classpath (DexClassLoader is a dalvik class); a JVM-only quirk is reported
+    // but does not fail the gate.
+    val dexLoadedCount = runCatching { loadPatchesFromDex(setOf(mpp)).size }
+    dexLoadedCount.onSuccess { n ->
+        println("GATE dex-loader (Manager path) patches=$n")
+        if (n != loaded.size) {
+            println("GATE FAIL dex loader sees $n patches, jar loader sees ${loaded.size}")
+            exitProcess(7)
+        }
+    }.onFailure { e ->
+        println("GATE dex-loader (Manager path) unavailable: ${e::class.simpleName}: ${e.message?.lineSequence()?.firstOrNull()}")
+    }
+
+    // Parity: every class in the bundle JAR that declares a patch (static Patch field or
+    // zero-arg static method returning Patch — exactly what PatchLoader.Jar scans) must exist
+    // as a class in the bundle's `classes*.dex`. The Manager enumerates dex classes only, so a
+    // patch present as .class but absent from the dex is invisible on Android -> 0 patches.
+    val patchDeclarers = patchDeclaringClasses(mpp)
+    val dexClasses = dexClassDescriptors(mpp)
+    val missingFromDex = patchDeclarers.filter { name ->
+        ("L" + name.replace('.', '/') + ";") !in dexClasses
+    }
+    println("GATE patch-declaring classes=${patchDeclarers.size} missingFromDex=${missingFromDex.size}")
+    if (missingFromDex.isNotEmpty()) {
+        println("GATE FAIL patch classes absent from classes.dex: $missingFromDex")
+        exitProcess(8)
+    }
+
     // Manager parity: PatchInfo.compatibleWith() returns TRUE whenever compatiblePackages == null,
     // i.e. a patch that declares no compatibility is UNIVERSAL and applies to every package. The
     // Manager's PatchBundleInfo.listedApps() likewise names no app for a universal patch. The gate
