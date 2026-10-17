@@ -21,3 +21,8 @@ object LaunchFingerprint : Fingerprint(
     definingClass = "Lcom/pairip/StartupLauncher;",
     name = "launch"
 )
+
+object VerifySignatureMatchesFingerprint : Fingerprint(
+    definingClass = "Lcom/pairip/SignatureCheck;",
+    name = "verifySignatureMatches"
+)

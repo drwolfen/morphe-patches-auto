@@ -19,5 +19,6 @@ val enablePremiumPatch = bytecodePatch(
         ProcessResponseFingerprint.method.returnEarly()
         ValidateResponseFingerprint.method.returnEarly()
         LaunchFingerprint.method.returnEarly()
+        VerifySignatureMatchesFingerprint.method.returnEarly(true)
     }
 }
