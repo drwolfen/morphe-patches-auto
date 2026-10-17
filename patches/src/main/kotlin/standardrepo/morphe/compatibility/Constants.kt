@@ -40,6 +40,13 @@ object Compat {
         targets = listOf(AppTarget("7.8.0", isExperimental = true))
     )
 
+    val INVESTING = Compatibility(
+        name = "Investing",
+        packageName = "com.fusionmedia.investing",
+        appIconColor = 0x20282E,
+        targets = listOf(AppTarget("6.52", isExperimental = true))
+    )
+
     // Entries are appended by the crackpipe generator:
     // val APP_NAME = Compatibility(
     //     name = "App Name",
