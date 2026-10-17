@@ -23,7 +23,7 @@ object Compat {
         name = "Sleep",
         packageName = "com.urbandroid.sleep",
         appIconColor = 0x7EC381,
-        targets = listOf(AppTarget("20261006"))
+        targets = listOf(AppTarget("20261006", 2311725, isExperimental = true))
     )
 
     val DUOLINGO = Compatibility(
