@@ -6,6 +6,7 @@
 package standardrepo.morphe.patches.bend.premium
 
 import app.morphe.patcher.patch.bytecodePatch
+import app.morphe.patcher.extensions.InstructionExtensions.addInstruction
 import app.morphe.util.returnEarly
 import standardrepo.morphe.compatibility.Compat
 
@@ -16,9 +17,9 @@ val enablePremiumPatch = bytecodePatch(
     compatibleWith(Compat.BEND)
 
     execute {
-        ProcessResponseFingerprint.method.returnEarly()
+        ProcessResponseFingerprint.method.addInstruction(0, "const/4 p1, 0x0")
         ValidateResponseFingerprint.method.returnEarly()
-        LaunchFingerprint.method.returnEarly()
         VerifySignatureMatchesFingerprint.method.returnEarly(true)
+        VerifyIntegrityFingerprint.method.returnEarly()
     }
 }

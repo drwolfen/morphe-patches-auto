@@ -37,7 +37,7 @@ object Compat {
         name = "Bend",
         packageName = "com.bowerydigital.bend",
         appIconColor = 0x1573A7,
-        targets = listOf(AppTarget("7.8.0", isExperimental = true))
+        targets = listOf(AppTarget("7.8.0", 215, isExperimental = true))
     )
 
     val INVESTING = Compatibility(
