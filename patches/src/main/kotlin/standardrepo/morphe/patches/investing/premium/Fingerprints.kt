@@ -16,3 +16,8 @@ object VerifyIntegrityFingerprint : Fingerprint(
     definingClass = "Lcom/pairip/SignatureCheck;",
     name = "verifyIntegrity"
 )
+
+object GetCurrencyIso4217CodeFingerprint : Fingerprint(
+    definingClass = "Lcom/appsflyer/internal/AFg1nSDK;",
+    name = "getCurrencyIso4217Code"
+)
