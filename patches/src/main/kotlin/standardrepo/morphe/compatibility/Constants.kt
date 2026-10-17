@@ -30,7 +30,7 @@ object Compat {
         name = "Duolingo",
         packageName = "com.duolingo",
         appIconColor = 0x57CB01,
-        targets = listOf( AppTarget("6.101.2", isExperimental = true), AppTarget("6.101.1", isExperimental = true) )
+        targets = listOf( AppTarget("6.101.2", 2476, isExperimental = true), AppTarget("6.101.1", isExperimental = true) )
     )
 
     val BEND = Compatibility(
