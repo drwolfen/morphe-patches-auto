@@ -44,7 +44,7 @@ object Compat {
         name = "Investing",
         packageName = "com.fusionmedia.investing",
         appIconColor = 0x20282E,
-        targets = listOf(AppTarget("6.52", isExperimental = true))
+        targets = listOf(AppTarget("6.52", 1660, isExperimental = true))
     )
 
     // Entries are appended by the crackpipe generator:

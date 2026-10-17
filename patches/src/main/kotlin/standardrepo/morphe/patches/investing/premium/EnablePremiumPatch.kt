@@ -16,7 +16,7 @@ val enablePremiumPatch = bytecodePatch(
     compatibleWith(Compat.INVESTING)
 
     execute {
-        LaunchFingerprint.method.returnEarly()
         VerifySignatureMatchesFingerprint.method.returnEarly(true)
+        VerifyIntegrityFingerprint.method.returnEarly()
     }
 }
