@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.34.0",
+  "version": "0.35.0",
   "patches": [
     {
       "name": "Enable Premium",
@@ -126,8 +126,13 @@
           "targets": [
             {
               "version": "20261006",
-              "versionCodes": null,
-              "isExperimental": false,
+              "versionCodes": {
+                "ARM64_V8A": 2311725,
+                "ARMEABI_V7A": 2311725,
+                "X86_64": 2311725,
+                "X86": 2311725
+              },
+              "isExperimental": true,
               "minSdk": null,
               "description": null
             }
