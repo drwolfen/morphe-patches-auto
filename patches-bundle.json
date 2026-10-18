@@ -1,7 +1,7 @@
 {
-  "created_at": "2026-10-18T16:00:10",
-  "description": "# 0.52.0\n\nEnable Premium for com.duolingo v6.101.2 (auto-generated).",
-  "download_url": "https://codeberg.org/StandardRepo/morphe-patches-auto/releases/download/v0.52.0/patches-0.52.0.mpp",
+  "created_at": "2026-10-18T16:03:59",
+  "description": "# 0.53.0\n\nEnable Premium for com.fusionmedia.investing v6.52 (auto-generated).",
+  "download_url": "https://codeberg.org/StandardRepo/morphe-patches-auto/releases/download/v0.53.0/patches-0.53.0.mpp",
   "signature_download_url": "",
-  "version": "0.52.0"
+  "version": "0.53.0"
 }
