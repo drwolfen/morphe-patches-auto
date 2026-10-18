@@ -16,6 +16,7 @@ val enablePremiumPatch = bytecodePatch(
     compatibleWith(Compat.SLEEP)
 
     execute {
+        LambdashowTheAlertDialog0Fingerprint.method.returnEarly()
         IsUnlockAckedFingerprint.method.returnEarly(true)
         HasUnlockFingerprint.method.returnEarly(true)
         IsTrialFingerprint.method.returnEarly(false)

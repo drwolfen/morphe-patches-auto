@@ -7,6 +7,11 @@ package standardrepo.morphe.patches.sleep.premium
 
 import app.morphe.patcher.Fingerprint
 
+object LambdashowTheAlertDialog0Fingerprint : Fingerprint(
+    definingClass = "Lcom/garmin/android/connectiq/AutoUIDialogHostActivity;",
+    name = "lambda\$showTheAlertDialog\$0"
+)
+
 object IsUnlockAckedFingerprint : Fingerprint(
     definingClass = "Lcom/urbandroid/common/util/PreferencesUtils;",
     name = "isUnlockAcked"

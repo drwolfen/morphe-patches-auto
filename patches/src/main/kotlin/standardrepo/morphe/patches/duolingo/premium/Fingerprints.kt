@@ -7,6 +7,11 @@ package standardrepo.morphe.patches.duolingo.premium
 
 import app.morphe.patcher.Fingerprint
 
+object UcFingerprint : Fingerprint(
+    definingClass = "Lcom/bytedance/sdk/openadsdk/eu/uc/uc/qtm;",
+    name = "uc"
+)
+
 object IsPromoFingerprint : Fingerprint(
     definingClass = "Lcom/duolingo/core/sessionend/api/SessionEndMessageType;",
     name = "isPromo"
@@ -25,4 +30,14 @@ object IsSubscriptionFingerprint : Fingerprint(
 object HasSubscriptionFingerprint : Fingerprint(
     definingClass = "Lcom/duolingo/data/user/SubscriberLevel;",
     name = "hasSubscription"
+)
+
+object IsUnlockFingerprint : Fingerprint(
+    definingClass = "Lcom/duolingo/feature/newpath/ui/items/OvalAnimationScenario;",
+    name = "isUnlock"
+)
+
+object GetStoreIdFromSystemFingerprint : Fingerprint(
+    definingClass = "Lcom/adjust/sdk/StoreInfoUtil;",
+    name = "getStoreIdFromSystem"
 )

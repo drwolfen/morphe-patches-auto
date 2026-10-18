@@ -16,9 +16,12 @@ val enablePremiumPatch = bytecodePatch(
     compatibleWith(Compat.DUOLINGO)
 
     execute {
+        UcFingerprint.method.returnEarly(true)
         IsPromoFingerprint.method.returnEarly(true)
         IsGoldSubscriptionFingerprint.method.returnEarly(true)
         IsSubscriptionFingerprint.method.returnEarly(true)
         HasSubscriptionFingerprint.method.returnEarly(true)
+        IsUnlockFingerprint.method.returnEarly(true)
+        GetStoreIdFromSystemFingerprint.method.returnEarly(null as Void?)
     }
 }
