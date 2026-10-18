@@ -21,3 +21,8 @@ object IsTrialFingerprint : Fingerprint(
     definingClass = "Lcom/urbandroid/sleep/TrialFilter;",
     name = "isTrial"
 )
+
+object DFingerprint : Fingerprint(
+    definingClass = "Lads_mobile_sdk/ja2;",
+    name = "d"
+)

@@ -19,5 +19,6 @@ val enablePremiumPatch = bytecodePatch(
         IsUnlockAckedFingerprint.method.returnEarly(true)
         HasUnlockFingerprint.method.returnEarly(true)
         IsTrialFingerprint.method.returnEarly(false)
+        DFingerprint.method.returnEarly(null as Void?)
     }
 }
