@@ -26,3 +26,8 @@ object GetRevenueFingerprint : Fingerprint(
     definingClass = "Lcom/appsflyer/internal/AFg1mSDK;",
     name = "getRevenue"
 )
+
+object AFingerprint : Fingerprint(
+    definingClass = "Le51;",
+    name = "a"
+)
