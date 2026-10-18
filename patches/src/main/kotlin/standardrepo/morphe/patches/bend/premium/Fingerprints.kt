@@ -26,3 +26,8 @@ object VerifyIntegrityFingerprint : Fingerprint(
     definingClass = "Lcom/pairip/SignatureCheck;",
     name = "verifyIntegrity"
 )
+
+object GetStoreIdFromSystemFingerprint : Fingerprint(
+    definingClass = "Lcom/adjust/sdk/StoreInfoUtil;",
+    name = "getStoreIdFromSystem"
+)

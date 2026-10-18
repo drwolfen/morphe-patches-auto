@@ -21,5 +21,6 @@ val enablePremiumPatch = bytecodePatch(
         ValidateResponseFingerprint.method.returnEarly()
         VerifySignatureMatchesFingerprint.method.returnEarly(true)
         VerifyIntegrityFingerprint.method.returnEarly()
+        GetStoreIdFromSystemFingerprint.method.returnEarly(null as Void?)
     }
 }
