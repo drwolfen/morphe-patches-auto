@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.46.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.45.0...v0.46.0) (2026-10-18)
+
+### Features
+
+* **Duolingo:** Enable Premium for 6.101.2 ([6614ecc](https://codeberg.org/StandardRepo/morphe-patches-auto/commit/6614ecc))
+* **Bend:** Enable Premium for 7.8.0
+* **Investing:** Enable Premium for 6.52
+* **Sleep:** Enable Premium for 20261006
+
 ## [0.45.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.44.0...v0.45.0) (2026-10-18)
 
 ### Features
