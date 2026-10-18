@@ -19,5 +19,6 @@ val enablePremiumPatch = bytecodePatch(
         VerifySignatureMatchesFingerprint.method.returnEarly(true)
         VerifyIntegrityFingerprint.method.returnEarly()
         GetCurrencyIso4217CodeFingerprint.method.returnEarly(true)
+        GetRevenueFingerprint.method.returnEarly(null as Void?)
     }
 }

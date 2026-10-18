@@ -21,3 +21,8 @@ object GetCurrencyIso4217CodeFingerprint : Fingerprint(
     definingClass = "Lcom/appsflyer/internal/AFg1nSDK;",
     name = "getCurrencyIso4217Code"
 )
+
+object GetRevenueFingerprint : Fingerprint(
+    definingClass = "Lcom/appsflyer/internal/AFg1mSDK;",
+    name = "getRevenue"
+)
