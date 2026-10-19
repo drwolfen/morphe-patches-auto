@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.56.0",
+  "version": "0.57.0",
   "patches": [
     {
       "name": "Enable Premium",
@@ -61,7 +61,7 @@
     },
     {
       "name": "Enable Premium",
-      "description": "Auto-generated: unlocks features gated by com.urbandroid.sleep paywall checks.",
+      "description": "Auto-generated: unlocks Sleep Premium — the app's own paywall/tier gates are forced open.",
       "default": true,
       "category": null,
       "compatiblePackages": [
