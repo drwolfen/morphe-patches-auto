@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.54.0",
+  "version": "0.55.0",
   "patches": [
     {
       "name": "Enable Premium",
@@ -73,35 +73,22 @@
     },
     {
       "name": "Enable Premium",
-      "description": "Enables app features locked behind the subscription paywall.",
-      "default": false,
-      "category": null,
-      "compatiblePackages": null,
-      "options": []
-    },
-    {
-      "name": "Enable Premium",
-      "description": "Auto-generated: unlocks features gated by com.fusionmedia.investing paywall checks.",
+      "description": "Enables app features locked behind the subscription paywall (template demo).",
       "default": true,
       "category": null,
       "compatiblePackages": [
         {
-          "packageName": "com.fusionmedia.investing",
-          "name": "Investing",
+          "packageName": "com.example.app",
+          "name": "Example App",
           "description": null,
           "apkFileType": null,
-          "appIconColor": "#20282E",
+          "appIconColor": "#FF0000",
           "signatures": null,
           "targets": [
             {
-              "version": "6.52",
-              "versionCodes": {
-                "ARM64_V8A": 1660,
-                "ARMEABI_V7A": 1660,
-                "X86_64": 1660,
-                "X86": 1660
-              },
-              "isExperimental": true,
+              "version": "1.0.0",
+              "versionCodes": null,
+              "isExperimental": false,
               "minSdk": null,
               "description": null
             }
@@ -131,6 +118,37 @@
                 "ARMEABI_V7A": 2311718,
                 "X86_64": 2311718,
                 "X86": 2311718
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Enable Pro",
+      "description": "Auto-generated: unlocks Investing Pro — the app's own paywall/tier gates are forced open.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.fusionmedia.investing",
+          "name": "Investing",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#20282E",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "6.52",
+              "versionCodes": {
+                "ARM64_V8A": 1660,
+                "ARMEABI_V7A": 1660,
+                "X86_64": 1660,
+                "X86": 1660
               },
               "isExperimental": true,
               "minSdk": null,
