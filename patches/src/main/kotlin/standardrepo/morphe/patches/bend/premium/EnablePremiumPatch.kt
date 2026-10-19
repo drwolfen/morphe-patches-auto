@@ -12,7 +12,7 @@ import standardrepo.morphe.compatibility.Compat
 
 val enablePremiumPatch = bytecodePatch(
     name = "Enable Premium",
-    description = "Auto-generated: unlocks features gated by com.bowerydigital.bend paywall checks."
+    description = "Auto-generated: unlocks Bend Premium — the app's own paywall/tier gates are forced open."
 ) {
     compatibleWith(Compat.BEND)
 
@@ -22,5 +22,7 @@ val enablePremiumPatch = bytecodePatch(
         VerifySignatureMatchesFingerprint.method.returnEarly(true)
         VerifyIntegrityFingerprint.method.returnEarly()
         GetStoreIdFromSystemFingerprint.method.returnEarly(null as Void?)
+        CFingerprint.method.returnEarly(true)
+        AFingerprint.method.returnEarly(true)
     }
 }

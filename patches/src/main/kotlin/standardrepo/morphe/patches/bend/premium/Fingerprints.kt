@@ -36,3 +36,15 @@ object GetStoreIdFromSystemFingerprint : Fingerprint(
     returnType = "Ljava/lang/String;",
     name = "getStoreIdFromSystem"
 )
+
+object CFingerprint : Fingerprint(
+    definingClass = "Lin3;",
+    returnType = "Z",
+    name = "C"
+)
+
+object AFingerprint : Fingerprint(
+    definingClass = "Lx63;",
+    returnType = "Z",
+    name = "a"
+)
