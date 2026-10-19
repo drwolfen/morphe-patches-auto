@@ -48,6 +48,13 @@ object Compat {
         targets = listOf(AppTarget("6.52", 1660, isExperimental = true))
     )
 
+    val BLURWALLPAPER = Compatibility(
+        name = "Blurwallpaper",
+        packageName = "apps.automan.blurwallpaper",
+        appIconColor = 0x497246,
+        targets = listOf(AppTarget("3.0.0", 32, isExperimental = true))
+    )
+
     // Entries are appended by the crackpipe generator:
     // val APP_NAME = Compatibility(
     //     name = "App Name",
