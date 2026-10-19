@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.59.0",
+  "version": "0.60.0",
   "patches": [
     {
       "name": "Enable Premium",
@@ -80,6 +80,37 @@
                 "ARMEABI_V7A": 2311718,
                 "X86_64": 2311718,
                 "X86": 2311718
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Enable Pro",
+      "description": "Auto-generated: unlocks Blurwallpaper Pro — the app's own paywall/tier gates are forced open.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "apps.automan.blurwallpaper",
+          "name": "Blurwallpaper",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#497246",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "3.0.0",
+              "versionCodes": {
+                "ARM64_V8A": 32,
+                "ARMEABI_V7A": 32,
+                "X86_64": 32,
+                "X86": 32
               },
               "isExperimental": true,
               "minSdk": null,
