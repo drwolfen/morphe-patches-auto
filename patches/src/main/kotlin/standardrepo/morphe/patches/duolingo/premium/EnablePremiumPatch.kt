@@ -10,18 +10,23 @@ import app.morphe.util.returnEarly
 import standardrepo.morphe.compatibility.Compat
 
 val enablePremiumPatch = bytecodePatch(
-    name = "Enable Premium",
-    description = "Auto-generated: unlocks features gated by com.duolingo paywall checks."
+    name = "Enable Super",
+    description = "Auto-generated: unlocks Duolingo Super — the app's own paywall/tier gates are forced open."
 ) {
     compatibleWith(Compat.DUOLINGO)
 
     execute {
         UcFingerprint.method.returnEarly(true)
-        IsPromoFingerprint.method.returnEarly(true)
+        InvokeFingerprint.method.returnEarly(null as Void?)
+        OnClickFingerprint.method.returnEarly()
+        BFingerprint.method.returnEarly(true)
+        IsFullEnergyRefillItemFingerprint.method.returnEarly(true)
         IsGoldSubscriptionFingerprint.method.returnEarly(true)
+        IsIapItemFingerprint.method.returnEarly(true)
+        IsIapReadyFingerprint.method.returnEarly(true)
+        IsLiteSubscriptionFingerprint.method.returnEarly(true)
+        IsPromoFingerprint.method.returnEarly(true)
         IsSubscriptionFingerprint.method.returnEarly(true)
         HasSubscriptionFingerprint.method.returnEarly(true)
-        IsUnlockFingerprint.method.returnEarly(true)
-        GetStoreIdFromSystemFingerprint.method.returnEarly(null as Void?)
     }
 }

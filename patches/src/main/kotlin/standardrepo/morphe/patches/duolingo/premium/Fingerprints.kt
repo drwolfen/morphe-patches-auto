@@ -13,16 +13,58 @@ object UcFingerprint : Fingerprint(
     name = "uc"
 )
 
-object IsPromoFingerprint : Fingerprint(
-    definingClass = "Lcom/duolingo/core/sessionend/api/SessionEndMessageType;",
+object InvokeFingerprint : Fingerprint(
+    definingClass = "Lj0x;",
+    returnType = "Ljava/lang/Object;",
+    name = "invoke"
+)
+
+object OnClickFingerprint : Fingerprint(
+    definingClass = "Lry80;",
+    returnType = "V",
+    name = "onClick"
+)
+
+object BFingerprint : Fingerprint(
+    definingClass = "Lcom/duolingo/data/user/User;",
     returnType = "Z",
-    name = "isPromo"
+    name = "B"
+)
+
+object IsFullEnergyRefillItemFingerprint : Fingerprint(
+    definingClass = "Lcom/duolingo/core/shop/Inventory\$PowerUp;",
+    returnType = "Z",
+    name = "isFullEnergyRefillItem"
 )
 
 object IsGoldSubscriptionFingerprint : Fingerprint(
     definingClass = "Lcom/duolingo/core/shop/Inventory\$PowerUp;",
     returnType = "Z",
     name = "isGoldSubscription"
+)
+
+object IsIapItemFingerprint : Fingerprint(
+    definingClass = "Lcom/duolingo/core/shop/Inventory\$PowerUp;",
+    returnType = "Z",
+    name = "isIapItem"
+)
+
+object IsIapReadyFingerprint : Fingerprint(
+    definingClass = "Lcom/duolingo/core/shop/Inventory\$PowerUp;",
+    returnType = "Z",
+    name = "isIapReady"
+)
+
+object IsLiteSubscriptionFingerprint : Fingerprint(
+    definingClass = "Lcom/duolingo/core/shop/Inventory\$PowerUp;",
+    returnType = "Z",
+    name = "isLiteSubscription"
+)
+
+object IsPromoFingerprint : Fingerprint(
+    definingClass = "Lcom/duolingo/core/sessionend/api/SessionEndMessageType;",
+    returnType = "Z",
+    name = "isPromo"
 )
 
 object IsSubscriptionFingerprint : Fingerprint(
@@ -35,16 +77,4 @@ object HasSubscriptionFingerprint : Fingerprint(
     definingClass = "Lcom/duolingo/data/user/SubscriberLevel;",
     returnType = "Z",
     name = "hasSubscription"
-)
-
-object IsUnlockFingerprint : Fingerprint(
-    definingClass = "Lcom/duolingo/feature/newpath/ui/items/OvalAnimationScenario;",
-    returnType = "Z",
-    name = "isUnlock"
-)
-
-object GetStoreIdFromSystemFingerprint : Fingerprint(
-    definingClass = "Lcom/adjust/sdk/StoreInfoUtil;",
-    returnType = "Ljava/lang/String;",
-    name = "getStoreIdFromSystem"
 )

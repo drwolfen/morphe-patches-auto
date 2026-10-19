@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.55.0",
+  "version": "0.56.0",
   "patches": [
     {
       "name": "Enable Premium",
@@ -24,44 +24,6 @@
                 "X86_64": 215,
                 "X86": 215
               },
-              "isExperimental": true,
-              "minSdk": null,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
-    },
-    {
-      "name": "Enable Premium",
-      "description": "Auto-generated: unlocks features gated by com.duolingo paywall checks.",
-      "default": true,
-      "category": null,
-      "compatiblePackages": [
-        {
-          "packageName": "com.duolingo",
-          "name": "Duolingo",
-          "description": null,
-          "apkFileType": null,
-          "appIconColor": "#57CB01",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "6.101.2",
-              "versionCodes": {
-                "ARM64_V8A": 2476,
-                "ARMEABI_V7A": 2476,
-                "X86_64": 2476,
-                "X86": 2476
-              },
-              "isExperimental": true,
-              "minSdk": null,
-              "description": null
-            },
-            {
-              "version": "6.101.1",
-              "versionCodes": null,
               "isExperimental": true,
               "minSdk": null,
               "description": null
@@ -150,6 +112,44 @@
                 "X86_64": 1660,
                 "X86": 1660
               },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Enable Super",
+      "description": "Auto-generated: unlocks Duolingo Super — the app's own paywall/tier gates are forced open.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.duolingo",
+          "name": "Duolingo",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#57CB01",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "6.101.2",
+              "versionCodes": {
+                "ARM64_V8A": 2476,
+                "ARMEABI_V7A": 2476,
+                "X86_64": 2476,
+                "X86": 2476
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "6.101.1",
+              "versionCodes": null,
               "isExperimental": true,
               "minSdk": null,
               "description": null
