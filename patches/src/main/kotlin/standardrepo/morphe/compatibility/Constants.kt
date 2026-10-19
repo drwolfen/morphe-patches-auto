@@ -9,9 +9,10 @@ import app.morphe.patcher.patch.AppTarget
 import app.morphe.patcher.patch.Compatibility
 
 object Compat {
-    // Template demo patch. The example patch deliberately ships no compatibleWith(), so this
-    // entry is reference-only — Morphe never offers com.example.app as an app. It stays as the
-    // gate's negative-control target (fingerprint present, package not declared).
+    // Template demo patch, SCOPED to com.example.app. It used to declare no compatibleWith()
+    // (universal), which made it applicable to every package and put a second patch on every
+    // app card; scoping keeps exactly ONE patch per app. Stays as the gate's negative-control
+    // target (fingerprint present, package not declared by a real app patch).
     val EXAMPLE = Compatibility(
         name = "Example App",
         packageName = "com.example.app",

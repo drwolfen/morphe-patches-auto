@@ -175,6 +175,17 @@ fun main(args: Array<String>) {
         exitProcess(5)
     }
 
+    // Exactly ONE patch per app. The template demo used to be universal (compatiblePackages ==
+    // null), which makes PatchInfo.compatibleWith() true for EVERY package — so the Manager showed
+    // the demo patch on every app card and every app looked "2-way" patched. A cracked app must
+    // ship exactly one patch: assert it here, because two applicable patches mean the app is
+    // cracked twice (and one of them is usually the no-op demo).
+    println("GATE applicable patch names=${applicable.map { it.name }}")
+    if (applicable.size != 1) {
+        println("GATE FAIL ${applicable.size} applicable patches declare $expectedPackage — want exactly 1")
+        exitProcess(11)
+    }
+
     // Manager parity: the Manager titles the app card in a source with this Compatibility `name`
     // (SourceManagementDialogs.patchesByApp -> title = displayName ?: packageName) and searches the
     // source's app list on it, so a wrong name hides the patch from the user. Assert it is the app
