@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.62.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.61.0...v0.62.0) (2026-10-20)
+
+### Features
+
+* **Blurwallpaper:** Enable Pro for 3.0.0 ([c873b44](https://codeberg.org/StandardRepo/morphe-patches-auto/commit/c873b44))
+* **Bend:** Enable Premium for 7.8.0
+* **Example App:** Enable Premium for 1.0.0
+* **Sleep:** Enable Premium for 20261006
+* **Investing:** Enable Pro for 6.52
+* **Duolingo:** Enable Super for 6.101.2
+
 ## [0.61.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.60.0...v0.61.0) (2026-10-20)
 
 ### Features
