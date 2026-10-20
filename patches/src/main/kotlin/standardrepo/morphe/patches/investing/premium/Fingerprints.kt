@@ -37,12 +37,6 @@ object AFingerprint : Fingerprint(
     name = "a"
 )
 
-object AFingerprintLd8i : Fingerprint(
-    definingClass = "Ld8i;",
-    returnType = "V",
-    name = "a"
-)
-
 object IFingerprint : Fingerprint(
     definingClass = "Lb8h;",
     returnType = "Z",
