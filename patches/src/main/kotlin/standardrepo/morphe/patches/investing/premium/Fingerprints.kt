@@ -1,6 +1,6 @@
 /**
  * Copyright 2026 crackpipe
- * Auto-generated for com.fusionmedia.investing v6.52 — do not edit by hand.
+ * Auto-generated for com.fusionmedia.investing v6.52 - do not edit by hand.
  */
 
 package standardrepo.morphe.patches.investing.premium
@@ -33,6 +33,12 @@ object GetRevenueFingerprint : Fingerprint(
 
 object AFingerprint : Fingerprint(
     definingClass = "Le51;",
+    returnType = "V",
+    name = "a"
+)
+
+object AFingerprintLd8i : Fingerprint(
+    definingClass = "Ld8i;",
     returnType = "V",
     name = "a"
 )
