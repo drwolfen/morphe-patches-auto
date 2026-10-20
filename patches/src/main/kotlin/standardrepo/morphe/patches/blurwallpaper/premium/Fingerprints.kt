@@ -18,3 +18,9 @@ object ValidateResponseFingerprint : Fingerprint(
     returnType = "V",
     name = "validateResponse"
 )
+
+object PerformLocalInstallerCheckFingerprint : Fingerprint(
+    definingClass = "Lcom/pairip/licensecheck/LicenseClient;",
+    returnType = "Z",
+    name = "performLocalInstallerCheck"
+)

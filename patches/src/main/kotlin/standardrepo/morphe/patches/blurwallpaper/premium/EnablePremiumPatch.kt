@@ -19,5 +19,6 @@ val enablePremiumPatch = bytecodePatch(
     execute {
         ProcessResponseFingerprint.method.addInstruction(0, "const/4 p1, 0x0")
         ValidateResponseFingerprint.method.returnEarly()
+        PerformLocalInstallerCheckFingerprint.method.returnEarly(true)
     }
 }
