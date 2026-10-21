@@ -57,6 +57,12 @@ object StartActivityForResultFingerprintLgr3 : Fingerprint(
     name = "startActivityForResult"
 )
 
+object InvokeSuspendFingerprint : Fingerprint(
+    definingClass = "Lod7;",
+    returnType = "Ljava/lang/Object;",
+    name = "invokeSuspend"
+)
+
 object IFingerprint : Fingerprint(
     definingClass = "Lb8h;",
     returnType = "Z",
@@ -71,12 +77,6 @@ object AFingerprintLkzj : Fingerprint(
 
 object AFingerprintLlgd : Fingerprint(
     definingClass = "Llgd;",
-    returnType = "Z",
-    name = "a"
-)
-
-object AFingerprintLrz0 : Fingerprint(
-    definingClass = "Lrz0;",
     returnType = "Z",
     name = "a"
 )
