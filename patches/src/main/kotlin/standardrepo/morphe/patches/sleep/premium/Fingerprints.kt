@@ -7,6 +7,36 @@ package standardrepo.morphe.patches.sleep.premium
 
 import app.morphe.patcher.Fingerprint
 
+object EarnedFingerprint : Fingerprint(
+    definingClass = "Lcom/urbandroid/sleep/domain/achievement/Achievement;",
+    returnType = "Z",
+    name = "earned"
+)
+
+object FullyCompletedFingerprint : Fingerprint(
+    definingClass = "Lcom/urbandroid/sleep/domain/achievement/Achievement;",
+    returnType = "Z",
+    name = "fullyCompleted"
+)
+
+object IsLevel1Fingerprint : Fingerprint(
+    definingClass = "Lcom/urbandroid/sleep/domain/achievement/Achievement;",
+    returnType = "Z",
+    name = "isLevel1"
+)
+
+object IsLevel2Fingerprint : Fingerprint(
+    definingClass = "Lcom/urbandroid/sleep/domain/achievement/Achievement;",
+    returnType = "Z",
+    name = "isLevel2"
+)
+
+object IsLevel3Fingerprint : Fingerprint(
+    definingClass = "Lcom/urbandroid/sleep/domain/achievement/Achievement;",
+    returnType = "Z",
+    name = "isLevel3"
+)
+
 object LambdashowTheAlertDialog0Fingerprint : Fingerprint(
     definingClass = "Lcom/garmin/android/connectiq/AutoUIDialogHostActivity;",
     returnType = "V",
@@ -43,36 +73,6 @@ object StartActivityForResultFingerprintComponentActivity : Fingerprint(
     returnType = "V",
     parameters = listOf("Landroid/content/Intent;", "I", "Landroid/os/Bundle;"),
     name = "startActivityForResult"
-)
-
-object EarnedFingerprint : Fingerprint(
-    definingClass = "Lcom/urbandroid/sleep/domain/achievement/Achievement;",
-    returnType = "Z",
-    name = "earned"
-)
-
-object FullyCompletedFingerprint : Fingerprint(
-    definingClass = "Lcom/urbandroid/sleep/domain/achievement/Achievement;",
-    returnType = "Z",
-    name = "fullyCompleted"
-)
-
-object IsLevel1Fingerprint : Fingerprint(
-    definingClass = "Lcom/urbandroid/sleep/domain/achievement/Achievement;",
-    returnType = "Z",
-    name = "isLevel1"
-)
-
-object IsLevel2Fingerprint : Fingerprint(
-    definingClass = "Lcom/urbandroid/sleep/domain/achievement/Achievement;",
-    returnType = "Z",
-    name = "isLevel2"
-)
-
-object IsLevel3Fingerprint : Fingerprint(
-    definingClass = "Lcom/urbandroid/sleep/domain/achievement/Achievement;",
-    returnType = "Z",
-    name = "isLevel3"
 )
 
 object IsUnlockAckedFingerprint : Fingerprint(

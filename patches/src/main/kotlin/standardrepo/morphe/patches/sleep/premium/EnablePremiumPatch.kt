@@ -18,6 +18,11 @@ val enablePremiumPatch = bytecodePatch(
     compatibleWith(Compat.SLEEP)
 
     execute {
+        EarnedFingerprint.method.returnEarly(true)
+        FullyCompletedFingerprint.method.returnEarly(true)
+        IsLevel1Fingerprint.method.returnEarly(true)
+        IsLevel2Fingerprint.method.returnEarly(true)
+        IsLevel3Fingerprint.method.returnEarly(true)
         LambdashowTheAlertDialog0Fingerprint.method.returnEarly()
         ResolveFingerprint.method.returnEarly()
         Lambdarefresh3Fingerprint.method.returnEarly(true)
@@ -198,11 +203,6 @@ val enablePremiumPatch = bytecodePatch(
                 return-void
             """)
         }
-        EarnedFingerprint.method.returnEarly(true)
-        FullyCompletedFingerprint.method.returnEarly(true)
-        IsLevel1Fingerprint.method.returnEarly(true)
-        IsLevel2Fingerprint.method.returnEarly(true)
-        IsLevel3Fingerprint.method.returnEarly(true)
         IsUnlockAckedFingerprint.method.returnEarly(true)
     }
 }
