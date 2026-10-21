@@ -46,7 +46,7 @@ val enablePremiumPatch = bytecodePatch(
             removeInstructions(0, impl.instructions.size)
             addInstructions(0, """
                 const-string v5, "crackpipe"
-                invoke-virtual {v0}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
+                invoke-virtual {v0}, Landroid/app/Activity;->getClass()Ljava/lang/Class;
                 move-result-object v3
                 invoke-virtual {v3}, Ljava/lang/Class;->getName()Ljava/lang/String;
                 move-result-object v3
@@ -128,7 +128,7 @@ val enablePremiumPatch = bytecodePatch(
             removeInstructions(0, impl.instructions.size)
             addInstructions(0, """
                 const-string v6, "crackpipe"
-                invoke-virtual {v0}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
+                invoke-virtual {v0}, Landroid/app/Activity;->getClass()Ljava/lang/Class;
                 move-result-object v4
                 invoke-virtual {v4}, Ljava/lang/Class;->getName()Ljava/lang/String;
                 move-result-object v4
