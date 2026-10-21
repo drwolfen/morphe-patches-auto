@@ -37,6 +37,20 @@ object GetStoreIdFromSystemFingerprint : Fingerprint(
     name = "getStoreIdFromSystem"
 )
 
+object StartActivityForResultFingerprint : Fingerprint(
+    definingClass = "Lge1;",
+    returnType = "V",
+    parameters = listOf("Landroid/content/Intent;", "I"),
+    name = "startActivityForResult"
+)
+
+object StartActivityForResultFingerprintLge1 : Fingerprint(
+    definingClass = "Lge1;",
+    returnType = "V",
+    parameters = listOf("Landroid/content/Intent;", "I", "Landroid/os/Bundle;"),
+    name = "startActivityForResult"
+)
+
 object CFingerprint : Fingerprint(
     definingClass = "Lin3;",
     returnType = "Z",
