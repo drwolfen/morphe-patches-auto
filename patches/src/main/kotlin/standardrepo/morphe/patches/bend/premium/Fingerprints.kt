@@ -56,15 +56,3 @@ object InvokeFingerprint : Fingerprint(
     returnType = "Ljava/lang/Object;",
     name = "invoke"
 )
-
-object CFingerprint : Fingerprint(
-    definingClass = "Lin3;",
-    returnType = "Z",
-    name = "C"
-)
-
-object AFingerprint : Fingerprint(
-    definingClass = "Lx63;",
-    returnType = "Z",
-    name = "a"
-)

@@ -56,6 +56,10 @@ val enablePremiumPatch = bytecodePatch(
                 invoke-virtual {v3, v4}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
                 move-result v4
                 if-eqz v4, :skip
+                const-string v4, "com.android.vending"
+                invoke-virtual {v3, v4}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+                move-result v4
+                if-eqz v4, :skip
                 :pkg
                 invoke-virtual {v1}, Landroid/content/Intent;->getPackage()Ljava/lang/String;
                 move-result-object v3
@@ -113,6 +117,10 @@ val enablePremiumPatch = bytecodePatch(
                 invoke-virtual {v4, v5}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
                 move-result v5
                 if-eqz v5, :skip
+                const-string v5, "com.android.vending"
+                invoke-virtual {v4, v5}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+                move-result v5
+                if-eqz v5, :skip
                 :pkg
                 invoke-virtual {v1}, Landroid/content/Intent;->getPackage()Ljava/lang/String;
                 move-result-object v4
@@ -142,7 +150,5 @@ val enablePremiumPatch = bytecodePatch(
             sget-object v22, Lkotlin/Unit;->INSTANCE:Lkotlin/Unit;
             return-object v22
             """)
-        CFingerprint.method.returnEarly(true)
-        AFingerprint.method.returnEarly(true)
     }
 }
