@@ -48,11 +48,17 @@ val enablePremiumPatch = bytecodePatch(
                 move-result-object v3
                 invoke-virtual {v3}, Ljava/lang/Class;->getName()Ljava/lang/String;
                 move-result-object v3
+                invoke-static {v3}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
+                move-result-object v3
                 invoke-static {v5, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
                 invoke-virtual {v9}, Landroid/content/Intent;->getAction()Ljava/lang/String;
                 move-result-object v3
+                invoke-static {v3}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
+                move-result-object v3
                 invoke-static {v5, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
                 invoke-virtual {v9}, Landroid/content/Intent;->getDataString()Ljava/lang/String;
+                move-result-object v3
+                invoke-static {v3}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
                 move-result-object v3
                 invoke-static {v5, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
                 if-eqz v3, :pkg
@@ -130,11 +136,17 @@ val enablePremiumPatch = bytecodePatch(
                 move-result-object v4
                 invoke-virtual {v4}, Ljava/lang/Class;->getName()Ljava/lang/String;
                 move-result-object v4
+                invoke-static {v4}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
+                move-result-object v4
                 invoke-static {v6, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
                 invoke-virtual {v9}, Landroid/content/Intent;->getAction()Ljava/lang/String;
                 move-result-object v4
+                invoke-static {v4}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
+                move-result-object v4
                 invoke-static {v6, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
                 invoke-virtual {v9}, Landroid/content/Intent;->getDataString()Ljava/lang/String;
+                move-result-object v4
+                invoke-static {v4}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
                 move-result-object v4
                 invoke-static {v6, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
                 if-eqz v4, :pkg
