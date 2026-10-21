@@ -43,6 +43,20 @@ object AFingerprintLe51 : Fingerprint(
     name = "a"
 )
 
+object StartActivityForResultFingerprint : Fingerprint(
+    definingClass = "Lgr3;",
+    returnType = "V",
+    parameters = listOf("Landroid/content/Intent;", "I"),
+    name = "startActivityForResult"
+)
+
+object StartActivityForResultFingerprintLgr3 : Fingerprint(
+    definingClass = "Lgr3;",
+    returnType = "V",
+    parameters = listOf("Landroid/content/Intent;", "I", "Landroid/os/Bundle;"),
+    name = "startActivityForResult"
+)
+
 object IFingerprint : Fingerprint(
     definingClass = "Lb8h;",
     returnType = "Z",
@@ -63,18 +77,6 @@ object AFingerprintLlgd : Fingerprint(
 
 object AFingerprintLrz0 : Fingerprint(
     definingClass = "Lrz0;",
-    returnType = "Z",
-    name = "a"
-)
-
-object AFingerprintLw4b : Fingerprint(
-    definingClass = "Lw4b;",
-    returnType = "Z",
-    name = "a"
-)
-
-object AFingerprintLy4b : Fingerprint(
-    definingClass = "Ly4b;",
     returnType = "Z",
     name = "a"
 )

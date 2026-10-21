@@ -6,6 +6,8 @@
 package standardrepo.morphe.patches.investing.premium
 
 import app.morphe.patcher.patch.bytecodePatch
+import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
+import app.morphe.patcher.extensions.InstructionExtensions.removeInstructions
 import app.morphe.util.returnEarly
 import standardrepo.morphe.compatibility.Compat
 
@@ -22,11 +24,51 @@ val enablePremiumPatch = bytecodePatch(
         GetRevenueFingerprint.method.returnEarly(null as Void?)
         AFingerprint.method.returnEarly()
         AFingerprintLe51.method.returnEarly()
+        StartActivityForResultFingerprint.method.apply {
+            removeInstructions(0, StartActivityForResultFingerprint.method.implementation!!.instructions.size)
+            addInstructions(0, """
+                invoke-virtual {v1}, Landroid/content/Intent;->getDataString()Ljava/lang/String;
+                move-result-object v3
+                if-eqz v3, :orig
+                const-string v4, "play.google.com"
+                invoke-virtual {v3, v4}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+                move-result v4
+                if-eqz v4, :skip
+                const-string v4, "market://"
+                invoke-virtual {v3, v4}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+                move-result v4
+                if-eqz v4, :skip
+                :orig
+                invoke-super {v0, v1, v2}, Landroid/app/Activity;->startActivityForResult(Landroid/content/Intent; I)V
+                return-void
+                :skip
+                return-void
+            """)
+        }
+        StartActivityForResultFingerprintLgr3.method.apply {
+            removeInstructions(0, StartActivityForResultFingerprintLgr3.method.implementation!!.instructions.size)
+            addInstructions(0, """
+                invoke-virtual {v1}, Landroid/content/Intent;->getDataString()Ljava/lang/String;
+                move-result-object v4
+                if-eqz v4, :orig
+                const-string v5, "play.google.com"
+                invoke-virtual {v4, v5}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+                move-result v5
+                if-eqz v5, :skip
+                const-string v5, "market://"
+                invoke-virtual {v4, v5}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+                move-result v5
+                if-eqz v5, :skip
+                :orig
+                invoke-super {v0, v1, v2, v3}, Landroid/app/Activity;->startActivityForResult(Landroid/content/Intent; I Landroid/os/Bundle;)V
+                return-void
+                :skip
+                return-void
+            """)
+        }
         IFingerprint.method.returnEarly(true)
         AFingerprintLkzj.method.returnEarly(true)
         AFingerprintLlgd.method.returnEarly(true)
         AFingerprintLrz0.method.returnEarly(true)
-        AFingerprintLw4b.method.returnEarly(true)
-        AFingerprintLy4b.method.returnEarly(true)
     }
 }
