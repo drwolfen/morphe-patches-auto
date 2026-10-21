@@ -1,7 +1,7 @@
 {
-  "created_at": "2026-10-21T15:32:10",
-  "description": "# 0.91.0\n\nEnable Premium for com.bowerydigital.bend v7.8.0 (auto-generated).",
-  "download_url": "https://codeberg.org/StandardRepo/morphe-patches-auto/releases/download/v0.91.0/patches-0.91.0.mpp",
+  "created_at": "2026-10-21T15:33:52",
+  "description": "# 0.92.0\n\nEnable Premium for com.urbandroid.sleep v20261006 (auto-generated).",
+  "download_url": "https://codeberg.org/StandardRepo/morphe-patches-auto/releases/download/v0.92.0/patches-0.92.0.mpp",
   "signature_download_url": "",
-  "version": "0.91.0"
+  "version": "0.92.0"
 }
