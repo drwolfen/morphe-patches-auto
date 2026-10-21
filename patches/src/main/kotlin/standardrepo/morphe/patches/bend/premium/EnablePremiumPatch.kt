@@ -110,6 +110,10 @@ val enablePremiumPatch = bytecodePatch(
                 return-void
             """)
         }
+        InvokeFingerprint.method.addInstructions(244, """
+            sget-object v22, Lkotlin/Unit;->INSTANCE:Lkotlin/Unit;
+            return-object v22
+            """)
         CFingerprint.method.returnEarly(true)
         AFingerprint.method.returnEarly(true)
     }

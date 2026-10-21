@@ -51,6 +51,12 @@ object StartActivityForResultFingerprintLge1 : Fingerprint(
     name = "startActivityForResult"
 )
 
+object InvokeFingerprint : Fingerprint(
+    definingClass = "Lmd2;",
+    returnType = "Ljava/lang/Object;",
+    name = "invoke"
+)
+
 object CFingerprint : Fingerprint(
     definingClass = "Lin3;",
     returnType = "Z",
