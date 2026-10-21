@@ -25,7 +25,11 @@ val enablePremiumPatch = bytecodePatch(
         AFingerprint.method.returnEarly()
         AFingerprintLe51.method.returnEarly()
         StartActivityForResultFingerprint.method.apply {
-            removeInstructions(0, StartActivityForResultFingerprint.method.implementation!!.instructions.size)
+            val impl = implementation!!
+            val rc = impl.javaClass.getDeclaredField("registerCount")
+            rc.isAccessible = true
+            rc.setInt(impl, impl.registerCount + 8)
+            removeInstructions(0, impl.instructions.size)
             addInstructions(0, """
                 invoke-virtual {v1}, Landroid/content/Intent;->getDataString()Ljava/lang/String;
                 move-result-object v3
@@ -46,7 +50,11 @@ val enablePremiumPatch = bytecodePatch(
             """)
         }
         StartActivityForResultFingerprintLgr3.method.apply {
-            removeInstructions(0, StartActivityForResultFingerprintLgr3.method.implementation!!.instructions.size)
+            val impl = implementation!!
+            val rc = impl.javaClass.getDeclaredField("registerCount")
+            rc.isAccessible = true
+            rc.setInt(impl, impl.registerCount + 8)
+            removeInstructions(0, impl.instructions.size)
             addInstructions(0, """
                 invoke-virtual {v1}, Landroid/content/Intent;->getDataString()Ljava/lang/String;
                 move-result-object v4
