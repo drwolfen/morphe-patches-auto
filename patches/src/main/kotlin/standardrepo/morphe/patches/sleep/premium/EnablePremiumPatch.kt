@@ -23,10 +23,16 @@ val enablePremiumPatch = bytecodePatch(
         IsLevel1Fingerprint.method.returnEarly(true)
         IsLevel2Fingerprint.method.returnEarly(true)
         IsLevel3Fingerprint.method.returnEarly(true)
+        HasUnlockFingerprint.method.returnEarly(true)
+        IsSubscriptionFingerprint.method.returnEarly(true)
+        IsTrialFingerprint.method.returnEarly(false)
+        IsTrialFingerprintInternalRingtonesInternalRingtone.method.returnEarly(false)
+        IsTrialFingerprintLullabyPlayerLullaby.method.returnEarly(false)
         LambdashowTheAlertDialog0Fingerprint.method.returnEarly()
         ResolveFingerprint.method.returnEarly()
         Lambdarefresh3Fingerprint.method.returnEarly(true)
         Bindlambda1Fingerprint.method.returnEarly()
+        IsPremiumFingerprint.method.returnEarly(true)
         StartActivityForResultFingerprint.method.apply {
             val impl = implementation!!
             var rc: java.lang.reflect.Field? = null
@@ -204,5 +210,6 @@ val enablePremiumPatch = bytecodePatch(
             """)
         }
         IsUnlockAckedFingerprint.method.returnEarly(true)
+        DFingerprint.method.returnEarly(null as Void?)
     }
 }

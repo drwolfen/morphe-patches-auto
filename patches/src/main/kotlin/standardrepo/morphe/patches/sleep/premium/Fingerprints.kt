@@ -37,6 +37,36 @@ object IsLevel3Fingerprint : Fingerprint(
     name = "isLevel3"
 )
 
+object HasUnlockFingerprint : Fingerprint(
+    definingClass = "Lcom/urbandroid/sleep/TrialFilter;",
+    returnType = "Z",
+    name = "hasUnlock"
+)
+
+object IsSubscriptionFingerprint : Fingerprint(
+    definingClass = "Lcom/urbandroid/sleep/TrialFilter;",
+    returnType = "Z",
+    name = "isSubscription"
+)
+
+object IsTrialFingerprint : Fingerprint(
+    definingClass = "Lcom/urbandroid/sleep/TrialFilter;",
+    returnType = "Z",
+    name = "isTrial"
+)
+
+object IsTrialFingerprintInternalRingtonesInternalRingtone : Fingerprint(
+    definingClass = "Lcom/urbandroid/sleep/media/InternalRingtones\$InternalRingtone;",
+    returnType = "Z",
+    name = "isTrial"
+)
+
+object IsTrialFingerprintLullabyPlayerLullaby : Fingerprint(
+    definingClass = "Lcom/urbandroid/sleep/media/lullaby/LullabyPlayer\$Lullaby;",
+    returnType = "Z",
+    name = "isTrial"
+)
+
 object LambdashowTheAlertDialog0Fingerprint : Fingerprint(
     definingClass = "Lcom/garmin/android/connectiq/AutoUIDialogHostActivity;",
     returnType = "V",
@@ -61,6 +91,12 @@ object Bindlambda1Fingerprint : Fingerprint(
     name = "bind\$lambda\$1"
 )
 
+object IsPremiumFingerprint : Fingerprint(
+    definingClass = "Lcom/urbandroid/sleep/media/spotify/SpotifyManager;",
+    returnType = "Z",
+    name = "isPremium"
+)
+
 object StartActivityForResultFingerprint : Fingerprint(
     definingClass = "Landroidx/activity/ComponentActivity;",
     returnType = "V",
@@ -79,4 +115,10 @@ object IsUnlockAckedFingerprint : Fingerprint(
     definingClass = "Lcom/urbandroid/common/util/PreferencesUtils;",
     returnType = "Z",
     name = "isUnlockAcked"
+)
+
+object DFingerprint : Fingerprint(
+    definingClass = "Lads_mobile_sdk/ja2;",
+    returnType = "Ljava/lang/Object;",
+    name = "d"
 )
