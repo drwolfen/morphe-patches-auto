@@ -1,11 +1,29 @@
 /**
  * Copyright 2026 crackpipe
- * Auto-generated for com.duolingo v6.101.2 — do not edit by hand.
+ * Auto-generated for com.duolingo v6.101.2 - do not edit by hand.
  */
 
 package standardrepo.morphe.patches.duolingo.premium
 
 import app.morphe.patcher.Fingerprint
+
+object InitFingerprint : Fingerprint(
+    definingClass = "Ls990;",
+    returnType = "V",
+    name = "<init>"
+)
+
+object ToStringFingerprint : Fingerprint(
+    definingClass = "Lcom/duolingo/data/user/User;",
+    returnType = "Ljava/lang/String;",
+    name = "toString"
+)
+
+object InitFingerprintEnergyConfig : Fingerprint(
+    definingClass = "Lcom/duolingo/core/energy/models/EnergyConfig;",
+    returnType = "V",
+    name = "<init>"
+)
 
 object UcFingerprint : Fingerprint(
     definingClass = "Lcom/bytedance/sdk/openadsdk/eu/uc/uc/qtm;",
@@ -25,40 +43,30 @@ object OnClickFingerprint : Fingerprint(
     name = "onClick"
 )
 
-object BFingerprint : Fingerprint(
-    definingClass = "Lcom/duolingo/data/user/User;",
-    returnType = "Z",
-    name = "B"
+object StartActivityForResultFingerprint : Fingerprint(
+    definingClass = "Landroidx/activity/ComponentActivity;",
+    returnType = "V",
+    parameters = listOf("Landroid/content/Intent;", "I"),
+    name = "startActivityForResult"
 )
 
-object IsFullEnergyRefillItemFingerprint : Fingerprint(
-    definingClass = "Lcom/duolingo/core/shop/Inventory\$PowerUp;",
-    returnType = "Z",
-    name = "isFullEnergyRefillItem"
+object StartActivityForResultFingerprintComponentActivity : Fingerprint(
+    definingClass = "Landroidx/activity/ComponentActivity;",
+    returnType = "V",
+    parameters = listOf("Landroid/content/Intent;", "I", "Landroid/os/Bundle;"),
+    name = "startActivityForResult"
 )
 
-object IsGoldSubscriptionFingerprint : Fingerprint(
-    definingClass = "Lcom/duolingo/core/shop/Inventory\$PowerUp;",
-    returnType = "Z",
-    name = "isGoldSubscription"
+object OnClickFingerprintLj13 : Fingerprint(
+    definingClass = "Lj13;",
+    returnType = "V",
+    name = "onClick"
 )
 
-object IsIapItemFingerprint : Fingerprint(
-    definingClass = "Lcom/duolingo/core/shop/Inventory\$PowerUp;",
-    returnType = "Z",
-    name = "isIapItem"
-)
-
-object IsIapReadyFingerprint : Fingerprint(
-    definingClass = "Lcom/duolingo/core/shop/Inventory\$PowerUp;",
-    returnType = "Z",
-    name = "isIapReady"
-)
-
-object IsLiteSubscriptionFingerprint : Fingerprint(
-    definingClass = "Lcom/duolingo/core/shop/Inventory\$PowerUp;",
-    returnType = "Z",
-    name = "isLiteSubscription"
+object InvokeFingerprintLh5 : Fingerprint(
+    definingClass = "Lh5;",
+    returnType = "Ljava/lang/Object;",
+    name = "invoke"
 )
 
 object IsPromoFingerprint : Fingerprint(
@@ -67,14 +75,8 @@ object IsPromoFingerprint : Fingerprint(
     name = "isPromo"
 )
 
-object IsSubscriptionFingerprint : Fingerprint(
+object IsGoldSubscriptionFingerprint : Fingerprint(
     definingClass = "Lcom/duolingo/core/shop/Inventory\$PowerUp;",
     returnType = "Z",
-    name = "isSubscription"
-)
-
-object HasSubscriptionFingerprint : Fingerprint(
-    definingClass = "Lcom/duolingo/data/user/SubscriberLevel;",
-    returnType = "Z",
-    name = "hasSubscription"
+    name = "isGoldSubscription"
 )
