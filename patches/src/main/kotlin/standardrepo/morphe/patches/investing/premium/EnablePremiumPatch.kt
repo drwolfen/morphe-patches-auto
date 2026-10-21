@@ -154,8 +154,5 @@ val enablePremiumPatch = bytecodePatch(
             sget-object v19, Lkotlin/Unit;->INSTANCE:Lkotlin/Unit;
             return-object v19
             """)
-        IFingerprint.method.returnEarly(true)
-        AFingerprintLkzj.method.returnEarly(true)
-        AFingerprintLlgd.method.returnEarly(true)
     }
 }

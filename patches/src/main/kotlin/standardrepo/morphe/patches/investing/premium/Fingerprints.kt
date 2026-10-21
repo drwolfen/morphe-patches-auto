@@ -62,21 +62,3 @@ object InvokeSuspendFingerprint : Fingerprint(
     returnType = "Ljava/lang/Object;",
     name = "invokeSuspend"
 )
-
-object IFingerprint : Fingerprint(
-    definingClass = "Lb8h;",
-    returnType = "Z",
-    name = "I"
-)
-
-object AFingerprintLkzj : Fingerprint(
-    definingClass = "Lkzj;",
-    returnType = "Z",
-    name = "a"
-)
-
-object AFingerprintLlgd : Fingerprint(
-    definingClass = "Llgd;",
-    returnType = "Z",
-    name = "a"
-)
