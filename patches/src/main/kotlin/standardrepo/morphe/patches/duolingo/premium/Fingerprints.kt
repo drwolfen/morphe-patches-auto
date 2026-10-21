@@ -10,6 +10,7 @@ import app.morphe.patcher.Fingerprint
 object InitFingerprint : Fingerprint(
     definingClass = "Ls990;",
     returnType = "V",
+    parameters = listOf("Lcom/duolingo/data/user/User;"),
     name = "<init>"
 )
 
@@ -22,12 +23,14 @@ object ToStringFingerprint : Fingerprint(
 object InitFingerprintEnergyConfig : Fingerprint(
     definingClass = "Lcom/duolingo/core/energy/models/EnergyConfig;",
     returnType = "V",
+    parameters = listOf("I", "I", "I", "J", "J", "J", "I", "J", "Z"),
     name = "<init>"
 )
 
 object InitFingerprintEnergyConfig_IIJJJIJV : Fingerprint(
     definingClass = "Lcom/duolingo/core/energy/models/EnergyConfig;",
     returnType = "V",
+    parameters = listOf("I", "I", "J", "J", "J", "I", "J"),
     name = "<init>"
 )
 
