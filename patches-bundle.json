@@ -1,7 +1,7 @@
 {
-  "created_at": "2026-10-21T13:24:16",
-  "description": "# 0.83.0\n\nEnable Super for com.duolingo v6.101.2 (auto-generated).",
-  "download_url": "https://codeberg.org/StandardRepo/morphe-patches-auto/releases/download/v0.83.0/patches-0.83.0.mpp",
+  "created_at": "2026-10-21T13:25:49",
+  "description": "# 0.84.0\n\nEnable Premium for com.urbandroid.sleep v20261006 (auto-generated).",
+  "download_url": "https://codeberg.org/StandardRepo/morphe-patches-auto/releases/download/v0.84.0/patches-0.84.0.mpp",
   "signature_download_url": "",
-  "version": "0.83.0"
+  "version": "0.84.0"
 }
