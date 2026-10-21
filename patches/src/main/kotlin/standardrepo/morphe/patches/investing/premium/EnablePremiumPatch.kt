@@ -45,8 +45,10 @@ val enablePremiumPatch = bytecodePatch(
             rcf.setInt(impl, oldRegs + 8)
             removeInstructions(0, impl.instructions.size)
             addInstructions(0, """
+                const-string v5, "crackpipe"
                 invoke-virtual {v1}, Landroid/content/Intent;->getDataString()Ljava/lang/String;
                 move-result-object v3
+                invoke-static {v5, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
                 if-eqz v3, :pkg
                 const-string v4, "play.google.com"
                 invoke-virtual {v3, v4}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
@@ -79,9 +81,13 @@ val enablePremiumPatch = bytecodePatch(
                 move-result v4
                 if-eqz v4, :skip
                 :orig
+                const-string v6, "PASSED"
+                invoke-static {v5, v6}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
                 invoke-super {v0, v1, v2}, Landroid/app/Activity;->startActivityForResult(Landroid/content/Intent; I)V
                 return-void
                 :skip
+                const-string v6, "SWALLOWED"
+                invoke-static {v5, v6}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
                 return-void
             """)
         }
@@ -106,8 +112,10 @@ val enablePremiumPatch = bytecodePatch(
             rcf.setInt(impl, oldRegs + 8)
             removeInstructions(0, impl.instructions.size)
             addInstructions(0, """
+                const-string v6, "crackpipe"
                 invoke-virtual {v1}, Landroid/content/Intent;->getDataString()Ljava/lang/String;
                 move-result-object v4
+                invoke-static {v6, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
                 if-eqz v4, :pkg
                 const-string v5, "play.google.com"
                 invoke-virtual {v4, v5}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
@@ -140,9 +148,13 @@ val enablePremiumPatch = bytecodePatch(
                 move-result v5
                 if-eqz v5, :skip
                 :orig
+                const-string v7, "PASSED"
+                invoke-static {v6, v7}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
                 invoke-super {v0, v1, v2, v3}, Landroid/app/Activity;->startActivityForResult(Landroid/content/Intent; I Landroid/os/Bundle;)V
                 return-void
                 :skip
+                const-string v7, "SWALLOWED"
+                invoke-static {v6, v7}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
                 return-void
             """)
         }
