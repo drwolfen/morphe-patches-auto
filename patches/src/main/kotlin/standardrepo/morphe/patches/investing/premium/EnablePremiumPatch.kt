@@ -46,15 +46,21 @@ val enablePremiumPatch = bytecodePatch(
             removeInstructions(0, impl.instructions.size)
             addInstructions(0, """
                 const-string v5, "crackpipe"
-                invoke-virtual {v0}, Landroid/app/Activity;->getClass()Ljava/lang/Class;
+                invoke-virtual {v8}, Landroid/app/Activity;->getClass()Ljava/lang/Class;
                 move-result-object v3
                 invoke-virtual {v3}, Ljava/lang/Class;->getName()Ljava/lang/String;
                 move-result-object v3
-                invoke-static {v5, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-                invoke-virtual {v1}, Landroid/content/Intent;->getAction()Ljava/lang/String;
+                invoke-static {v3}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
                 move-result-object v3
                 invoke-static {v5, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-                invoke-virtual {v1}, Landroid/content/Intent;->getDataString()Ljava/lang/String;
+                invoke-virtual {v9}, Landroid/content/Intent;->getAction()Ljava/lang/String;
+                move-result-object v3
+                invoke-static {v3}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
+                move-result-object v3
+                invoke-static {v5, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+                invoke-virtual {v9}, Landroid/content/Intent;->getDataString()Ljava/lang/String;
+                move-result-object v3
+                invoke-static {v3}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
                 move-result-object v3
                 invoke-static {v5, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
                 if-eqz v3, :pkg
@@ -76,7 +82,7 @@ val enablePremiumPatch = bytecodePatch(
                 if-eqz v4, :pkg
                 goto :skip
                 :pkg
-                invoke-virtual {v1}, Landroid/content/Intent;->getPackage()Ljava/lang/String;
+                invoke-virtual {v9}, Landroid/content/Intent;->getPackage()Ljava/lang/String;
                 move-result-object v3
                 if-eqz v3, :comp
                 const-string v4, "com.android.vending"
@@ -85,7 +91,7 @@ val enablePremiumPatch = bytecodePatch(
                 if-eqz v4, :comp
                 goto :skip
                 :comp
-                invoke-virtual {v1}, Landroid/content/Intent;->getComponent()Landroid/content/ComponentName;
+                invoke-virtual {v9}, Landroid/content/Intent;->getComponent()Landroid/content/ComponentName;
                 move-result-object v3
                 if-eqz v3, :orig
                 invoke-virtual {v3}, Landroid/content/ComponentName;->getPackageName()Ljava/lang/String;
@@ -98,7 +104,7 @@ val enablePremiumPatch = bytecodePatch(
                 :orig
                 const-string v6, "PASSED"
                 invoke-static {v5, v6}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-                invoke-super {v0, v1, v2}, Landroid/app/Activity;->startActivityForResult(Landroid/content/Intent; I)V
+                invoke-super {v8, v9, v10}, Landroid/app/Activity;->startActivityForResult(Landroid/content/Intent; I)V
                 return-void
                 :skip
                 const-string v6, "SWALLOWED"
@@ -128,15 +134,21 @@ val enablePremiumPatch = bytecodePatch(
             removeInstructions(0, impl.instructions.size)
             addInstructions(0, """
                 const-string v6, "crackpipe"
-                invoke-virtual {v0}, Landroid/app/Activity;->getClass()Ljava/lang/Class;
+                invoke-virtual {v8}, Landroid/app/Activity;->getClass()Ljava/lang/Class;
                 move-result-object v4
                 invoke-virtual {v4}, Ljava/lang/Class;->getName()Ljava/lang/String;
                 move-result-object v4
-                invoke-static {v6, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-                invoke-virtual {v1}, Landroid/content/Intent;->getAction()Ljava/lang/String;
+                invoke-static {v4}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
                 move-result-object v4
                 invoke-static {v6, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-                invoke-virtual {v1}, Landroid/content/Intent;->getDataString()Ljava/lang/String;
+                invoke-virtual {v9}, Landroid/content/Intent;->getAction()Ljava/lang/String;
+                move-result-object v4
+                invoke-static {v4}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
+                move-result-object v4
+                invoke-static {v6, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+                invoke-virtual {v9}, Landroid/content/Intent;->getDataString()Ljava/lang/String;
+                move-result-object v4
+                invoke-static {v4}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
                 move-result-object v4
                 invoke-static {v6, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
                 if-eqz v4, :pkg
@@ -158,7 +170,7 @@ val enablePremiumPatch = bytecodePatch(
                 if-eqz v5, :pkg
                 goto :skip
                 :pkg
-                invoke-virtual {v1}, Landroid/content/Intent;->getPackage()Ljava/lang/String;
+                invoke-virtual {v9}, Landroid/content/Intent;->getPackage()Ljava/lang/String;
                 move-result-object v4
                 if-eqz v4, :comp
                 const-string v5, "com.android.vending"
@@ -167,7 +179,7 @@ val enablePremiumPatch = bytecodePatch(
                 if-eqz v5, :comp
                 goto :skip
                 :comp
-                invoke-virtual {v1}, Landroid/content/Intent;->getComponent()Landroid/content/ComponentName;
+                invoke-virtual {v9}, Landroid/content/Intent;->getComponent()Landroid/content/ComponentName;
                 move-result-object v4
                 if-eqz v4, :orig
                 invoke-virtual {v4}, Landroid/content/ComponentName;->getPackageName()Ljava/lang/String;
@@ -180,7 +192,7 @@ val enablePremiumPatch = bytecodePatch(
                 :orig
                 const-string v7, "PASSED"
                 invoke-static {v6, v7}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-                invoke-super {v0, v1, v2, v3}, Landroid/app/Activity;->startActivityForResult(Landroid/content/Intent; I Landroid/os/Bundle;)V
+                invoke-super {v8, v9, v10, v11}, Landroid/app/Activity;->startActivityForResult(Landroid/content/Intent; I Landroid/os/Bundle;)V
                 return-void
                 :skip
                 const-string v7, "SWALLOWED"
