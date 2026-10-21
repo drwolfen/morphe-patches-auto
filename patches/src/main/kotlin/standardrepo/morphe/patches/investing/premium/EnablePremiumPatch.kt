@@ -33,13 +33,31 @@ val enablePremiumPatch = bytecodePatch(
             addInstructions(0, """
                 invoke-virtual {v1}, Landroid/content/Intent;->getDataString()Ljava/lang/String;
                 move-result-object v3
-                if-eqz v3, :orig
+                if-eqz v3, :pkg
                 const-string v4, "play.google.com"
                 invoke-virtual {v3, v4}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
                 move-result v4
                 if-eqz v4, :skip
                 const-string v4, "market://"
                 invoke-virtual {v3, v4}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+                move-result v4
+                if-eqz v4, :skip
+                :pkg
+                invoke-virtual {v1}, Landroid/content/Intent;->getPackage()Ljava/lang/String;
+                move-result-object v3
+                if-eqz v3, :comp
+                const-string v4, "com.android.vending"
+                invoke-virtual {v3, v4}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+                move-result v4
+                if-eqz v4, :skip
+                :comp
+                invoke-virtual {v1}, Landroid/content/Intent;->getComponent()Landroid/content/ComponentName;
+                move-result-object v3
+                if-eqz v3, :orig
+                invoke-virtual {v3}, Landroid/content/ComponentName;->getPackageName()Ljava/lang/String;
+                move-result-object v3
+                const-string v4, "com.android.vending"
+                invoke-virtual {v3, v4}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
                 move-result v4
                 if-eqz v4, :skip
                 :orig
@@ -58,13 +76,31 @@ val enablePremiumPatch = bytecodePatch(
             addInstructions(0, """
                 invoke-virtual {v1}, Landroid/content/Intent;->getDataString()Ljava/lang/String;
                 move-result-object v4
-                if-eqz v4, :orig
+                if-eqz v4, :pkg
                 const-string v5, "play.google.com"
                 invoke-virtual {v4, v5}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
                 move-result v5
                 if-eqz v5, :skip
                 const-string v5, "market://"
                 invoke-virtual {v4, v5}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+                move-result v5
+                if-eqz v5, :skip
+                :pkg
+                invoke-virtual {v1}, Landroid/content/Intent;->getPackage()Ljava/lang/String;
+                move-result-object v4
+                if-eqz v4, :comp
+                const-string v5, "com.android.vending"
+                invoke-virtual {v4, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+                move-result v5
+                if-eqz v5, :skip
+                :comp
+                invoke-virtual {v1}, Landroid/content/Intent;->getComponent()Landroid/content/ComponentName;
+                move-result-object v4
+                if-eqz v4, :orig
+                invoke-virtual {v4}, Landroid/content/ComponentName;->getPackageName()Ljava/lang/String;
+                move-result-object v4
+                const-string v5, "com.android.vending"
+                invoke-virtual {v4, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
                 move-result v5
                 if-eqz v5, :skip
                 :orig
