@@ -1,6 +1,6 @@
 /**
  * Copyright 2026 crackpipe
- * Auto-generated for com.urbandroid.sleep v20261006 — do not edit by hand.
+ * Auto-generated for com.urbandroid.sleep v20261006 - do not edit by hand.
  */
 
 package standardrepo.morphe.patches.sleep.premium
@@ -31,50 +31,52 @@ object Bindlambda1Fingerprint : Fingerprint(
     name = "bind\$lambda\$1"
 )
 
-object IsSameAsLastFinishedRecordFingerprint : Fingerprint(
-    definingClass = "Lcom/urbandroid/sleep/alarmclock/StartTrackReceiver;",
-    returnType = "Z",
-    name = "isSameAsLastFinishedRecord"
+object StartActivityForResultFingerprint : Fingerprint(
+    definingClass = "Landroidx/activity/ComponentActivity;",
+    returnType = "V",
+    parameters = listOf("Landroid/content/Intent;", "I"),
+    name = "startActivityForResult"
 )
 
-object NestmskipUpdateFingerprint : Fingerprint(
-    definingClass = "Lcom/urbandroid/sleep/graph/GraphUpdateSleepRecordListener;",
-    returnType = "Z",
-    name = "-\$\$Nest\$mskipUpdate"
+object StartActivityForResultFingerprintComponentActivity : Fingerprint(
+    definingClass = "Landroidx/activity/ComponentActivity;",
+    returnType = "V",
+    parameters = listOf("Landroid/content/Intent;", "I", "Landroid/os/Bundle;"),
+    name = "startActivityForResult"
 )
 
-object IsHideSleepAnalysisFingerprint : Fingerprint(
-    definingClass = "Lcom/urbandroid/sleep/TrialFilter;",
+object EarnedFingerprint : Fingerprint(
+    definingClass = "Lcom/urbandroid/sleep/domain/achievement/Achievement;",
     returnType = "Z",
-    name = "isHideSleepAnalysis"
+    name = "earned"
 )
 
-object IsTrackingEnabledForRecordFingerprint : Fingerprint(
-    definingClass = "Lcom/urbandroid/sleep/TrialFilter;",
+object FullyCompletedFingerprint : Fingerprint(
+    definingClass = "Lcom/urbandroid/sleep/domain/achievement/Achievement;",
     returnType = "Z",
-    name = "isTrackingEnabledForRecord"
+    name = "fullyCompleted"
 )
 
-object FilterFingerprint : Fingerprint(
-    definingClass = "Lcom/urbandroid/sleep/addon/stats/filter/AcceptAllFilter;",
+object IsLevel1Fingerprint : Fingerprint(
+    definingClass = "Lcom/urbandroid/sleep/domain/achievement/Achievement;",
     returnType = "Z",
-    name = "filter"
+    name = "isLevel1"
 )
 
-object FilterFingerprintTagFilter : Fingerprint(
-    definingClass = "Lcom/urbandroid/sleep/addon/stats/filter/TagFilter;",
+object IsLevel2Fingerprint : Fingerprint(
+    definingClass = "Lcom/urbandroid/sleep/domain/achievement/Achievement;",
     returnType = "Z",
-    name = "filter"
+    name = "isLevel2"
+)
+
+object IsLevel3Fingerprint : Fingerprint(
+    definingClass = "Lcom/urbandroid/sleep/domain/achievement/Achievement;",
+    returnType = "Z",
+    name = "isLevel3"
 )
 
 object IsUnlockAckedFingerprint : Fingerprint(
     definingClass = "Lcom/urbandroid/common/util/PreferencesUtils;",
     returnType = "Z",
     name = "isUnlockAcked"
-)
-
-object HasUnlockFingerprint : Fingerprint(
-    definingClass = "Lcom/urbandroid/sleep/TrialFilter;",
-    returnType = "Z",
-    name = "hasUnlock"
 )
