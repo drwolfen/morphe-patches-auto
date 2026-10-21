@@ -1,6 +1,6 @@
 /**
  * Copyright 2026 crackpipe
- * Auto-generated for com.bowerydigital.bend v7.8.0 — do not edit by hand.
+ * Auto-generated for com.bowerydigital.bend v7.8.0 - do not edit by hand.
  */
 
 package standardrepo.morphe.patches.bend.premium
