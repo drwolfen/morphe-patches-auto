@@ -21,6 +21,7 @@ val enablePremiumPatch = bytecodePatch(
         GetCurrencyIso4217CodeFingerprint.method.returnEarly(true)
         GetRevenueFingerprint.method.returnEarly(null as Void?)
         AFingerprint.method.returnEarly()
+        AFingerprintLe51.method.returnEarly()
         IFingerprint.method.returnEarly(true)
         AFingerprintLkzj.method.returnEarly(true)
         AFingerprintLlgd.method.returnEarly(true)

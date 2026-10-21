@@ -32,6 +32,12 @@ object GetRevenueFingerprint : Fingerprint(
 )
 
 object AFingerprint : Fingerprint(
+    definingClass = "Ld8i;",
+    returnType = "V",
+    name = "a"
+)
+
+object AFingerprintLe51 : Fingerprint(
     definingClass = "Le51;",
     returnType = "V",
     name = "a"
