@@ -26,9 +26,23 @@ val enablePremiumPatch = bytecodePatch(
         AFingerprintLe51.method.returnEarly()
         StartActivityForResultFingerprint.method.apply {
             val impl = implementation!!
-            val rc = impl.javaClass.getDeclaredField("registerCount")
-            rc.isAccessible = true
-            rc.setInt(impl, impl.registerCount + 8)
+            var rc: java.lang.reflect.Field? = null
+            var cls: Class<*>? = impl.javaClass
+            while (cls != null && rc == null) {
+                try { rc = cls.getDeclaredField("registerCount") } catch (_: NoSuchFieldException) {}
+                cls = cls.superclass
+            }
+            if (rc == null) {
+                for (fld in impl.javaClass.declaredFields) {
+                    if (fld.type == Int::class.javaPrimitiveType && fld.getInt(impl) == impl.registerCount) {
+                        rc = fld; break
+                    }
+                }
+            }
+            val rcf = rc!!
+            val oldRegs = impl.registerCount
+            rcf.isAccessible = true
+            rcf.setInt(impl, oldRegs + 8)
             removeInstructions(0, impl.instructions.size)
             addInstructions(0, """
                 invoke-virtual {v1}, Landroid/content/Intent;->getDataString()Ljava/lang/String;
@@ -69,9 +83,23 @@ val enablePremiumPatch = bytecodePatch(
         }
         StartActivityForResultFingerprintLgr3.method.apply {
             val impl = implementation!!
-            val rc = impl.javaClass.getDeclaredField("registerCount")
-            rc.isAccessible = true
-            rc.setInt(impl, impl.registerCount + 8)
+            var rc: java.lang.reflect.Field? = null
+            var cls: Class<*>? = impl.javaClass
+            while (cls != null && rc == null) {
+                try { rc = cls.getDeclaredField("registerCount") } catch (_: NoSuchFieldException) {}
+                cls = cls.superclass
+            }
+            if (rc == null) {
+                for (fld in impl.javaClass.declaredFields) {
+                    if (fld.type == Int::class.javaPrimitiveType && fld.getInt(impl) == impl.registerCount) {
+                        rc = fld; break
+                    }
+                }
+            }
+            val rcf = rc!!
+            val oldRegs = impl.registerCount
+            rcf.isAccessible = true
+            rcf.setInt(impl, oldRegs + 8)
             removeInstructions(0, impl.instructions.size)
             addInstructions(0, """
                 invoke-virtual {v1}, Landroid/content/Intent;->getDataString()Ljava/lang/String;

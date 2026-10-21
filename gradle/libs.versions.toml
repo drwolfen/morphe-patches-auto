@@ -1,11 +1,11 @@
 [versions]
 android-all = "14-robolectric-10818077"
 jte = "3.2.4"
-morphe-patcher = "1.15.1"
-morphe-patches-library = "1.9.0-dev.4"
+morphe-patcher = "2.0.0-dev.22"
+morphe-patches-library = "1.9.0-dev.11"
 # Tracking https://github.com/google/smali/issues/100.
 slf4j-api = "2.0.18"
-smali = "d92701d947"
+smali = "4220ae75f7"
 agp = "9.1.0"
 annotation = "1.9.1"
 gson = "2.14.0"
