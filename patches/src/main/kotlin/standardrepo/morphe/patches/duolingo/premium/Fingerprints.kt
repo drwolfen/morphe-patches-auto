@@ -25,6 +25,12 @@ object InitFingerprintEnergyConfig : Fingerprint(
     name = "<init>"
 )
 
+object InitFingerprintEnergyConfig_IIJJJIJV : Fingerprint(
+    definingClass = "Lcom/duolingo/core/energy/models/EnergyConfig;",
+    returnType = "V",
+    name = "<init>"
+)
+
 object UcFingerprint : Fingerprint(
     definingClass = "Lcom/bytedance/sdk/openadsdk/eu/uc/uc/qtm;",
     returnType = "Z",
@@ -73,10 +79,4 @@ object IsPromoFingerprint : Fingerprint(
     definingClass = "Lcom/duolingo/core/sessionend/api/SessionEndMessageType;",
     returnType = "Z",
     name = "isPromo"
-)
-
-object IsGoldSubscriptionFingerprint : Fingerprint(
-    definingClass = "Lcom/duolingo/core/shop/Inventory\$PowerUp;",
-    returnType = "Z",
-    name = "isGoldSubscription"
 )

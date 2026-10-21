@@ -53,6 +53,7 @@ val enablePremiumPatch = bytecodePatch(
             }
         }
         InitFingerprintEnergyConfig.method.addInstruction(0, "move p1, p2")
+        InitFingerprintEnergyConfig_IIJJJIJV.method.addInstruction(0, "move p1, p2")
         UcFingerprint.method.returnEarly(true)
         InvokeFingerprint.method.returnEarly(null as Void?)
         OnClickFingerprint.method.returnEarly()
@@ -219,6 +220,5 @@ val enablePremiumPatch = bytecodePatch(
             return-object v13
             """)
         IsPromoFingerprint.method.returnEarly(true)
-        IsGoldSubscriptionFingerprint.method.returnEarly(true)
     }
 }
