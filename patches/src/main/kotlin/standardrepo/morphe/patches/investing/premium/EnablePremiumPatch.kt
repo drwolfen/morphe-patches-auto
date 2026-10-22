@@ -262,7 +262,7 @@ val enablePremiumPatch = bytecodePatch(
             java.io.File(tmpDir + "/site.log").appendText("B8H " + (bc?.methods?.joinToString(";") { it.name + ":" + it.returnType } ?: "NULL") + "\n")
         }
         for (g in listOf("I", "K", "L")) {
-            val bm = mutableClassDefByOrNull("Lb8h;")?.methods?.firstOrNull { it.name == g && it.returnType.endsWith(")Z") }
+            val bm = mutableClassDefByOrNull("Lb8h;")?.methods?.firstOrNull { it.name == g && it.returnType == "Z" }
             runCatching { java.io.File(tmpDir + "/site.log").appendText("B8H m=" + g + " found=" + (bm != null) + "\n") }
             bm?.returnEarly(true)
         }
