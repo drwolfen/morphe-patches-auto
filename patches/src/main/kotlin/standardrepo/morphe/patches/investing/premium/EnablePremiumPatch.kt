@@ -252,6 +252,12 @@ val enablePremiumPatch = bytecodePatch(
                 }
             }
         }
+        // InvestingPro gate: b8h.K/I/L take the user state flow and return the `isPro`
+        // boolean; forcing them true unlocks every paywalled screen, including while
+        // logged out (the user object is null, so the field read alone is not enough).
+        for (g in listOf("I", "K", "L")) {
+            mutableClassDefByOrNull("Lb8h;")?.methods?.firstOrNull { it.name == g && it.returnType == "Z" }?.returnEarly(true)
+        }
         mutableClassDefByOrNull("Landroidx/core/content/FileProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
         mutableClassDefByOrNull("Lcom/yandex/mobile/ads/core/initializer/YandexAdsInitializeProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
         mutableClassDefByOrNull("Lcom/facebook/FacebookContentProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
