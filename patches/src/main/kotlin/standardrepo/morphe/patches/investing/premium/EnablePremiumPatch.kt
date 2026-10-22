@@ -266,6 +266,17 @@ val enablePremiumPatch = bytecodePatch(
             runCatching { java.io.File(tmpDir + "/site.log").appendText("B8H m=" + g + " found=" + (bm != null) + "\n") }
             bm?.returnEarly(true)
         }
+        // DEBUG: dump the news fetch failure stack to logcat (System.out shows in logcat).
+        val newsRepo = mutableClassDefByOrNull("Lore;")?.methods?.firstOrNull { it.name == "a" && it.parameterTypes.size == 3 }
+        if (newsRepo != null) {
+            val nins = newsRepo.implementation?.instructions?.toList() ?: emptyList()
+            val at = nins.indexOfFirst { it.opcode.name == "new-instance" && (it as? ReferenceInstruction)?.reference?.toString() == "Lh51;" }
+            runCatching { java.io.File(tmpDir + "/site.log").appendText("LORE at=" + at + " ins=" + nins.size + "\n") }
+            if (at > 0) newsRepo.addInstructions(at, """
+                sget-object v6, Ljava/lang/System;->out:Ljava/io/PrintStream;
+                invoke-virtual {v1, v6}, Ljava/lang/Throwable;->printStackTrace(Ljava/io/PrintStream;)V
+            """)
+        }
         mutableClassDefByOrNull("Landroidx/core/content/FileProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
         mutableClassDefByOrNull("Lcom/yandex/mobile/ads/core/initializer/YandexAdsInitializeProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
         mutableClassDefByOrNull("Lcom/facebook/FacebookContentProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
