@@ -278,7 +278,9 @@ val enablePremiumPatch = bytecodePatch(
             """)
             val dat = nins.indexOfFirst { it.opcode.name == "iget-object" && ((it as? ReferenceInstruction)?.reference as? FieldReference)?.let { f -> f.name == "b" && f.definingClass.contains("ArticlesResponse\$Data") } == true }
             runCatching { java.io.File(tmpDir + "/site.log").appendText("LORE dat=" + at + "/" + dat + "\n") }
-            if (dat > 0) newsRepo.addInstructions(dat + 1, "nop")
+            if (dat > 0) newsRepo.addInstructions(dat + 1, """
+                invoke-static {v5}, Lkotlin/io/ConsoleKt;->println(Ljava/lang/Object;)V
+            """)
         }
         mutableClassDefByOrNull("Landroidx/core/content/FileProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
         mutableClassDefByOrNull("Lcom/yandex/mobile/ads/core/initializer/YandexAdsInitializeProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
