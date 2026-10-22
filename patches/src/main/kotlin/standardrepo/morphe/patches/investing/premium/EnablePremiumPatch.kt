@@ -276,6 +276,14 @@ val enablePremiumPatch = bytecodePatch(
                 sget-object v6, Ljava/lang/System;->out:Ljava/io/PrintStream;
                 invoke-virtual {v1, v6}, Ljava/lang/Throwable;->printStackTrace(Ljava/io/PrintStream;)V
             """)
+            val dat = nins.indexOfFirst { it.opcode.name == "iget-object" && ((it as? ReferenceInstruction)?.reference as? FieldReference)?.let { f -> f.name == "b" && f.definingClass.endsWith("ArticlesResponse\$Data") } == true }
+            runCatching { java.io.File(tmpDir + "/site.log").appendText("LORE dat=" + at + "/" + dat + "\n") }
+            if (dat > 0) newsRepo.addInstructions(dat + 1, """
+                sget-object v6, Ljava/lang/System;->out:Ljava/io/PrintStream;
+                const-string v7, "ARTDB: "
+                invoke-virtual {v6, v7}, Ljava/io/PrintStream;->println:(Ljava/lang/String;)V
+                invoke-virtual {v6, v5}, Ljava/io/PrintStream;->println:(Ljava/lang/String;)V
+            """)
         }
         mutableClassDefByOrNull("Landroidx/core/content/FileProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
         mutableClassDefByOrNull("Lcom/yandex/mobile/ads/core/initializer/YandexAdsInitializeProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
