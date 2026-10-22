@@ -385,7 +385,9 @@ val enablePremiumPatch = bytecodePatch(
                         if (r !in regs) continue
                         if (mr.name.startsWith("getColumnIndex")) column = true
                         // Obfuscated DAO helpers take exactly one String (the SQL) and pass it on.
-                        if (mr.parameterTypes.size == 1 && mr.parameterTypes[0] == "Ljava/lang/String;") sql = true
+                        if (mr.parameterTypes.isNotEmpty() && mr.parameterTypes[0] == "Ljava/lang/String;" &&
+                            mr.name != "parse" && mr.name != "equals" && mr.name != "startsWith" && mr.name != "contains"
+                        ) sql = true
                         // Room-style DAO wrappers return a statement/query wrapper object.
                         if (mr.returnType == "Ls9a;" || mr.returnType == "Lxmo;" ||
                             mr.returnType == "Lymo;" || mr.returnType == "Lwmo;" ||
