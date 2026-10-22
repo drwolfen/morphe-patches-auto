@@ -277,9 +277,11 @@ val enablePremiumPatch = bytecodePatch(
             // Earlier site first: its two instructions shift the later index by two.
             if (at > 0) newsRepo.addInstructions(at + 1, """
                 const-string v7, "CPERR"
-                invoke-static {v7, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/Throwable;)I
+                invoke-static {v1}, Landroid/util/Log;->getStackTraceString(Ljava/lang/Throwable;)Ljava/lang/String;
+                move-result-object v6
+                invoke-static {v7, v6}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
             """)
-            if (dat > 0) newsRepo.addInstructions(dat + 3, """
+            if (dat > 0) newsRepo.addInstructions(dat + 5, """
                 const-string v7, "CPDB:"
                 invoke-static {v7, v5}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
             """)
