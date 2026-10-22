@@ -366,6 +366,11 @@ val enablePremiumPatch = bytecodePatch(
                         if (mr.name.startsWith("getColumnIndex")) column = true
                         if (mr.name == "execSQL" || mr.name == "compileStatement" ||
                             mr.name == "rawQuery" || mr.name == "query") sql = true
+                        // SQL is also passed through app wrappers whose ctor takes (db, sql).
+                        if (mr.name == "<init>" && !mr.definingClass.contains("SQLite") &&
+                            mr.definingClass != "Ljava/net/URL;" && mr.definingClass != "Landroid/net/Uri;" &&
+                            mr.parameterTypes.size > 1 && mr.parameterTypes.contains("Ljava/lang/String;")
+                        ) sql = true
                         if (mr.name == "getSystemService") {
                             for (q in j + 1..j + 6) {
                                 val c = ins.getOrNull(q) as? ReferenceInstruction
