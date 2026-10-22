@@ -327,7 +327,10 @@ val enablePremiumPatch = bytecodePatch(
                         else continue
                         break
                     }
-                    val pick = owner.fields.firstOrNull { want.isNotEmpty() && it.type == want } ?: owner.fields.first()
+                    // Unsafe.objectFieldOffset only accepts instance fields.
+                    val pick = owner.fields.firstOrNull { want.isNotEmpty() && it.type == want && (it.accessFlags and 0x8) == 0 }
+                        ?: owner.fields.firstOrNull { (it.accessFlags and 0x8) == 0 }
+                        ?: owner.fields.first()
                     reflect[key] = pick.name
                 }
             }
