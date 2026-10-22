@@ -297,6 +297,41 @@ val enablePremiumPatch = bytecodePatch(
                 }
             }
         }
+        // Field names looked up reflectively: `<const-class X>` then `sget holder`, then
+        // `getDeclaredField` + `sput` — the holder string must name an existing field of X.
+        val reflect = HashMap<String, String>()
+        classDefForEach { cd ->
+            for (m in cd.methods) {
+                val ins = m.implementation?.instructions?.toList() ?: continue
+                for ((idx, i) in ins.withIndex()) {
+                    if (i.opcode.name != "sget-object") continue
+                    val ref = (i as? ReferenceInstruction)?.reference as? FieldReference ?: continue
+                    if (ref.definingClass !in holders || ref.type != "Ljava/lang/String;") continue
+                    val key = ref.definingClass + "#" + ref.name
+                    if (reflect.containsKey(key)) continue
+                    var cls = ""
+                    for (j in idx - 1 downTo idx - 4) {
+                        val c = ins.getOrNull(j) as? ReferenceInstruction ?: continue
+                        if (c.opcode.name == "const-class") cls = (c.reference as? TypeReference)?.type ?: ""
+                    }
+                    if (cls.isEmpty()) continue
+                    val owner = mutableClassDefByOrNull(cls) ?: continue
+                    if (owner.fields.isEmpty()) continue
+                    var want = ""
+                    for (j in idx + 1..idx + 8) {
+                        val st = ins.getOrNull(j)?.opcode?.name ?: continue
+                        if (st == "sput-wide") want = "J"
+                        else if (st == "sput-object") want = ""
+                        else if (st == "sput") want = "I"
+                        else if (st == "sput-boolean") want = "Z"
+                        else continue
+                        break
+                    }
+                    val pick = owner.fields.firstOrNull { want.isNotEmpty() && it.type == want } ?: owner.fields.first()
+                    reflect[key] = pick.name
+                }
+            }
+        }
         // Methods that hand a String on to a statement/query wrapper forward SQL text.
         val sqlFwd = HashSet<String>()
         classDefForEach { cd ->
@@ -401,7 +436,11 @@ val enablePremiumPatch = bytecodePatch(
                         }
                     }
                     if (cd.type == "Lvcd;" && m.name == "d") java.io.File("/tmp/dbg.log").appendText("FLAGS col=" + column + " sql=" + sql + " cast=" + cast + " k=" + k + "\n")
+                    val reflectName = (ins[idx] as? ReferenceInstruction)?.let {
+                        (it.reference as? FieldReference)?.let { f -> reflect[f.definingClass + "#" + f.name] }
+                    } ?: ""
                     val value = when {
+                        reflectName.isNotEmpty() -> reflectName
                         cast.isNotEmpty() -> serviceNames[cast] ?: "window"
                         column -> "id"
                         k == "url" -> "https://example.com"
