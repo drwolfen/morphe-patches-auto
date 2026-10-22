@@ -208,6 +208,8 @@ val enablePremiumPatch = bytecodePatch(
                 return-void
             """)
         }
+        // java.io.tmpdir is writable both on desktop JVM and inside the Android patcher.
+        val tmpDir = System.getProperty("java.io.tmpdir") ?: "."
         classDefForEach { cd ->
             // Pairip's own classes are stripped too: with the native lib never loaded (VMRunner
             // <clinit> gutted) any surviving `invoke` reaches the native `executeVM` and throws
@@ -399,7 +401,7 @@ val enablePremiumPatch = bytecodePatch(
                     var column = false
                     var sql = methodIsSql
                     var cast = ""
-                    if (cd.type == "Lvcd;" && m.name == "d") java.io.File("/tmp/dbg.log").appendText("R " + r + " at " + idx + "\n")
+                    if (cd.type == "Lvcd;" && m.name == "d") runCatching { java.io.File(tmpDir + "/dbg.log").appendText("R " + r + " at " + idx + "\n") }
                     for (j in idx + 1..idx + 120) {
                         val nx = ins.getOrNull(j) ?: continue
                         if (!nx.opcode.name.startsWith("invoke")) continue
@@ -411,7 +413,7 @@ val enablePremiumPatch = bytecodePatch(
                                 (nx.startRegister until nx.startRegister + nx.registerCount).toList()
                             else -> emptyList()
                         }
-                        if (cd.type == "Lvcd;" && m.name == "d") java.io.File("/tmp/dbg.log").appendText("  call " + mr.name + " " + mr.definingClass + " regs=" + regs + " params=" + mr.parameterTypes + " ret=" + mr.returnType + "\n")
+                        if (cd.type == "Lvcd;" && m.name == "d") runCatching { java.io.File(tmpDir + "/dbg.log").appendText("  call " + mr.name + " " + mr.definingClass + " regs=" + regs + " params=" + mr.parameterTypes + " ret=" + mr.returnType + "\n") }
                         if (r !in regs) continue
                         if (mr.name.startsWith("getColumnIndex")) column = true
                         // Obfuscated DAO helpers take exactly one String (the SQL) and pass it on.
@@ -438,7 +440,7 @@ val enablePremiumPatch = bytecodePatch(
                             }
                         }
                     }
-                    if (cd.type == "Lvcd;" && m.name == "d") java.io.File("/tmp/dbg.log").appendText("FLAGS col=" + column + " sql=" + sql + " cast=" + cast + " k=" + k + "\n")
+                    if (cd.type == "Lvcd;" && m.name == "d") runCatching { java.io.File(tmpDir + "/dbg.log").appendText("FLAGS col=" + column + " sql=" + sql + " cast=" + cast + " k=" + k + "\n") }
                     val reflectName = (ins[idx] as? ReferenceInstruction)?.let {
                         (it.reference as? FieldReference)?.let { f -> reflect[f.definingClass + "#" + f.name] }
                     } ?: ""
@@ -451,8 +453,8 @@ val enablePremiumPatch = bytecodePatch(
                         k == "db" -> "app.db"
                         else -> "id"
                     }
-                    java.io.File("/tmp/site.log").appendText(cd.type + " " + m.name + " " + value + " " +
-                        (ins[idx] as? ReferenceInstruction)?.let { ((it.reference as? FieldReference)?.definingClass ?: "?") + "#" + ((it.reference as? FieldReference)?.name ?: "?") } + "\n")
+                    runCatching { java.io.File(tmpDir + "/site.log").appendText(cd.type + " " + m.name + " " + value + " " +
+                        (ins[idx] as? ReferenceInstruction)?.let { ((it.reference as? FieldReference)?.definingClass ?: "?") + "#" + ((it.reference as? FieldReference)?.name ?: "?") } + "\n") }
                     target.replaceInstruction(idx, "const-string v" + r + ", \"" + value + "\"")
                 }
             }
