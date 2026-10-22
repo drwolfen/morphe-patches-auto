@@ -351,7 +351,7 @@ val enablePremiumPatch = bytecodePatch(
                     var column = false
                     var sql = false
                     var cast = ""
-                    for (j in idx + 1..idx + 40) {
+                    for (j in idx + 1..idx + 120) {
                         val nx = ins.getOrNull(j) ?: continue
                         if (!nx.opcode.name.startsWith("invoke")) continue
                         val mr = (nx as? ReferenceInstruction)?.reference as? MethodReference ?: continue
