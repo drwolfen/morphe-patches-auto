@@ -390,6 +390,8 @@ val enablePremiumPatch = bytecodePatch(
                         k == "db" -> "app.db"
                         else -> "id"
                     }
+                    java.io.File("/tmp/site.log").appendText(cd.type + " " + m.name + " " + value + " " +
+                        (ins[idx] as? ReferenceInstruction)?.let { ((it.reference as? FieldReference)?.definingClass ?: "?") + "#" + ((it.reference as? FieldReference)?.name ?: "?") } + "\n")
                     target.replaceInstruction(idx, "const-string v" + r + ", \"" + value + "\"")
                 }
             }
