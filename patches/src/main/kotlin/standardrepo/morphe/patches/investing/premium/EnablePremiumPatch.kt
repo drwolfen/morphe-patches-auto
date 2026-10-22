@@ -318,7 +318,7 @@ val enablePremiumPatch = bytecodePatch(
                     var value = ""
                     for (k in 1..6) {
                         val cast = (ins.getOrNull(idx + k) as? ReferenceInstruction)?.reference
-                        if (ins.getOrNull(idx + k)?.opcode?.name != "CHECK_CAST") continue
+                        if (ins.getOrNull(idx + k)?.opcode?.name != "check-cast") continue
                         java.io.File("/tmp/svc.log").appendText("k=" + k + " " + (cast as? TypeReference)?.type + "\n")
                         if (cast is TypeReference) value = serviceNames[cast.type] ?: ""
                     }
