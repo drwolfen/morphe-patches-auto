@@ -381,7 +381,7 @@ val enablePremiumPatch = bytecodePatch(
                                 (nx.startRegister until nx.startRegister + nx.registerCount).toList()
                             else -> emptyList()
                         }
-                        if (cd.type == "Lvcd;" && m.name == "d") java.io.File("/tmp/dbg.log").appendText("  call " + mr.name + " " + mr.definingClass + " regs=" + regs + "\n")
+                        if (cd.type == "Lvcd;" && m.name == "d") java.io.File("/tmp/dbg.log").appendText("  call " + mr.name + " " + mr.definingClass + " regs=" + regs + " params=" + mr.parameterTypes + " ret=" + mr.returnType + "\n")
                         if (r !in regs) continue
                         if (mr.name.startsWith("getColumnIndex")) column = true
                         // Obfuscated DAO helpers take exactly one String (the SQL) and pass it on.
