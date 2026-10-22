@@ -271,6 +271,40 @@ val enablePremiumPatch = bytecodePatch(
         mutableClassDefByOrNull("Landroidx/startup/InitializationProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
         mutableClassDefByOrNull("Lcom/facebook/internal/FacebookInitProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
         mutableClassDefByOrNull("Lcom/squareup/picasso/PicassoProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
+        val holders = HashSet<String>()
+        classDefForEach { cd ->
+            if (cd.methods.none { it.name == "<clinit>" } &&
+                cd.fields.any { it.name.isNotEmpty() && it.type == "Ljava/lang/String;" }
+            ) holders.add(cd.type)
+        }
+        // Pass 1: classify each holder field by the platform API its reads flow into, so the
+        // default is chosen per field (a field used as SQL always gets SQL, a column always a
+        // column name), then pass 2 rewrites the reads.
+        val kind = HashMap<String, IntArray>()   // 0=svc 1=col 2=url 3=db 4=sql
+        classDefForEach { cd ->
+            for (m in cd.methods) {
+                val ins = m.implementation?.instructions?.toList() ?: continue
+                for ((idx, i) in ins.withIndex()) {
+                    if (i.opcode.name != "sget-object") continue
+                    val ref = (i as? ReferenceInstruction)?.reference as? FieldReference ?: continue
+                    if (ref.definingClass !in holders || ref.type != "Ljava/lang/String;") continue
+                    val k = kind.getOrPut(ref.definingClass + "#" + ref.name) { IntArray(5) }
+                    for (j in idx + 1..idx + 12) {
+                        val nx = ins.getOrNull(j) ?: continue
+                        if (!nx.opcode.name.startsWith("invoke")) continue
+                        val mr = (nx as? ReferenceInstruction)?.reference as? MethodReference ?: continue
+                        when {
+                            mr.name == "getSystemService" -> k[0]++
+                            mr.name.startsWith("getColumnIndex") -> k[1]++
+                            mr.name == "parse" -> k[2]++
+                            mr.name == "<init>" && mr.definingClass.contains("SQLite") -> k[3]++
+                            mr.name == "execSQL" || mr.name == "compileStatement" ||
+                                mr.name == "rawQuery" || mr.name == "query" -> k[4]++
+                        }
+                    }
+                }
+            }
+        }
         val serviceNames = mapOf(
             "Landroid/view/WindowManager;" to "window",
             "Landroid/view/LayoutInflater;" to "layout_inflater",
@@ -286,62 +320,45 @@ val enablePremiumPatch = bytecodePatch(
             "Landroid/app/KeyguardManager;" to "keyguard",
             "Landroid/os/PowerManager;" to "power"
         )
-        java.io.File("/tmp/hb.log").appendText("HOLDERBLOCK\n")
-        java.io.File("/tmp/hb.log").appendText("HOLDERBLOCK\n")
-        val holders = HashSet<String>()
-        classDefForEach { cd ->
-            if (cd.methods.none { it.name == "<clinit>" } &&
-                cd.fields.any { it.name.isNotEmpty() && it.type == "Ljava/lang/String;" }
-            ) holders.add(cd.type)
-        }
         classDefForEach { cd ->
             for (m in cd.methods) {
-                if (cd.type == "Lexq;") java.io.File("/tmp/exq.log").appendText("M " + m.name + " ins=" + (m.implementation != null) + "\n")
                 val ins = m.implementation?.instructions?.toList() ?: continue
                 val target = mutableClassDefByOrNull(cd.type)?.methods
-                    ?.firstOrNull { it.name == m.name && it.returnType == m.returnType && it.parameterTypes == m.parameterTypes } ?: continue
-                val hits = ArrayList<Int>()
+                    ?.firstOrNull {
+                        it.name == m.name && it.returnType == m.returnType &&
+                            it.parameterTypes == m.parameterTypes
+                    } ?: continue
+                val hits = ArrayList<Pair<Int, String>>()
                 for ((idx, i) in ins.withIndex()) {
                     if (i.opcode.name != "sget-object") continue
-                    if (cd.type == "Lexq;" && m.name == "getBasicDeviceBody") java.io.File("/tmp/gdb.log").appendText("S " + idx + " " + ((i as? ReferenceInstruction)?.reference as? FieldReference)?.definingClass + " " + ((i as? ReferenceInstruction)?.reference as? FieldReference)?.type + "\n")
                     val ref = (i as? ReferenceInstruction)?.reference as? FieldReference ?: continue
-                    if (ref.definingClass.contains("NMkYVc")) java.io.File("/tmp/nmk.log").appendText("NMK " + cd.type + " " + idx + " " + ref.definingClass + " " + ref.type + " in=" + (ref.definingClass in holders) + "\n")
-                    if (ref.definingClass in holders && ref.type == "Ljava/lang/String;") hits.add(idx)
+                    if (ref.definingClass !in holders || ref.type != "Ljava/lang/String;") continue
+                    val k = kind[ref.definingClass + "#" + ref.name] ?: continue
+                    hits.add(idx to when {
+                        k[0] > 0 -> "svc"
+                        k[2] > 0 -> "url"
+                        k[3] > 0 -> "db"
+                        k[1] > 0 && k[4] == 0 -> "col"
+                        k[4] > 0 -> "sql"
+                        else -> ""
+                    })
                 }
-                java.io.File("/tmp/hold_hits.log").appendText("H " + hits.size + " " + cd.type + "\n")
-                for (idx in hits.asReversed()) {
+                for ((idx, k) in hits.asReversed()) {
                     val r = (ins[idx] as OneRegisterInstruction).registerA
-                    // "SELECT 1" is a safe non-empty default: valid SQL, a usable DB/pref name, and
-                    // harmless where the caller only needs a non-null String.
-                    // A non-empty default is required everywhere; refine it from the consumer API
-                    // that the register flows into (service name from the cast, column name, URL,
-                    // DB name, SQL text). Unknown consumers keep the benign "SELECT 1".
                     var value = "SELECT 1"
-                    var cast = ""
-                    var column = false
-                    var url = false
-                    var db = ""
-                    for (k in 1..10) {
-                        val nx = ins.getOrNull(idx + k) ?: continue
-                        if (!nx.opcode.name.startsWith("invoke")) continue
-                        val mr = (nx as? ReferenceInstruction)?.reference as? MethodReference ?: continue
-                        if (mr.name == "getSystemService") {
-                            for (j in k + 1..k + 6) {
-                                val c = ins.getOrNull(idx + j) as? ReferenceInstruction
-                                if (c?.opcode?.name == "check-cast") cast = (c.reference as? TypeReference)?.type ?: ""
+                    when (k) {
+                        "svc" -> {
+                            var cast = ""
+                            for (j in idx + 1..idx + 12) {
+                                val c = ins.getOrNull(j) as? ReferenceInstruction ?: continue
+                                if (c.opcode.name == "check-cast") cast = (c.reference as? TypeReference)?.type ?: ""
                             }
-                        } else if (mr.name.startsWith("getColumnIndex")) {
-                            column = true
-                        } else if (mr.name == "parse") {
-                            url = true
-                        } else if (mr.name == "<init>" && mr.definingClass.contains("SQLite")) {
-                            db = "app.db"
+                            value = serviceNames[cast] ?: "window"
                         }
+                        "col" -> value = "id"
+                        "url" -> value = "https://example.com"
+                        "db" -> value = "app.db"
                     }
-                    if (cast.isNotEmpty()) value = serviceNames[cast] ?: "window"
-                    else if (column) value = "id"
-                    else if (url) value = "https://example.com"
-                    else if (db != "") value = db
                     target.replaceInstruction(idx, "const-string v" + r + ", \"" + value + "\"")
                 }
             }
