@@ -384,6 +384,8 @@ val enablePremiumPatch = bytecodePatch(
                         if (cd.type == "Lvcd;" && m.name == "d") java.io.File("/tmp/dbg.log").appendText("  call " + mr.name + " " + mr.definingClass + " regs=" + regs + "\n")
                         if (r !in regs) continue
                         if (mr.name.startsWith("getColumnIndex")) column = true
+                        // Obfuscated DAO helpers take exactly one String (the SQL) and pass it on.
+                        if (mr.parameterTypes.size == 1 && mr.parameterTypes[0] == "Ljava/lang/String;") sql = true
                         // Room-style DAO wrappers return a statement/query wrapper object.
                         if (mr.returnType == "Ls9a;" || mr.returnType == "Lxmo;" ||
                             mr.returnType == "Lymo;" || mr.returnType == "Lwmo;" ||
@@ -406,8 +408,8 @@ val enablePremiumPatch = bytecodePatch(
                     val value = when {
                         cast.isNotEmpty() -> serviceNames[cast] ?: "window"
                         column -> "id"
-                        sql -> "SELECT 1"
                         k == "url" -> "https://example.com"
+                        sql -> "SELECT 1"
                         k == "db" -> "app.db"
                         else -> "id"
                     }
