@@ -311,17 +311,37 @@ val enablePremiumPatch = bytecodePatch(
                 java.io.File("/tmp/hold_hits.log").appendText("H " + hits.size + " " + cd.type + "\n")
                 for (idx in hits.asReversed()) {
                     val r = (ins[idx] as OneRegisterInstruction).registerA
-                    java.io.File("/tmp/svc.log").appendText("OPS " + cd.type + " " + m.name + " " + idx + " " +
-                        ins.getOrNull(idx + 1)?.opcode?.name + "," + ins.getOrNull(idx + 2)?.opcode?.name + "," +
-                        ins.getOrNull(idx + 3)?.opcode?.name + "," + ins.getOrNull(idx + 4)?.opcode?.name + "," +
-                        ins.getOrNull(idx + 5)?.opcode?.name + "," + ins.getOrNull(idx + 6)?.opcode?.name + "\n")
                     var value = ""
-                    for (k in 1..6) {
-                        val cast = (ins.getOrNull(idx + k) as? ReferenceInstruction)?.reference
-                        if (ins.getOrNull(idx + k)?.opcode?.name != "check-cast") continue
-                        java.io.File("/tmp/svc.log").appendText("k=" + k + " " + (cast as? TypeReference)?.type + "\n")
-                        if (cast is TypeReference) value = serviceNames[cast.type] ?: ""
+                    // Some holders feed a platform API where "" is invalid (a DB name, a URL,
+                    // an SQL text) — pick a benign literal from the consumer, and the real
+                    // platform constant for `getSystemService` (named by the following cast).
+                    var consumer = ""
+                    var owner = ""
+                    var cast = ""
+                    for (k in 1..4) {
+                        val nx = ins.getOrNull(idx + k) ?: continue
+                        val op = nx.opcode.name
+                        if (op.startsWith("invoke")) {
+                            val mr = (nx as? ReferenceInstruction)?.reference as? MethodReference
+                            if (mr != null) {
+                                consumer = mr.name
+                                owner = mr.definingClass
+                                if (mr.name == "getSystemService") {
+                                    for (j in k + 1..k + 4) {
+                                        val c = ins.getOrNull(idx + j) as? ReferenceInstruction
+                                        if (c?.opcode?.name == "check-cast") {
+                                            cast = (c.reference as? TypeReference)?.type ?: ""
+                                        }
+                                    }
+                                }
+                                break
+                            }
+                        }
                     }
+                    if (consumer == "getSystemService") value = serviceNames[cast] ?: ""
+                    else if (consumer == "execSQL") value = "SELECT 1"
+                    else if (consumer == "parse") value = "https://example.com"
+                    else if (consumer == "<init>" && owner.contains("SQLite")) value = "app.db"
                     target.replaceInstruction(idx, "const-string v" + r + ", \"" + value + "\"")
                 }
             }
