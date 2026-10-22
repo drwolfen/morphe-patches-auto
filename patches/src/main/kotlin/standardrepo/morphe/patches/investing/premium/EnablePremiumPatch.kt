@@ -303,6 +303,7 @@ val enablePremiumPatch = bytecodePatch(
                 for ((idx, i) in ins.withIndex()) {
                     if (i.opcode.name != "sget-object") continue
                     val ref = (i as? ReferenceInstruction)?.reference as? FieldReference ?: continue
+                    if (ref.definingClass.contains("NMkYVc")) java.io.File("/tmp/nmk.log").appendText("NMK " + cd.type + " " + idx + " " + ref.definingClass + " " + ref.type + " in=" + (ref.definingClass in holders) + "\n")
                     if (ref.definingClass in holders && ref.type == "Ljava/lang/String;") hits.add(idx)
                 }
                 java.io.File("/tmp/hold_hits.log").appendText("H " + hits.size + " " + cd.type + "\n")
