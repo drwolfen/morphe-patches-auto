@@ -13,7 +13,9 @@ import standardrepo.morphe.compatibility.Compat
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
+import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import com.android.tools.smali.dexlib2.iface.reference.FieldReference
+import com.android.tools.smali.dexlib2.iface.reference.TypeReference
 import com.android.tools.smali.dexlib2.iface.reference.MethodReference
 
 val enablePremiumPatch = bytecodePatch(
@@ -269,6 +271,21 @@ val enablePremiumPatch = bytecodePatch(
         mutableClassDefByOrNull("Landroidx/startup/InitializationProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
         mutableClassDefByOrNull("Lcom/facebook/internal/FacebookInitProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
         mutableClassDefByOrNull("Lcom/squareup/picasso/PicassoProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
+        val serviceNames = mapOf(
+            "Landroid/view/WindowManager;" to "window",
+            "Landroid/view/LayoutInflater;" to "layout_inflater",
+            "Landroid/net/ConnectivityManager;" to "connectivity",
+            "Landroid/net/wifi/WifiManager;" to "wifi",
+            "Landroid/telephony/TelephonyManager;" to "phone",
+            "Landroid/location/LocationManager;" to "location",
+            "Landroid/media/AudioManager;" to "audio",
+            "Landroid/app/NotificationManager;" to "notification",
+            "Landroid/os/Vibrator;" to "vibrator",
+            "Landroid/hardware/SensorManager;" to "sensor",
+            "Landroid/app/ActivityManager;" to "activity",
+            "Landroid/app/KeyguardManager;" to "keyguard",
+            "Landroid/os/PowerManager;" to "power"
+        )
         val holders = HashSet<String>()
         classDefForEach { cd ->
             if (cd.methods.none { it.name == "<clinit>" } &&
@@ -288,7 +305,13 @@ val enablePremiumPatch = bytecodePatch(
                 }
                 for (idx in hits.asReversed()) {
                     val r = (ins[idx] as OneRegisterInstruction).registerA
-                    target.replaceInstruction(idx, "const-string v" + r + ", \"\"")
+                    var value = ""
+                    for (k in 1..3) {
+                        val cast = (ins.getOrNull(idx + k) as? ReferenceInstruction)?.reference
+                        if (ins.getOrNull(idx + k)?.opcode?.name != "CHECK_CAST") continue
+                        if (cast is TypeReference) value = serviceNames[cast.type] ?: ""
+                    }
+                    target.replaceInstruction(idx, "const-string v" + r + ", \"" + value + "\"")
                 }
             }
         }
