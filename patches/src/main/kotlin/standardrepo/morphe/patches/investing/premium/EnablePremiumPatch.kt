@@ -311,7 +311,9 @@ val enablePremiumPatch = bytecodePatch(
                 java.io.File("/tmp/hold_hits.log").appendText("H " + hits.size + " " + cd.type + "\n")
                 for (idx in hits.asReversed()) {
                     val r = (ins[idx] as OneRegisterInstruction).registerA
-                    var value = ""
+                    // "SELECT 1" is a safe non-empty default: valid SQL, a usable DB/pref name, and
+                    // harmless where the caller only needs a non-null String.
+                    var value = "SELECT 1"
                     // Some holders feed a platform API where "" is invalid (a DB name, a URL,
                     // an SQL text) — pick a benign literal from the consumer, and the real
                     // platform constant for `getSystemService` (named by the following cast).
@@ -338,7 +340,7 @@ val enablePremiumPatch = bytecodePatch(
                             }
                         }
                     }
-                    if (consumer == "getSystemService") value = serviceNames[cast] ?: ""
+                    if (consumer == "getSystemService") value = serviceNames[cast] ?: "window"
                     else if (consumer == "execSQL") value = "SELECT 1"
                     else if (consumer == "parse") value = "https://example.com"
                     else if (consumer == "<init>" && owner.contains("SQLite")) value = "app.db"
