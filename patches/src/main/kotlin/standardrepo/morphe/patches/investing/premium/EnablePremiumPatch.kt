@@ -13,6 +13,7 @@ import standardrepo.morphe.compatibility.Compat
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
+import com.android.tools.smali.dexlib2.iface.reference.FieldReference
 import com.android.tools.smali.dexlib2.iface.reference.MethodReference
 
 val enablePremiumPatch = bytecodePatch(
@@ -236,7 +237,7 @@ val enablePremiumPatch = bytecodePatch(
             for (m in cd.methods.filter { it.name == "<clinit>" }) {
                 val ins = m.implementation?.instructions?.toList() ?: continue
                 val target = mutableClassDefByOrNull(cd.type)?.methods
-                    ?.firstOrNull { it.name == "<clinit>" && it.returnType == m.returnType } ?: continue
+                    ?.firstOrNull { it.name == "<clinit>" && it.returnType == m.returnType && it.parameterTypes == m.parameterTypes } ?: continue
                 val sites = ArrayList<Int>()
                 for ((idx, i) in ins.withIndex()) {
                     val ref = (i as? ReferenceInstruction)?.reference
@@ -268,5 +269,28 @@ val enablePremiumPatch = bytecodePatch(
         mutableClassDefByOrNull("Landroidx/startup/InitializationProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
         mutableClassDefByOrNull("Lcom/facebook/internal/FacebookInitProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
         mutableClassDefByOrNull("Lcom/squareup/picasso/PicassoProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
+        val holders = HashSet<String>()
+        classDefForEach { cd ->
+            if (cd.methods.none { it.name == "<clinit>" } &&
+                cd.fields.any { it.name.isNotEmpty() && it.type == "Ljava/lang/String;" }
+            ) holders.add(cd.type)
+        }
+        classDefForEach { cd ->
+            for (m in cd.methods) {
+                val ins = m.implementation?.instructions?.toList() ?: continue
+                val target = mutableClassDefByOrNull(cd.type)?.methods
+                    ?.firstOrNull { it.name == m.name && it.returnType == m.returnType && it.parameterTypes == m.parameterTypes } ?: continue
+                val hits = ArrayList<Int>()
+                for ((idx, i) in ins.withIndex()) {
+                    if (i.opcode.name != "sget-object") continue
+                    val ref = (i as? ReferenceInstruction)?.reference as? FieldReference ?: continue
+                    if (ref.definingClass in holders && ref.type == "Ljava/lang/String;") hits.add(idx)
+                }
+                for (idx in hits.asReversed()) {
+                    val r = (ins[idx] as OneRegisterInstruction).registerA
+                    target.replaceInstruction(idx, "const-string v" + r + ", \"\"")
+                }
+            }
+        }
     }
 }

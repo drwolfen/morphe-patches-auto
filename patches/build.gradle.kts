@@ -80,6 +80,9 @@ tasks {
     // same dex-bearing artifact the Manager downloads.
     register<JavaExec>("verifyPatch") {
         description = "Applies compiled patches to a target APK via Morphe Patcher (JVM fingerprint gate)."
+        // Whole-app holder rewrites intern a lot of replacement instructions; the 2 GB daemon
+        // default OOMs on large multidex apps.
+        maxHeapSize = "6g"
 
         dependsOn("buildAndroid")
 

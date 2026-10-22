@@ -219,6 +219,7 @@ fun main(args: Array<String>) {
             val label = r.patch.name ?: r.patch::class.simpleName
             if (ex != null) {
                 failures += "$label -> ${ex.message?.lineSequence()?.firstOrNull() ?: ex::class.simpleName}"
+                println("GATE trace $label:\n" + ex.stackTraceToString().take(4000))
             } else {
                 println("GATE patch ok: $label")
             }
