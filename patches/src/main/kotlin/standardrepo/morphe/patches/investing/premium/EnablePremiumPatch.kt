@@ -269,7 +269,7 @@ val enablePremiumPatch = bytecodePatch(
         // DEBUG: dump the news fetch failure stack to logcat (System.out shows in logcat).
         val newsRepo = mutableClassDefByOrNull("Lore;")?.methods?.firstOrNull { it.name == "a" && it.parameterTypes.size == 3 }
         // Dump the news request headers so we can see what the client actually sends.
-        runCatching {
+        try {
             val j67 = mutableClassDefByOrNull("Lj67;")
             val hm = j67?.methods?.firstOrNull { it.name == "a" && it.parameterTypes.size == 1 }
             val hi = hm?.implementation?.instructions?.toList() ?: emptyList()
@@ -277,14 +277,12 @@ val enablePremiumPatch = bytecodePatch(
             runCatching { java.io.File(tmpDir + "/site.log").appendText("HDR c=" + (j67 != null) + " m=" + (hm != null) + " r=" + hr + " n=" + hi.size + "\n") }
             if (hr > 0) hm!!.addInstructions(hr, """
                 const-string v1, "CPHDR"
-                invoke-virtual {v3}, Ljava/lang/Object;->toString:()Ljava/lang/String;
+                invoke-virtual {v3}, Ljava/lang/Object;->toString()Ljava/lang/String;
                 move-result-object v0
                 invoke-static {v1, v0}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
             """)
-            runCatching {
-                val after = hm?.implementation?.instructions?.toList() ?: emptyList()
-                java.io.File(tmpDir + "/site.log").appendText("HDR2 n=" + after.size + " has=" + hi.size + "\n")
-            }
+        } catch (t: Throwable) {
+            runCatching { java.io.File(tmpDir + "/site.log").appendText("HDRERR " + t + "\n") }
         }
 
         if (newsRepo != null) {
