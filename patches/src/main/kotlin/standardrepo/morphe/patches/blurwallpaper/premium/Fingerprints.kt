@@ -45,3 +45,17 @@ object OnReceivedFingerprint : Fingerprint(
     filters = listOf(string("customerInfo"), string("start_blur")),
     name = "onReceived"
 )
+
+object StartActivityForResultFingerprint : Fingerprint(
+    definingClass = "Lԩ/އ;",
+    returnType = "V",
+    parameters = listOf("Landroid/content/Intent;", "I"),
+    name = "startActivityForResult"
+)
+
+object StartActivityForResultFingerprint_sBundleV : Fingerprint(
+    definingClass = "Lԩ/އ;",
+    returnType = "V",
+    parameters = listOf("Landroid/content/Intent;", "I", "Landroid/os/Bundle;"),
+    name = "startActivityForResult"
+)
