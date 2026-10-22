@@ -364,6 +364,10 @@ val enablePremiumPatch = bytecodePatch(
                         }
                         if (r !in regs) continue
                         if (mr.name.startsWith("getColumnIndex")) column = true
+                        // Room-style DAO wrappers return a statement/query wrapper object.
+                        if (mr.returnType == "Ls9a;" || mr.returnType == "Lxmo;" ||
+                            mr.returnType == "Lymo;" || mr.returnType == "Lwmo;" ||
+                            mr.returnType == "Lqmo;") sql = true
                         if (mr.name == "execSQL" || mr.name == "compileStatement" ||
                             mr.name == "rawQuery" || mr.name == "query") sql = true
                         // SQL is also passed through app wrappers whose ctor takes (db, sql).
