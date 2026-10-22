@@ -281,6 +281,10 @@ val enablePremiumPatch = bytecodePatch(
                 move-result-object v0
                 invoke-static {v1, v0}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
             """)
+            runCatching {
+                val after = hm?.implementation?.instructions?.toList() ?: emptyList()
+                java.io.File(tmpDir + "/site.log").appendText("HDR2 n=" + after.size + " has=" + hi.size + "\n")
+            }
         }
 
         if (newsRepo != null) {
