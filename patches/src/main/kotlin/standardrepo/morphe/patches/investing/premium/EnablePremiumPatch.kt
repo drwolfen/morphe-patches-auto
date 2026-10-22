@@ -270,9 +270,9 @@ val enablePremiumPatch = bytecodePatch(
         val newsRepo = mutableClassDefByOrNull("Lore;")?.methods?.firstOrNull { it.name == "a" && it.parameterTypes.size == 3 }
         if (newsRepo != null) {
             val nins = newsRepo.implementation?.instructions?.toList() ?: emptyList()
-            val at = nins.indexOfFirst { it.opcode.name == "new-instance" && (it as? ReferenceInstruction)?.reference?.toString() == "Lh51;" }
+            val at = nins.indexOfFirst { it.opcode.name == "iget-object" && ((it as? ReferenceInstruction)?.reference as? FieldReference)?.let { f -> f.name == "a" && f.definingClass.contains("Lh51") } == true }
             runCatching { java.io.File(tmpDir + "/site.log").appendText("LORE at=" + at + " ins=" + nins.size + "\n") }
-            if (at > 0) newsRepo.addInstructions(at, """
+            if (at > 0) newsRepo.addInstructions(at + 1, """
                 sget-object v6, Ljava/lang/System;->out:Ljava/io/PrintStream;
                 invoke-virtual {v1, v6}, Ljava/lang/Throwable;->printStackTrace(Ljava/io/PrintStream;)V
             """)
