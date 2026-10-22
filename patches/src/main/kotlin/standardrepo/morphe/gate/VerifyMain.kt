@@ -235,5 +235,35 @@ fun main(args: Array<String>) {
         exitProcess(3)
     }
 
+    // Structural gate: every mutated method must still END in return/throw/goto. dexlib2 drops
+    // the tail silently when a smali invoke lists more than the 5 registers a non-range invoke
+    // can encode — the body then "flows through to end of code area" and ART rejects the class
+    // with a VerifyError at load, which only shows up ON DEVICE. The JVM gate has no verifier.
+    // dexlib2's Opcode.name is the lowercase smali mnemonic ("return-void"), not an enum label.
+    // Payload pseudo-instructions are not control flow and legitimately trail a switch/fill.
+    val terminators = setOf("return-void", "return-void-barrier", "return", "return-wide",
+                            "return-object", "throw", "goto", "goto/16", "goto/32",
+                            "packed-switch-payload", "sparse-switch-payload",
+                            "array-payload")
+    val dangling = mutableListOf<String>()
+    for ((name, bytes) in patched) {
+        if (original[name]?.contentEquals(bytes) == true) continue
+        val df = DexBackedDexFile(null, ByteBuffer.wrap(bytes))
+        for (cls in df.classes) for (meth in cls.methods) {
+            val impl = meth.implementation ?: continue
+            val it2 = impl.instructions.iterator()
+            var last: com.android.tools.smali.dexlib2.iface.instruction.Instruction? = null
+            while (it2.hasNext()) last = it2.next()
+            if (last == null || last.opcode.name !in terminators) {
+                dangling += "${meth.definingClass}->${meth.name}"
+            }
+        }
+    }
+    println("GATE structure: dangling methods=${dangling.size} ${dangling.take(5)}")
+    if (dangling.isNotEmpty()) {
+        println("GATE FAIL method body does not end in return/throw/goto: ${dangling.take(10)}")
+        exitProcess(10)
+    }
+
     println("GATE PASS $changed dex file(s) mutated, ${applicable.size} patch(es) clean")
 }
