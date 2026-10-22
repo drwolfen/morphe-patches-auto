@@ -286,8 +286,8 @@ val enablePremiumPatch = bytecodePatch(
             "Landroid/app/KeyguardManager;" to "keyguard",
             "Landroid/os/PowerManager;" to "power"
         )
-        System.err.println("HOLDERBLOCK holders-built")
-        System.err.println("HOLDERBLOCK holders-built")
+        java.io.File("/tmp/hb.log").appendText("HOLDERBLOCK\n")
+        java.io.File("/tmp/hb.log").appendText("HOLDERBLOCK\n")
         val holders = HashSet<String>()
         classDefForEach { cd ->
             if (cd.methods.none { it.name == "<clinit>" } &&
@@ -311,7 +311,7 @@ val enablePremiumPatch = bytecodePatch(
                     for (k in 1..3) {
                         val cast = (ins.getOrNull(idx + k) as? ReferenceInstruction)?.reference
                         if (ins.getOrNull(idx + k)?.opcode?.name != "CHECK_CAST") continue
-                        System.err.println("svc k=" + k + " cast=" + (cast as? TypeReference)?.type)
+                        java.io.File("/tmp/svc.log").appendText("k=" + k + " " + (cast as? TypeReference)?.type + "\n")
                         if (cast is TypeReference) value = serviceNames[cast.type] ?: ""
                     }
                     target.replaceInstruction(idx, "const-string v" + r + ", \"" + value + "\"")
