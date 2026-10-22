@@ -369,6 +369,7 @@ val enablePremiumPatch = bytecodePatch(
                     var column = false
                     var sql = methodIsSql
                     var cast = ""
+                    if (cd.type == "Lvcd;" && m.name == "d") java.io.File("/tmp/dbg.log").appendText("R " + r + " at " + idx + "\n")
                     for (j in idx + 1..idx + 120) {
                         val nx = ins.getOrNull(j) ?: continue
                         if (!nx.opcode.name.startsWith("invoke")) continue
@@ -380,6 +381,7 @@ val enablePremiumPatch = bytecodePatch(
                                 (nx.startRegister until nx.startRegister + nx.registerCount).toList()
                             else -> emptyList()
                         }
+                        if (cd.type == "Lvcd;" && m.name == "d") java.io.File("/tmp/dbg.log").appendText("  call " + mr.name + " " + mr.definingClass + " regs=" + regs + "\n")
                         if (r !in regs) continue
                         if (mr.name.startsWith("getColumnIndex")) column = true
                         // Room-style DAO wrappers return a statement/query wrapper object.
