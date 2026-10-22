@@ -268,6 +268,20 @@ val enablePremiumPatch = bytecodePatch(
         }
         // DEBUG: dump the news fetch failure stack to logcat (System.out shows in logcat).
         val newsRepo = mutableClassDefByOrNull("Lore;")?.methods?.firstOrNull { it.name == "a" && it.parameterTypes.size == 3 }
+        // Dump the news request headers so we can see what the client actually sends.
+        runCatching {
+            val j67 = mutableClassDefByOrNull("Lj67;")
+            val hm = j67?.methods?.firstOrNull { it.name == "a" && it.parameterTypes.size == 1 }
+            val hi = hm?.implementation?.instructions?.toList() ?: emptyList()
+            val hr = hi.indexOfLast { it.opcode.name == "return-object" }
+            if (hr > 0) hm!!.addInstructions(hr, """
+                const-string v1, "CPHDR"
+                invoke-virtual {v3}, Ljava/lang/Object;->toString:()Ljava/lang/String;
+                move-result-object v0
+                invoke-static {v1, v0}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+            """)
+        }
+
         if (newsRepo != null) {
             val nins = newsRepo.implementation?.instructions?.toList() ?: emptyList()
             val at = nins.indexOfFirst { it.opcode.name == "iget-object" && ((it as? ReferenceInstruction)?.reference as? FieldReference)?.let { f -> f.name == "a" && f.definingClass.contains("Lh51") } == true }
