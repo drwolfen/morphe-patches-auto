@@ -270,18 +270,13 @@ val enablePremiumPatch = bytecodePatch(
         val newsRepo = mutableClassDefByOrNull("Lore;")?.methods?.firstOrNull { it.name == "a" && it.parameterTypes.size == 3 }
         if (newsRepo != null) {
             val nins = newsRepo.implementation?.instructions?.toList() ?: emptyList()
-            val at = nins.indexOfFirst { it.opcode.name == "iget-object" && ((it as? ReferenceInstruction)?.reference as? FieldReference)?.let { f -> f.name == "a" && f.definingClass.contains("Lh51") } == true }
-            runCatching { java.io.File(tmpDir + "/site.log").appendText("LORE at=" + at + " ins=" + nins.size + "\n") }
-            if (at > 0) newsRepo.addInstructions(at + 1, """
-                sget-object v6, Ljava/lang/System;->out:Ljava/io/PrintStream;
-                invoke-virtual {v1, v6}, Ljava/lang/Throwable;->printStackTrace(Ljava/io/PrintStream;)V
-            """)
             val dat = nins.indexOfFirst { it.opcode.name == "iget-object" && (it as? OneRegisterInstruction)?.registerA == 5 && ((it as? ReferenceInstruction)?.reference as? FieldReference)?.let { f -> f.name == "b" && f.definingClass.contains("ArticlesResponse\$Data") } == true }
-            runCatching { java.io.File(tmpDir + "/site.log").appendText("LORE at=" + at + " dat=" + dat + " datOp=" + (nins.getOrNull(dat)?.let { it.opcode.name + " " + ((it as? ReferenceInstruction)?.reference?.toString() ?: "") } ?: "?") + "\n") }
+            runCatching { java.io.File(tmpDir + "/site.log").appendText("LORE dat=" + dat + "\n") }
             if (dat > 0) newsRepo.addInstructions(dat + 1, """
                 invoke-static {v5}, Lkotlin/io/ConsoleKt;->println(Ljava/lang/Object;)V
             """)
         }
+
         mutableClassDefByOrNull("Landroidx/core/content/FileProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
         mutableClassDefByOrNull("Lcom/yandex/mobile/ads/core/initializer/YandexAdsInitializeProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
         mutableClassDefByOrNull("Lcom/facebook/FacebookContentProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
