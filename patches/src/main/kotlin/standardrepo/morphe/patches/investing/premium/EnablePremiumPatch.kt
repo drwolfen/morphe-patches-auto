@@ -315,7 +315,7 @@ val enablePremiumPatch = bytecodePatch(
                         ins.getOrNull(idx + 1)?.opcode?.name + "," + ins.getOrNull(idx + 2)?.opcode?.name + "," +
                         ins.getOrNull(idx + 3)?.opcode?.name + "\n")
                     var value = ""
-                    for (k in 1..3) {
+                    for (k in 1..6) {
                         val cast = (ins.getOrNull(idx + k) as? ReferenceInstruction)?.reference
                         if (ins.getOrNull(idx + k)?.opcode?.name != "CHECK_CAST") continue
                         java.io.File("/tmp/svc.log").appendText("k=" + k + " " + (cast as? TypeReference)?.type + "\n")
