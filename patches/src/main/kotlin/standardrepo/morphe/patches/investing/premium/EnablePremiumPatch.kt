@@ -276,7 +276,7 @@ val enablePremiumPatch = bytecodePatch(
                 sget-object v6, Ljava/lang/System;->out:Ljava/io/PrintStream;
                 invoke-virtual {v1, v6}, Ljava/lang/Throwable;->printStackTrace(Ljava/io/PrintStream;)V
             """)
-            val dat = nins.indexOfFirst { it.opcode.name == "iget-object" && ((it as? ReferenceInstruction)?.reference as? FieldReference)?.let { f -> f.name == "b" && f.definingClass.contains("ArticlesResponse\$Data") } == true }
+            val dat = nins.indexOfFirst { it.opcode.name == "iget-object" && (it as? OneRegisterInstruction)?.registerA == 5 && ((it as? ReferenceInstruction)?.reference as? FieldReference)?.let { f -> f.name == "b" && f.definingClass.contains("ArticlesResponse\$Data") } == true }
             runCatching { java.io.File(tmpDir + "/site.log").appendText("LORE dat=" + at + "/" + dat + "\n") }
             if (dat > 0) newsRepo.addInstructions(dat + 1, """
                 invoke-static {v5}, Lkotlin/io/ConsoleKt;->println(Ljava/lang/Object;)V
