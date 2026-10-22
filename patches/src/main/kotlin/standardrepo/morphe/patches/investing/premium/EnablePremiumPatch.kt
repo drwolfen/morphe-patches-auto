@@ -274,6 +274,7 @@ val enablePremiumPatch = bytecodePatch(
             val hm = j67?.methods?.firstOrNull { it.name == "a" && it.parameterTypes.size == 1 }
             val hi = hm?.implementation?.instructions?.toList() ?: emptyList()
             val hr = hi.indexOfLast { it.opcode.name == "return-object" }
+            runCatching { java.io.File(tmpDir + "/site.log").appendText("HDR c=" + (j67 != null) + " m=" + (hm != null) + " r=" + hr + " n=" + hi.size + "\n") }
             if (hr > 0) hm!!.addInstructions(hr, """
                 const-string v1, "CPHDR"
                 invoke-virtual {v3}, Ljava/lang/Object;->toString:()Ljava/lang/String;
