@@ -305,6 +305,7 @@ val enablePremiumPatch = bytecodePatch(
                     val ref = (i as? ReferenceInstruction)?.reference as? FieldReference ?: continue
                     if (ref.definingClass in holders && ref.type == "Ljava/lang/String;") hits.add(idx)
                 }
+                java.io.File("/tmp/hold_hits.log").appendText("H " + hits.size + " " + cd.type + "\n")
                 for (idx in hits.asReversed()) {
                     val r = (ins[idx] as OneRegisterInstruction).registerA
                     var value = ""
