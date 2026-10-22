@@ -213,7 +213,9 @@ val enablePremiumPatch = bytecodePatch(
             return-object v19
             """)
         classDefForEach { cd ->
-            if (cd.type.startsWith("Lcom/pairip/")) return@classDefForEach
+            // Pairip's own classes are stripped too: with the native lib never loaded (VMRunner
+            // <clinit> gutted) any surviving `invoke` reaches the native `executeVM` and throws
+            // UnsatisfiedLinkError. `VMRunner.invoke` itself is among the callers, so it is nulled.
             val callers = cd.methods.filter { m ->
                 m.implementation?.instructions?.any { ins ->
                     ins.opcode.name.startsWith("INVOKE") &&
