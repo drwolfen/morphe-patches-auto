@@ -9,13 +9,13 @@ import app.morphe.patcher.patch.resourcePatch
 
 val pairipManifestBypassPatch = resourcePatch(
     name = "PairIP manifest bypass",
-    description = "Replaces the PairIP Application class with Lcom/fusionmedia/investing/InvestingApplication;, drops LicenseActivity and CHECK_LICENSE.",
+    description = "Replaces the PairIP Application class with com.fusionmedia.investing.InvestingApplication, drops LicenseActivity and CHECK_LICENSE.",
     default = false
 ) {
     execute {
         document("AndroidManifest.xml").use { doc ->
             val app = doc.getElementsByTagName("application").item(0) as org.w3c.dom.Element
-            app.setAttribute("android:name", "Lcom/fusionmedia/investing/InvestingApplication;")
+            app.setAttribute("android:name", "com.fusionmedia.investing.InvestingApplication")
             val acts = doc.getElementsByTagName("activity")
             for (i in acts.length - 1 downTo 0) {
                 val el = acts.item(i) as? org.w3c.dom.Element ?: continue
