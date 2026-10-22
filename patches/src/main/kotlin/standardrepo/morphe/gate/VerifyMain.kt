@@ -171,18 +171,22 @@ fun main(args: Array<String>) {
     }
     println("GATE bundle patches=${loaded.size} applicable=${applicable.size}")
     if (applicable.isEmpty()) {
-        println("GATE FAIL no patch in bundle declares $expectedPackage@$expectedVersion (Compat drift)")
+        println("GATE FAIL no patch in bundle declares $expectedPackage — want 1 app patch")
         exitProcess(5)
     }
 
-    // Exactly ONE patch per app. The template demo used to be universal (compatiblePackages ==
-    // null), which makes PatchInfo.compatibleWith() true for EVERY package — so the Manager showed
-    // the demo patch on every app card and every app looked "2-way" patched. A cracked app must
-    // ship exactly one patch: assert it here, because two applicable patches mean the app is
-    // cracked twice (and one of them is usually the no-op demo).
-    println("GATE applicable patch names=${applicable.map { it.name }}")
-    if (applicable.size != 1) {
-        println("GATE FAIL ${applicable.size} applicable patches declare $expectedPackage — want exactly 1")
+    // A patch may carry ONE app-agnostic companion (a resource patch: manifest bypass, asset
+    // swap) that `dependsOn`s — `dependsOn` applies it even though it declares no Compat. So
+    // allow 1..2 applicable patches, but require exactly one that is NOT default-disabled, i.e.
+    // the patch the Manager actually offers.
+    println("GATE applicable patches=${applicable.map { p -> "${p.name}${if (p.default) "" else " (default=false)"}" }}")
+    val offered = applicable.filter { it.default }
+    if (offered.size != 1 || applicable.size > 2) {
+        println("GATE FAIL ${applicable.size} applicable patches — want 1 main (+1 universal helper)")
+        exitProcess(11)
+    }
+    if (applicable.size == 2 && applicable.count { !it.default } != 1) {
+        println("GATE FAIL companion patch not declared default=false")
         exitProcess(11)
     }
 

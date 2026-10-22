@@ -10,12 +10,15 @@ import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.extensions.InstructionExtensions.removeInstructions
 import app.morphe.util.returnEarly
 import standardrepo.morphe.compatibility.Compat
+import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
+import com.android.tools.smali.dexlib2.iface.reference.MethodReference
 
 val enablePremiumPatch = bytecodePatch(
     name = "Enable Pro",
     description = "Auto-generated: unlocks Investing Pro — the app's own paywall/tier gates are forced open."
 ) {
     compatibleWith(Compat.INVESTING)
+    dependsOn(pairipManifestBypassPatch)
 
     execute {
         VerifySignatureMatchesFingerprint.method.returnEarly(true)
@@ -45,70 +48,70 @@ val enablePremiumPatch = bytecodePatch(
             rcf.setInt(impl, oldRegs + 8)
             removeInstructions(0, impl.instructions.size)
             addInstructions(0, """
-                const-string v5, "crackpipe"
+                const-string v2, "crackpipe"
                 invoke-virtual {v8}, Landroid/app/Activity;->getClass()Ljava/lang/Class;
-                move-result-object v3
-                invoke-virtual {v3}, Ljava/lang/Class;->getName()Ljava/lang/String;
-                move-result-object v3
-                invoke-static {v3}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
-                move-result-object v3
-                invoke-static {v5, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+                move-result-object v0
+                invoke-virtual {v0}, Ljava/lang/Class;->getName()Ljava/lang/String;
+                move-result-object v0
+                invoke-static {v0}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
+                move-result-object v0
+                invoke-static {v2, v0}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
                 invoke-virtual {v9}, Landroid/content/Intent;->getAction()Ljava/lang/String;
-                move-result-object v3
-                invoke-static {v3}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
-                move-result-object v3
-                invoke-static {v5, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+                move-result-object v0
+                invoke-static {v0}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
+                move-result-object v0
+                invoke-static {v2, v0}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
                 invoke-virtual {v9}, Landroid/content/Intent;->getDataString()Ljava/lang/String;
-                move-result-object v3
-                invoke-static {v3}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
-                move-result-object v3
-                invoke-static {v5, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-                if-eqz v3, :pkg
-                const-string v4, "play.google.com"
-                invoke-virtual {v3, v4}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
-                move-result v4
-                if-nez v4, :m1
+                move-result-object v0
+                invoke-static {v0}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
+                move-result-object v0
+                invoke-static {v2, v0}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+                if-eqz v0, :pkg
+                const-string v1, "play.google.com"
+                invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+                move-result v1
+                if-nez v1, :m1
                 goto :skip
                 :m1
-                const-string v4, "market://"
-                invoke-virtual {v3, v4}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
-                move-result v4
-                if-nez v4, :m2
+                const-string v1, "market://"
+                invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+                move-result v1
+                if-nez v1, :m2
                 goto :skip
                 :m2
-                const-string v4, "com.android.vending"
-                invoke-virtual {v3, v4}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
-                move-result v4
-                if-eqz v4, :pkg
+                const-string v1, "com.android.vending"
+                invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+                move-result v1
+                if-eqz v1, :pkg
                 goto :skip
                 :pkg
                 invoke-virtual {v9}, Landroid/content/Intent;->getPackage()Ljava/lang/String;
-                move-result-object v3
-                if-eqz v3, :comp
-                const-string v4, "com.android.vending"
-                invoke-virtual {v3, v4}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
-                move-result v4
-                if-eqz v4, :comp
+                move-result-object v0
+                if-eqz v0, :comp
+                const-string v1, "com.android.vending"
+                invoke-virtual {v0, v1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+                move-result v1
+                if-eqz v1, :comp
                 goto :skip
                 :comp
                 invoke-virtual {v9}, Landroid/content/Intent;->getComponent()Landroid/content/ComponentName;
-                move-result-object v3
-                if-eqz v3, :orig
-                invoke-virtual {v3}, Landroid/content/ComponentName;->getPackageName()Ljava/lang/String;
-                move-result-object v3
-                const-string v4, "com.android.vending"
-                invoke-virtual {v3, v4}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
-                move-result v4
-                if-eqz v4, :orig
+                move-result-object v0
+                if-eqz v0, :orig
+                invoke-virtual {v0}, Landroid/content/ComponentName;->getPackageName()Ljava/lang/String;
+                move-result-object v0
+                const-string v1, "com.android.vending"
+                invoke-virtual {v0, v1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+                move-result v1
+                if-eqz v1, :orig
                 goto :skip
                 :orig
-                const-string v6, "PASSED"
-                invoke-static {v5, v6}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+                const-string v3, "PASSED"
+                invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
                 invoke-super {v8, v9, v10}, Landroid/app/Activity;->startActivityForResult(Landroid/content/Intent; I)V
                 return-void
                 :skip
-                const-string v6, "SWALLOWED"
-                invoke-static {v5, v6}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+                const-string v3, "SWALLOWED"
+                invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
                 return-void
             """)
         }
@@ -133,70 +136,70 @@ val enablePremiumPatch = bytecodePatch(
             rcf.setInt(impl, oldRegs + 8)
             removeInstructions(0, impl.instructions.size)
             addInstructions(0, """
-                const-string v6, "crackpipe"
+                const-string v2, "crackpipe"
                 invoke-virtual {v8}, Landroid/app/Activity;->getClass()Ljava/lang/Class;
-                move-result-object v4
-                invoke-virtual {v4}, Ljava/lang/Class;->getName()Ljava/lang/String;
-                move-result-object v4
-                invoke-static {v4}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
-                move-result-object v4
-                invoke-static {v6, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+                move-result-object v0
+                invoke-virtual {v0}, Ljava/lang/Class;->getName()Ljava/lang/String;
+                move-result-object v0
+                invoke-static {v0}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
+                move-result-object v0
+                invoke-static {v2, v0}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
                 invoke-virtual {v9}, Landroid/content/Intent;->getAction()Ljava/lang/String;
-                move-result-object v4
-                invoke-static {v4}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
-                move-result-object v4
-                invoke-static {v6, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+                move-result-object v0
+                invoke-static {v0}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
+                move-result-object v0
+                invoke-static {v2, v0}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
                 invoke-virtual {v9}, Landroid/content/Intent;->getDataString()Ljava/lang/String;
-                move-result-object v4
-                invoke-static {v4}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
-                move-result-object v4
-                invoke-static {v6, v4}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-                if-eqz v4, :pkg
-                const-string v5, "play.google.com"
-                invoke-virtual {v4, v5}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
-                move-result v5
-                if-nez v5, :m1
+                move-result-object v0
+                invoke-static {v0}, Ljava/lang/String;->valueOf(Ljava/lang/Object;)Ljava/lang/String;
+                move-result-object v0
+                invoke-static {v2, v0}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+                if-eqz v0, :pkg
+                const-string v1, "play.google.com"
+                invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+                move-result v1
+                if-nez v1, :m1
                 goto :skip
                 :m1
-                const-string v5, "market://"
-                invoke-virtual {v4, v5}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
-                move-result v5
-                if-nez v5, :m2
+                const-string v1, "market://"
+                invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+                move-result v1
+                if-nez v1, :m2
                 goto :skip
                 :m2
-                const-string v5, "com.android.vending"
-                invoke-virtual {v4, v5}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
-                move-result v5
-                if-eqz v5, :pkg
+                const-string v1, "com.android.vending"
+                invoke-virtual {v0, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+                move-result v1
+                if-eqz v1, :pkg
                 goto :skip
                 :pkg
                 invoke-virtual {v9}, Landroid/content/Intent;->getPackage()Ljava/lang/String;
-                move-result-object v4
-                if-eqz v4, :comp
-                const-string v5, "com.android.vending"
-                invoke-virtual {v4, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
-                move-result v5
-                if-eqz v5, :comp
+                move-result-object v0
+                if-eqz v0, :comp
+                const-string v1, "com.android.vending"
+                invoke-virtual {v0, v1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+                move-result v1
+                if-eqz v1, :comp
                 goto :skip
                 :comp
                 invoke-virtual {v9}, Landroid/content/Intent;->getComponent()Landroid/content/ComponentName;
-                move-result-object v4
-                if-eqz v4, :orig
-                invoke-virtual {v4}, Landroid/content/ComponentName;->getPackageName()Ljava/lang/String;
-                move-result-object v4
-                const-string v5, "com.android.vending"
-                invoke-virtual {v4, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
-                move-result v5
-                if-eqz v5, :orig
+                move-result-object v0
+                if-eqz v0, :orig
+                invoke-virtual {v0}, Landroid/content/ComponentName;->getPackageName()Ljava/lang/String;
+                move-result-object v0
+                const-string v1, "com.android.vending"
+                invoke-virtual {v0, v1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+                move-result v1
+                if-eqz v1, :orig
                 goto :skip
                 :orig
-                const-string v7, "PASSED"
-                invoke-static {v6, v7}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+                const-string v3, "PASSED"
+                invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
                 invoke-super {v8, v9, v10, v11}, Landroid/app/Activity;->startActivityForResult(Landroid/content/Intent; I Landroid/os/Bundle;)V
                 return-void
                 :skip
-                const-string v7, "SWALLOWED"
-                invoke-static {v6, v7}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+                const-string v3, "SWALLOWED"
+                invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
                 return-void
             """)
         }
@@ -208,5 +211,25 @@ val enablePremiumPatch = bytecodePatch(
             sget-object v19, Lkotlin/Unit;->INSTANCE:Lkotlin/Unit;
             return-object v19
             """)
+        PairipVmClinitFingerprint.method.returnEarly()
+        PairipVmInvokeFingerprint.method.returnEarly(null as Void?)
+        PairipStartupLauncherFingerprint.method.returnEarly()
+        classDefForEach { cd ->
+            if (cd.type.startsWith("Lcom/pairip/")) return@classDefForEach
+            val callers = cd.methods.filter { m ->
+                m.implementation?.instructions?.any { ins ->
+                    ins.opcode.name.startsWith("INVOKE") &&
+                        (ins as? ReferenceInstruction)?.reference.let { ref ->
+                            ref is MethodReference && ref.definingClass == "Lcom/pairip/VMRunner;" &&
+                                ref.name == "invoke"
+                        }
+                } == true
+            }
+            if (callers.isEmpty()) return@classDefForEach
+            val mc = mutableClassDefByOrNull(cd.type) ?: return@classDefForEach
+            for (m in callers) {
+                mc.methods.firstOrNull { it.name == m.name && it.returnType == m.returnType }?.returnEarly()
+            }
+        }
     }
 }

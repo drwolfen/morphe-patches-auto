@@ -62,3 +62,24 @@ object InvokeSuspendFingerprint : Fingerprint(
     returnType = "Ljava/lang/Object;",
     name = "invokeSuspend"
 )
+
+object PairipVmClinitFingerprint : Fingerprint(
+    definingClass = "Lcom/pairip/VMRunner;",
+    returnType = "V",
+    parameters = listOf(),
+    name = "<clinit>"
+)
+
+object PairipVmInvokeFingerprint : Fingerprint(
+    definingClass = "Lcom/pairip/VMRunner;",
+    returnType = "Ljava/lang/Object;",
+    parameters = listOf("Ljava/lang/String;", "[Ljava/lang/Object;"),
+    name = "invoke"
+)
+
+object PairipStartupLauncherFingerprint : Fingerprint(
+    definingClass = "Lcom/pairip/StartupLauncher;",
+    returnType = "V",
+    parameters = listOf(),
+    name = "launch"
+)
