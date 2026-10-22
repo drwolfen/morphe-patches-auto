@@ -243,16 +243,17 @@ val enablePremiumPatch = bytecodePatch(
                         ref.name == "forName"
                     ) {
                         val prev = ins.getOrNull(idx - 1) ?: continue
-                        if (prev.opcode.name != "SGET_OBJECT") continue
+                        if (prev.opcode.name != "sget-object") continue
                         sites.add(idx)
                     }
                 }
+                var lbl = 0
                 for (idx in sites.asReversed()) {
                     val prev = ins[idx - 1] as OneRegisterInstruction
                     val r = prev.registerA
-                    val label = "charset_\${cd.type.hashCode()}_\$idx"
+                    val label = "charset_" + lbl++
                     target.addInstructions(idx,
-                        "if-eqz v\$r, :\$label\nconst-string v\$r, \"UTF-8\"\n:\$label")
+                        "if-eqz v" + r + ", :" + label + "\nconst-string v" + r + ", \"UTF-8\"\n:" + label)
                 }
             }
         }
