@@ -208,14 +208,6 @@ val enablePremiumPatch = bytecodePatch(
                 return-void
             """)
         }
-        InvokeSuspendFingerprint.method.addInstructions(1021, """
-            sget-object v19, Lkotlin/Unit;->INSTANCE:Lkotlin/Unit;
-            return-object v19
-            """)
-        InvokeSuspendFingerprint.method.addInstructions(246, """
-            sget-object v19, Lkotlin/Unit;->INSTANCE:Lkotlin/Unit;
-            return-object v19
-            """)
         classDefForEach { cd ->
             // Pairip's own classes are stripped too: with the native lib never loaded (VMRunner
             // <clinit> gutted) any surviving `invoke` reaches the native `executeVM` and throws
