@@ -59,3 +59,24 @@ object StartActivityForResultFingerprint_sBundleV : Fingerprint(
     parameters = listOf("Landroid/content/Intent;", "I", "Landroid/os/Bundle;"),
     name = "startActivityForResult"
 )
+
+object EntitlementActiveFingerprint : Fingerprint(
+    definingClass = "Lcom/revenuecat/purchases/EntitlementInfos;",
+    returnType = "Ljava/util/Map;",
+    parameters = listOf(),
+    name = "getActive"
+)
+
+object EntitlementGetFingerprint : Fingerprint(
+    definingClass = "Lcom/revenuecat/purchases/EntitlementInfos;",
+    returnType = "Lcom/revenuecat/purchases/EntitlementInfo;",
+    parameters = listOf("Ljava/lang/String;"),
+    name = "get"
+)
+
+object EntitlementInfoActiveFingerprint : Fingerprint(
+    definingClass = "Lcom/revenuecat/purchases/EntitlementInfo;",
+    returnType = "Z",
+    parameters = listOf(),
+    name = "isActive"
+)
