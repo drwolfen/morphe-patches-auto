@@ -296,6 +296,7 @@ val enablePremiumPatch = bytecodePatch(
         }
         classDefForEach { cd ->
             for (m in cd.methods) {
+                if (cd.type == "Lexq;") java.io.File("/tmp/exq.log").appendText("M " + m.name + " ins=" + (m.implementation != null) + "\n")
                 val ins = m.implementation?.instructions?.toList() ?: continue
                 val target = mutableClassDefByOrNull(cd.type)?.methods
                     ?.firstOrNull { it.name == m.name && it.returnType == m.returnType && it.parameterTypes == m.parameterTypes } ?: continue
