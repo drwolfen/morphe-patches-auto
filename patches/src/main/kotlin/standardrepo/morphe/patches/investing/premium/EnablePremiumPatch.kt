@@ -286,6 +286,8 @@ val enablePremiumPatch = bytecodePatch(
             "Landroid/app/KeyguardManager;" to "keyguard",
             "Landroid/os/PowerManager;" to "power"
         )
+        println("HOLDERBLOCK holders-built")
+        println("HOLDERBLOCK holders-built")
         val holders = HashSet<String>()
         classDefForEach { cd ->
             if (cd.methods.none { it.name == "<clinit>" } &&
