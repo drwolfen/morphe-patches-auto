@@ -305,6 +305,21 @@ val enablePremiumPatch = bytecodePatch(
                 }
             }
         }
+        // Methods that hand a String on to a statement/query wrapper forward SQL text.
+        val sqlFwd = HashSet<String>()
+        classDefForEach { cd ->
+            for (m in cd.methods) {
+                val ins = m.implementation?.instructions?.toList() ?: continue
+                for (i in ins) {
+                    if (!i.opcode.name.startsWith("invoke")) continue
+                    val mr = (i as? ReferenceInstruction)?.reference as? MethodReference ?: continue
+                    if (mr.parameterTypes.contains("Ljava/lang/String;") &&
+                        (mr.returnType == "Ls9a;" || mr.returnType == "Lxmo;" ||
+                            mr.returnType == "Lymo;" || mr.returnType == "Lwmo;" || mr.returnType == "Lqmo;")
+                    ) sqlFwd.add(cd.type + "#" + m.name + "#" + m.parameterTypes.joinToString(","))
+                }
+            }
+        }
         val serviceNames = mapOf(
             "Landroid/view/WindowManager;" to "window",
             "Landroid/view/LayoutInflater;" to "layout_inflater",
@@ -368,6 +383,7 @@ val enablePremiumPatch = bytecodePatch(
                         if (mr.returnType == "Ls9a;" || mr.returnType == "Lxmo;" ||
                             mr.returnType == "Lymo;" || mr.returnType == "Lwmo;" ||
                             mr.returnType == "Lqmo;") sql = true
+                        if (sqlFwd.contains(mr.definingClass + "#" + mr.name + "#" + mr.parameterTypes.joinToString(","))) sql = true
                         if (mr.name == "execSQL" || mr.name == "compileStatement" ||
                             mr.name == "rawQuery" || mr.name == "query") sql = true
                         // SQL is also passed through app wrappers whose ctor takes (db, sql).
