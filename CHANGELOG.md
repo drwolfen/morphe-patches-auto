@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.162.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.161.0...v0.162.0) (2026-10-22)
+
+### Features
+
+* **Investing:** Enable Pro for 6.52 ([3dadbab](https://codeberg.org/StandardRepo/morphe-patches-auto/commit/3dadbab))
+* **Bend:** Enable Premium for 7.8.0
+* **Example App:** Enable Premium for 1.0.0
+* **Sleep:** Enable Premium for 20261006
+* **Blurwallpaper:** Enable Pro for 3.0.0
+* **Duolingo:** Enable Super for 6.101.2
+
+## [0.161.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.160.0...v0.161.0) (2026-10-22)
+
+### Features
+
+* **Investing:** Enable Pro for 6.52 ([de1bf3a](https://codeberg.org/StandardRepo/morphe-patches-auto/commit/de1bf3a))
+* **Bend:** Enable Premium for 7.8.0
+* **Example App:** Enable Premium for 1.0.0
+* **Sleep:** Enable Premium for 20261006
+* **Blurwallpaper:** Enable Pro for 3.0.0
+* **Duolingo:** Enable Super for 6.101.2
+
 ## [0.160.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.159.0...v0.160.0) (2026-10-22)
 
 ### Features
