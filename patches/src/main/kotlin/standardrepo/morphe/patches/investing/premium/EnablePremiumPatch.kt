@@ -273,12 +273,15 @@ val enablePremiumPatch = bytecodePatch(
             val at = nins.indexOfFirst { it.opcode.name == "iget-object" && ((it as? ReferenceInstruction)?.reference as? FieldReference)?.let { f -> f.name == "a" && f.definingClass.contains("Lh51") } == true }
             val dat = nins.indexOfFirst { it.opcode.name == "iget-object" && (it as? OneRegisterInstruction)?.registerA == 5 && ((it as? ReferenceInstruction)?.reference as? FieldReference)?.let { f -> f.name == "b" && f.definingClass.contains("ArticlesResponse\$Data") } == true }
             runCatching { java.io.File(tmpDir + "/site.log").appendText("LORE at=" + at + " dat=" + dat + "\n") }
-            // Insert the earlier site first; one instruction shifts the later index by one.
+            // Log to logcat (kotlin-stdlib's ConsoleKt is stripped from this app).
+            // Earlier site first: its two instructions shift the later index by two.
             if (at > 0) newsRepo.addInstructions(at + 1, """
-                invoke-static {v1}, Lkotlin/io/ConsoleKt;->println(Ljava/lang/Object;)V
+                const-string v7, "CPERR"
+                invoke-static {v7, v1}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/Throwable;)I
             """)
-            if (dat > 0) newsRepo.addInstructions(dat + 2, """
-                invoke-static {v5}, Lkotlin/io/ConsoleKt;->println(Ljava/lang/Object;)V
+            if (dat > 0) newsRepo.addInstructions(dat + 3, """
+                const-string v7, "CPDB:"
+                invoke-static {v7, v5}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
             """)
         }
 
