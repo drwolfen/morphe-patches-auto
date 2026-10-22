@@ -317,21 +317,19 @@ val enablePremiumPatch = bytecodePatch(
                     if (cls.isEmpty()) continue
                     val owner = mutableClassDefByOrNull(cls) ?: continue
                     if (owner.fields.isEmpty()) continue
-                    var want = ""
-                    for (j in idx + 1..idx + 8) {
-                        val st = ins.getOrNull(j)?.opcode?.name ?: continue
-                        if (st == "sput-wide") want = "J"
-                        else if (st == "sput-object") want = ""
-                        else if (st == "sput") want = "I"
-                        else if (st == "sput-boolean") want = "Z"
-                        else continue
-                        break
+                    // The offset is stored into a specific field right after the lookup — that
+                    // field's own name is the exact reflection name we must supply.
+                    var pick = ""
+                    for (j in idx + 1..idx + 10) {
+                        val st = ins.getOrNull(j) ?: continue
+                        if (!st.opcode.name.startsWith("sput")) continue
+                        val f = (st as? ReferenceInstruction)?.reference as? FieldReference ?: continue
+                        if (f.definingClass == cls) pick = f.name
                     }
-                    // Unsafe.objectFieldOffset only accepts instance fields.
-                    val pick = owner.fields.firstOrNull { want.isNotEmpty() && it.type == want && (it.accessFlags and 0x8) == 0 }
-                        ?: owner.fields.firstOrNull { (it.accessFlags and 0x8) == 0 }
-                        ?: owner.fields.first()
-                    reflect[key] = pick.name
+                    if (pick.isEmpty()) {
+                        pick = owner.fields.firstOrNull { (it.accessFlags and 0x8) == 0 }?.name ?: owner.fields.first().name
+                    }
+                    reflect[key] = pick
                 }
             }
         }
