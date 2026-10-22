@@ -317,17 +317,13 @@ val enablePremiumPatch = bytecodePatch(
                     if (cls.isEmpty()) continue
                     val owner = mutableClassDefByOrNull(cls) ?: continue
                     if (owner.fields.isEmpty()) continue
-                    // The offset is stored into a specific field right after the lookup — that
-                    // field's own name is the exact reflection name we must supply.
-                    var pick = ""
-                    for (j in idx + 1..idx + 10) {
-                        val st = ins.getOrNull(j) ?: continue
-                        if (!st.opcode.name.startsWith("sput")) continue
-                        val f = (st as? ReferenceInstruction)?.reference as? FieldReference ?: continue
-                        if (f.definingClass == cls) pick = f.name
-                    }
-                    if (pick.isEmpty()) {
-                        pick = owner.fields.firstOrNull { (it.accessFlags and 0x8) == 0 }?.name ?: owner.fields.first().name
+                    // `Unsafe.objectFieldOffset` needs an instance field; the offset itself is
+                    // cached in a static one. Kotlin state machines expose `state$volatile`, so
+                    // prefer the synthetic instance field, else the first instance field.
+                    val inst = owner.fields.filter { (it.accessFlags and 0x8) == 0 }
+                    var pick = owner.fields.firstOrNull { it.name.contains("$") || it.name.contains("state") }?.name ?: ""
+                    if (inst.none { it.name == pick }) {
+                        pick = inst.firstOrNull { it.type.startsWith("L") || it.type.startsWith("[") }?.name ?: inst.firstOrNull()?.name ?: ""
                     }
                     reflect[key] = pick
                 }
