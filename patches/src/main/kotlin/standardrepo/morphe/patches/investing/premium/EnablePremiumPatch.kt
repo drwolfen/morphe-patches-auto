@@ -416,7 +416,9 @@ val enablePremiumPatch = bytecodePatch(
                     // and see which API actually consumes it (a field can serve both SQL and a
                     // column name; only the call site disambiguates).
                     var column = false
-                    var sql = methodIsSql
+                    // A wrapper class's own <clinit> holds SQL text; a forward scan misses it
+                    // because the value is cached in a static field first.
+                    var sql = methodIsSql || (m.name == "<clinit>" && cd.type in setOf("Ls9a;", "Lxmo;", "Lymo;", "Lwmo;", "Lqmo;"))
                     var cast = ""
                     if (cd.type == "Lvcd;" && m.name == "d") runCatching { java.io.File(tmpDir + "/dbg.log").appendText("R " + r + " at " + idx + "\n") }
                     for (j in idx + 1..idx + 120) {
