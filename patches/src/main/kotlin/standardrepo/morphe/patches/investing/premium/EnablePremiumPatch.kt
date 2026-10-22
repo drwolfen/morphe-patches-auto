@@ -405,6 +405,7 @@ val enablePremiumPatch = bytecodePatch(
                             }
                         }
                     }
+                    if (cd.type == "Lvcd;" && m.name == "d") java.io.File("/tmp/dbg.log").appendText("FLAGS col=" + column + " sql=" + sql + " cast=" + cast + " k=" + k + "\n")
                     val value = when {
                         cast.isNotEmpty() -> serviceNames[cast] ?: "window"
                         column -> "id"
