@@ -10,12 +10,17 @@ import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.extensions.InstructionExtensions.removeInstructions
 import app.morphe.util.returnEarly
 import standardrepo.morphe.compatibility.Compat
+import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
+import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
+import com.android.tools.smali.dexlib2.iface.reference.MethodReference
 
 val enablePremiumPatch = bytecodePatch(
     name = "Enable Pro",
     description = "Auto-generated: unlocks Investing Pro — the app's own paywall/tier gates are forced open."
 ) {
     compatibleWith(Compat.INVESTING)
+    dependsOn(pairipManifestBypassPatch)
+
     execute {
         VerifySignatureMatchesFingerprint.method.returnEarly(true)
         VerifyIntegrityFingerprint.method.returnEarly()
@@ -207,8 +212,47 @@ val enablePremiumPatch = bytecodePatch(
             sget-object v19, Lkotlin/Unit;->INSTANCE:Lkotlin/Unit;
             return-object v19
             """)
-        PairipVmClinitFingerprint.method.returnEarly()
-        PairipVmInvokeFingerprint.method.returnEarly(null as Void?)
-        PairipStartupLauncherFingerprint.method.returnEarly()
+        classDefForEach { cd ->
+            if (cd.type.startsWith("Lcom/pairip/")) return@classDefForEach
+            val callers = cd.methods.filter { m ->
+                m.implementation?.instructions?.any { ins ->
+                    ins.opcode.name.startsWith("INVOKE") &&
+                        (ins as? ReferenceInstruction)?.reference.let { ref ->
+                            ref is MethodReference && ref.definingClass == "Lcom/pairip/VMRunner;" &&
+                                ref.name == "invoke"
+                        }
+                } == true
+            }
+            if (callers.isEmpty()) return@classDefForEach
+            val mc = mutableClassDefByOrNull(cd.type) ?: return@classDefForEach
+            for (m in callers) {
+                mc.methods.firstOrNull { it.name == m.name && it.returnType == m.returnType }?.returnEarly()
+            }
+        }
+        classDefForEach { cd ->
+            for (m in cd.methods.filter { it.name == "<clinit>" }) {
+                val ins = m.implementation?.instructions?.toList() ?: continue
+                val target = mutableClassDefByOrNull(cd.type)?.methods
+                    ?.firstOrNull { it.name == "<clinit>" && it.returnType == m.returnType } ?: continue
+                val sites = ArrayList<Int>()
+                for ((idx, i) in ins.withIndex()) {
+                    val ref = (i as? ReferenceInstruction)?.reference
+                    if (ref is MethodReference && ref.definingClass == "Ljava/nio/charset/Charset;" &&
+                        ref.name == "forName"
+                    ) {
+                        val prev = ins.getOrNull(idx - 1) ?: continue
+                        if (prev.opcode.name != "SGET_OBJECT") continue
+                        sites.add(idx)
+                    }
+                }
+                for (idx in sites.asReversed()) {
+                    val prev = ins[idx - 1] as OneRegisterInstruction
+                    val r = prev.registerA
+                    val label = "charset_\${cd.type.hashCode()}_\$idx"
+                    target.addInstructions(idx,
+                        "if-eqz v\$r, :\$label\nconst-string v\$r, \"UTF-8\"\n:\$label")
+                }
+            }
+        }
     }
 }
