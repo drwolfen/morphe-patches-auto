@@ -201,7 +201,7 @@ val enablePremiumPatch = bytecodePatch(
                 :orig
                 const-string v3, "PASSED"
                 invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-                invoke-super {v6, v7, v6}, Landroid/app/Activity;->startActivityForResult(Landroid/content/Intent; I Landroid/os/Bundle;)V
+                invoke-super {v6, v7, v8}, Landroid/app/Activity;->startActivityForResult(Landroid/content/Intent; I Landroid/os/Bundle;)V
                 return-void
                 :skip
                 const-string v3, "SWALLOWED"
