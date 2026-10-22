@@ -313,7 +313,8 @@ val enablePremiumPatch = bytecodePatch(
                     val r = (ins[idx] as OneRegisterInstruction).registerA
                     java.io.File("/tmp/svc.log").appendText("OPS " + cd.type + " " + m.name + " " + idx + " " +
                         ins.getOrNull(idx + 1)?.opcode?.name + "," + ins.getOrNull(idx + 2)?.opcode?.name + "," +
-                        ins.getOrNull(idx + 3)?.opcode?.name + "\n")
+                        ins.getOrNull(idx + 3)?.opcode?.name + "," + ins.getOrNull(idx + 4)?.opcode?.name + "," +
+                        ins.getOrNull(idx + 5)?.opcode?.name + "," + ins.getOrNull(idx + 6)?.opcode?.name + "\n")
                     var value = ""
                     for (k in 1..6) {
                         val cast = (ins.getOrNull(idx + k) as? ReferenceInstruction)?.reference
