@@ -345,20 +345,41 @@ val enablePremiumPatch = bytecodePatch(
                 }
                 for ((idx, k) in hits.asReversed()) {
                     val r = (ins[idx] as OneRegisterInstruction).registerA
-                    var value = "id"
-                    when (k) {
-                        "svc" -> {
-                            var cast = ""
-                            for (j in idx + 1..idx + 12) {
-                                val c = ins.getOrNull(j) as? ReferenceInstruction ?: continue
-                                if (c.opcode.name == "check-cast") cast = (c.reference as? TypeReference)?.type ?: ""
-                            }
-                            value = serviceNames[cast] ?: "window"
+                    // Per-site evidence beats the field-level guess: follow the register forward
+                    // and see which API actually consumes it (a field can serve both SQL and a
+                    // column name; only the call site disambiguates).
+                    var column = false
+                    var sql = false
+                    var cast = ""
+                    for (j in idx + 1..idx + 40) {
+                        val nx = ins.getOrNull(j) ?: continue
+                        if (!nx.opcode.name.startsWith("invoke")) continue
+                        val mr = (nx as? ReferenceInstruction)?.reference as? MethodReference ?: continue
+                        val regs = when (nx) {
+                            is com.android.tools.smali.dexlib2.iface.instruction.FiveRegisterInstruction ->
+                                listOf(nx.registerC, nx.registerD, nx.registerE, nx.registerF, nx.registerG).take(nx.registerCount)
+                            is com.android.tools.smali.dexlib2.iface.instruction.RegisterRangeInstruction ->
+                                (nx.startRegister until nx.startRegister + nx.registerCount).toList()
+                            else -> emptyList()
                         }
-                    
-                        "url" -> value = "https://example.com"
-                        "db" -> value = "app.db"
-                        "sql" -> value = "SELECT 1"
+                        if (r !in regs) continue
+                        if (mr.name.startsWith("getColumnIndex")) column = true
+                        if (mr.name == "execSQL" || mr.name == "compileStatement" ||
+                            mr.name == "rawQuery" || mr.name == "query") sql = true
+                        if (mr.name == "getSystemService") {
+                            for (q in j + 1..j + 6) {
+                                val c = ins.getOrNull(q) as? ReferenceInstruction
+                                if (c?.opcode?.name == "check-cast") cast = (c.reference as? TypeReference)?.type ?: ""
+                            }
+                        }
+                    }
+                    val value = when {
+                        cast.isNotEmpty() -> serviceNames[cast] ?: "window"
+                        column -> "id"
+                        sql -> "SELECT 1"
+                        k == "url" -> "https://example.com"
+                        k == "db" -> "app.db"
+                        else -> "id"
                     }
                     target.replaceInstruction(idx, "const-string v" + r + ", \"" + value + "\"")
                 }
