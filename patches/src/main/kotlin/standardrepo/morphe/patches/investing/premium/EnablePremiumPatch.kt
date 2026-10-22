@@ -117,7 +117,7 @@ val enablePremiumPatch = bytecodePatch(
                 :skip
                 const-string v3, "SWALLOWED"
                 invoke-static {v2, v3}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-                return-void
+                goto :orig
             """)
         }
         StartActivityForResultFingerprintLgr3.method.apply {
