@@ -309,6 +309,7 @@ val enablePremiumPatch = bytecodePatch(
                     for (k in 1..3) {
                         val cast = (ins.getOrNull(idx + k) as? ReferenceInstruction)?.reference
                         if (ins.getOrNull(idx + k)?.opcode?.name != "CHECK_CAST") continue
+                        println("svc k=" + k + " cast=" + (cast as? TypeReference)?.type)
                         if (cast is TypeReference) value = serviceNames[cast.type] ?: ""
                     }
                     target.replaceInstruction(idx, "const-string v" + r + ", \"" + value + "\"")
