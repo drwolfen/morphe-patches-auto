@@ -358,13 +358,16 @@ val enablePremiumPatch = bytecodePatch(
                         else -> ""
                     })
                 }
+                // A method that forwards a String into a statement wrapper treats its holder
+                // string reads as SQL text (the register may travel several frames).
+                val methodIsSql = sqlFwd.contains(cd.type + "#" + m.name + "#" + m.parameterTypes.joinToString(","))
                 for ((idx, k) in hits.asReversed()) {
                     val r = (ins[idx] as OneRegisterInstruction).registerA
                     // Per-site evidence beats the field-level guess: follow the register forward
                     // and see which API actually consumes it (a field can serve both SQL and a
                     // column name; only the call site disambiguates).
                     var column = false
-                    var sql = false
+                    var sql = methodIsSql
                     var cast = ""
                     for (j in idx + 1..idx + 120) {
                         val nx = ins.getOrNull(j) ?: continue
