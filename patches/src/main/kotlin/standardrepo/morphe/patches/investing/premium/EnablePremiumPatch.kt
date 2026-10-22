@@ -338,14 +338,14 @@ val enablePremiumPatch = bytecodePatch(
                         k[0] > 0 -> "svc"
                         k[2] > 0 -> "url"
                         k[3] > 0 -> "db"
-                        k[1] > 0 && k[4] == 0 -> "col"
+                        k[1] > 0 -> "col"
                         k[4] > 0 -> "sql"
                         else -> ""
                     })
                 }
                 for ((idx, k) in hits.asReversed()) {
                     val r = (ins[idx] as OneRegisterInstruction).registerA
-                    var value = "SELECT 1"
+                    var value = "id"
                     when (k) {
                         "svc" -> {
                             var cast = ""
@@ -355,9 +355,10 @@ val enablePremiumPatch = bytecodePatch(
                             }
                             value = serviceNames[cast] ?: "window"
                         }
-                        "col" -> value = "id"
+                    
                         "url" -> value = "https://example.com"
                         "db" -> value = "app.db"
+                        "sql" -> value = "SELECT 1"
                     }
                     target.replaceInstruction(idx, "const-string v" + r + ", \"" + value + "\"")
                 }
