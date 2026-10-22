@@ -303,6 +303,7 @@ val enablePremiumPatch = bytecodePatch(
                 val hits = ArrayList<Int>()
                 for ((idx, i) in ins.withIndex()) {
                     if (i.opcode.name != "sget-object") continue
+                    if (cd.type == "Lexq;" && m.name == "getBasicDeviceBody") java.io.File("/tmp/gdb.log").appendText("S " + idx + " " + ((i as? ReferenceInstruction)?.reference as? FieldReference)?.definingClass + " " + ((i as? ReferenceInstruction)?.reference as? FieldReference)?.type + "\n")
                     val ref = (i as? ReferenceInstruction)?.reference as? FieldReference ?: continue
                     if (ref.definingClass.contains("NMkYVc")) java.io.File("/tmp/nmk.log").appendText("NMK " + cd.type + " " + idx + " " + ref.definingClass + " " + ref.type + " in=" + (ref.definingClass in holders) + "\n")
                     if (ref.definingClass in holders && ref.type == "Ljava/lang/String;") hits.add(idx)
