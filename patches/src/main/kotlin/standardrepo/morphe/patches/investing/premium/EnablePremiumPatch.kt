@@ -311,7 +311,7 @@ val enablePremiumPatch = bytecodePatch(
                 java.io.File("/tmp/hold_hits.log").appendText("H " + hits.size + " " + cd.type + "\n")
                 for (idx in hits.asReversed()) {
                     val r = (ins[idx] as OneRegisterInstruction).registerA
-                    java.io.File("/tmp/svc.log").appendText("OPS " + cd.type + " " + idx + " " +
+                    java.io.File("/tmp/svc.log").appendText("OPS " + cd.type + " " + m.name + " " + idx + " " +
                         ins.getOrNull(idx + 1)?.opcode?.name + "," + ins.getOrNull(idx + 2)?.opcode?.name + "," +
                         ins.getOrNull(idx + 3)?.opcode?.name + "\n")
                     var value = ""
