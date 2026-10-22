@@ -313,38 +313,35 @@ val enablePremiumPatch = bytecodePatch(
                     val r = (ins[idx] as OneRegisterInstruction).registerA
                     // "SELECT 1" is a safe non-empty default: valid SQL, a usable DB/pref name, and
                     // harmless where the caller only needs a non-null String.
+                    // A non-empty default is required everywhere; refine it from the consumer API
+                    // that the register flows into (service name from the cast, column name, URL,
+                    // DB name, SQL text). Unknown consumers keep the benign "SELECT 1".
                     var value = "SELECT 1"
-                    // Some holders feed a platform API where "" is invalid (a DB name, a URL,
-                    // an SQL text) — pick a benign literal from the consumer, and the real
-                    // platform constant for `getSystemService` (named by the following cast).
-                    var consumer = ""
-                    var owner = ""
                     var cast = ""
-                    for (k in 1..4) {
+                    var column = false
+                    var url = false
+                    var db = ""
+                    for (k in 1..10) {
                         val nx = ins.getOrNull(idx + k) ?: continue
-                        val op = nx.opcode.name
-                        if (op.startsWith("invoke")) {
-                            val mr = (nx as? ReferenceInstruction)?.reference as? MethodReference
-                            if (mr != null) {
-                                consumer = mr.name
-                                owner = mr.definingClass
-                                if (mr.name == "getSystemService") {
-                                    for (j in k + 1..k + 4) {
-                                        val c = ins.getOrNull(idx + j) as? ReferenceInstruction
-                                        if (c?.opcode?.name == "check-cast") {
-                                            cast = (c.reference as? TypeReference)?.type ?: ""
-                                        }
-                                    }
-                                }
-                                break
+                        if (!nx.opcode.name.startsWith("invoke")) continue
+                        val mr = (nx as? ReferenceInstruction)?.reference as? MethodReference ?: continue
+                        if (mr.name == "getSystemService") {
+                            for (j in k + 1..k + 6) {
+                                val c = ins.getOrNull(idx + j) as? ReferenceInstruction
+                                if (c?.opcode?.name == "check-cast") cast = (c.reference as? TypeReference)?.type ?: ""
                             }
+                        } else if (mr.name.startsWith("getColumnIndex")) {
+                            column = true
+                        } else if (mr.name == "parse") {
+                            url = true
+                        } else if (mr.name == "<init>" && mr.definingClass.contains("SQLite")) {
+                            db = "app.db"
                         }
                     }
-                    if (consumer == "getSystemService") value = serviceNames[cast] ?: "window"
-                    else if (consumer == "execSQL") value = "SELECT 1"
-                    else if (consumer == "getColumnIndexOrThrow" || consumer == "getColumnIndex") value = "id"
-                    else if (consumer == "parse") value = "https://example.com"
-                    else if (consumer == "<init>" && owner.contains("SQLite")) value = "app.db"
+                    if (cast.isNotEmpty()) value = serviceNames[cast] ?: "window"
+                    else if (column) value = "id"
+                    else if (url) value = "https://example.com"
+                    else if (db != "") value = db
                     target.replaceInstruction(idx, "const-string v" + r + ", \"" + value + "\"")
                 }
             }
