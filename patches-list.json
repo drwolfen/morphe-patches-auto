@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.126.0",
+  "version": "0.127.0",
   "patches": [
     {
       "name": "Enable Premium",
@@ -188,14 +188,6 @@
           ]
         }
       ],
-      "options": []
-    },
-    {
-      "name": "PairIP manifest bypass",
-      "description": "Replaces the PairIP Application class with com.fusionmedia.investing.InvestingApplication, drops LicenseActivity and CHECK_LICENSE.",
-      "default": false,
-      "category": null,
-      "compatiblePackages": null,
       "options": []
     }
   ]

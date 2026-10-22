@@ -207,5 +207,8 @@ val enablePremiumPatch = bytecodePatch(
             sget-object v19, Lkotlin/Unit;->INSTANCE:Lkotlin/Unit;
             return-object v19
             """)
+        PairipVmClinitFingerprint.method.returnEarly()
+        PairipVmInvokeFingerprint.method.returnEarly(null as Void?)
+        PairipStartupLauncherFingerprint.method.returnEarly()
     }
 }
