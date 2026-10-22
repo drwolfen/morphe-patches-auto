@@ -10,6 +10,7 @@ import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.extensions.InstructionExtensions.removeInstructions
 import app.morphe.util.returnEarly
 import standardrepo.morphe.compatibility.Compat
+import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.reference.MethodReference
@@ -247,13 +248,12 @@ val enablePremiumPatch = bytecodePatch(
                         sites.add(idx)
                     }
                 }
-                var lbl = 0
+                // Replace the holder-field read itself: `forName` takes a String, so the read is
+                // always a String sget. Substituting a literal needs no branch and no label —
+                // dexlib2 label binding inside an insertion is what trips ART's verifier.
                 for (idx in sites.asReversed()) {
                     val prev = ins[idx - 1] as OneRegisterInstruction
-                    val r = prev.registerA
-                    val label = "charset_" + lbl++
-                    target.addInstructions(idx,
-                        "if-eqz v" + r + ", :" + label + "\nconst-string v" + r + ", \"UTF-8\"\n:" + label)
+                    target.replaceInstruction(idx - 1, "const-string v" + prev.registerA + ", \"UTF-8\"")
                 }
             }
         }
