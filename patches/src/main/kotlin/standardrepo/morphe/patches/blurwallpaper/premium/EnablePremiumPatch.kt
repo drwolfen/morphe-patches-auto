@@ -226,30 +226,15 @@ val enablePremiumPatch = bytecodePatch(
             }
             val rcf = rc!!
             rcf.isAccessible = true
-            rcf.setInt(impl, impl.registerCount + 18)
+            rcf.setInt(impl, impl.registerCount + 5)
             removeInstructions(0, implementation!!.instructions.size)
             addInstructions(0, """
                 new-instance v0, Ljava/util/HashMap;
                 invoke-direct {v0}, Ljava/util/HashMap;-><init>()V
-                new-instance v1, Lcom/revenuecat/purchases/EntitlementInfo;
-                const-string v2, "pro"
-                const/4 v3, 0x1
-                const/4 v4, 0x1
-                sget-object v5, Lcom/revenuecat/purchases/PeriodType;->NORMAL:Lcom/revenuecat/purchases/PeriodType;
-                const/4 v6, 0x0
-                const/4 v7, 0x0
-                const/4 v8, 0x0
-                sget-object v9, Lcom/revenuecat/purchases/Store;->PLAY_STORE:Lcom/revenuecat/purchases/Store;
-                const-string v10, "pro"
-                const/4 v11, 0x0
-                const/4 v12, 0x0
-                const/4 v13, 0x0
-                const/4 v14, 0x0
-                sget-object v15, Lcom/revenuecat/purchases/OwnershipType;->PURCHASED:Lcom/revenuecat/purchases/OwnershipType;
-                const/4 v16, 0x0
-                invoke-direct/range {v1 .. v16}, Lcom/revenuecat/purchases/EntitlementInfo;-><init>(Ljava/lang/String;ZZLcom/revenuecat/purchases/PeriodType;Ljava/util/Date;Ljava/util/Date;Ljava/util/Date;Lcom/revenuecat/purchases/Store;Ljava/lang/String;Ljava/lang/String;ZLjava/util/Date;Ljava/util/Date;Lcom/revenuecat/purchases/OwnershipType;Lorg/json/JSONObject;)V
-                const-string v17, "pro"
-                invoke-virtual {v0, v17, v1}, Ljava/util/HashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+                const-string v1, "pro"
+                invoke-virtual {p0, v1}, Lcom/revenuecat/purchases/EntitlementInfos;->get(Ljava/lang/String;)Lcom/revenuecat/purchases/EntitlementInfo;
+                move-result-object v2
+                invoke-virtual {v0, v1, v2}, Ljava/util/HashMap;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
                 return-object v0
             """)
         }
