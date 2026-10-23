@@ -349,7 +349,7 @@ val enablePremiumPatch = bytecodePatch(
                 }
             }
         } catch (t: Throwable) {
-            runCatching { java.io.File(tmpDir + "/site.log").appendText("NAERR " + t + "\n") }
+            runCatching { java.io.File(tmpDir + "/site.log").appendText("NAERR " + t + " @ " + (t.stackTrace.firstOrNull()?.toString() ?: "-") + "\n") }
         }
 
         // Dump the news request headers so we can see what the client actually sends.
