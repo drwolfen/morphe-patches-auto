@@ -313,11 +313,13 @@ val enablePremiumPatch = bytecodePatch(
                 val ths = n2x.indices.filter { ii ->
                     ii > 2 && n2x[ii].opcode.name == "throw" && n2x[ii - 1].opcode.name == "move-result-object" && n2x[ii - 2].opcode.name == "invoke-static"
                 }
+                val loopHead = n2x.indices.firstOrNull { (n2x[it] as? ReferenceInstruction)?.reference?.toString()?.contains("Lrpd;->s:()") == true }
+                val loopLbl = loopHead?.let { runCatching { n2x[it + 1].location.addNewLabel() }.getOrNull() }
                 for (ii in ths.asReversed()) {
                     // The helper (invoke-static) throws by itself, so the throw never gets
                     // control: drop the call, the move-result and the throw, and restore
                     // v0 (the cases use it as `this`) before falling through.
-                    runCatching { fm!!.implementation!!.replaceInstruction(ii, BuilderInstruction32x(Opcode.MOVE_OBJECT_16, 0, thisReg)) }.onFailure { e("TH" + ii, it) }
+                    if (loopLbl != null) runCatching { fm!!.implementation!!.replaceInstruction(ii, BuilderInstruction20t(Opcode.GOTO_16, loopLbl)) }.onFailure { e("TH" + ii, it) } else runCatching { fm!!.implementation!!.replaceInstruction(ii, BuilderInstruction32x(Opcode.MOVE_OBJECT_16, 0, thisReg)) }.onFailure { e("TH" + ii, it) }
                     tn++
                 }
                 runCatching { fm!!.implementation!!.instructions.size }
