@@ -342,6 +342,16 @@ val enablePremiumPatch = bytecodePatch(
                         runCatching { fm!!.implementation!!.replaceInstruction(swI, BuilderInstruction31t(Opcode.PACKED_SWITCH, reg, plLbl)) }.onFailure { e("SW2", it) }
                     } else e("SWNL", Throwable("no payload label"))
                     runCatching { fm!!.implementation!!.instructions.size }.onFailure { e("FX2", it) }
+                    // The old payload is now unreferenced but still sits in the code path,
+                    // so falling into its data trips the verifier: nop it out.
+                    var oldPlI = -1
+                    var cn = 0
+                    val szN = runCatching { fm!!.implementation!!.instructions.size }.getOrNull() ?: 0
+                    for (k in 0 until szN) {
+                        val ins = runCatching { fm!!.implementation!!.instructions[k] }.getOrNull() ?: break
+                        if (ins.opcode.name == "packed-switch-payload") { oldPlI = k; cn = ins.codeUnits; break }
+                    }
+                    if (oldPlI >= 0 && cn > 0) runCatching { fm!!.implementation!!.removeInstructions(oldPlI, 1) }.onFailure { e("SWNO", it) }
                     runCatching { java.io.File(tmpDir + "/site.log").appendText("SWOK s=" + swI + " sz=" + sz + "\n") }
                 } else runCatching { java.io.File(tmpDir + "/site.log").appendText("PLNONE\n") }
             }.onFailure { e("PL", it) }
