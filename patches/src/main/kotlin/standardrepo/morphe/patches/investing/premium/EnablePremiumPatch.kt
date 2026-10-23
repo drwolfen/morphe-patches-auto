@@ -21,6 +21,7 @@ import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction10x
 import com.android.tools.smali.dexlib2.immutable.reference.ImmutableStringReference
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction20t
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction21s
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction21t
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction11x
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction31c
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction11n
@@ -313,13 +314,25 @@ val enablePremiumPatch = bytecodePatch(
                 val ths = n2x.indices.filter { ii ->
                     ii > 2 && n2x[ii].opcode.name == "throw" && n2x[ii - 1].opcode.name == "move-result-object" && n2x[ii - 2].opcode.name == "invoke-static"
                 }
-                val loopHead = n2x.indices.firstOrNull { (n2x[it] as? ReferenceInstruction)?.reference?.toString()?.contains("Lrpd;->s:()") == true }
-                val loopLbl = loopHead?.let { runCatching { n2x[it + 1].location.addNewLabel() }.getOrNull() }
                 for (ii in ths.asReversed()) {
+                    // Flip the null test that branches to this throw block into if-nez:
+                    // a missing field then falls through to the normal path and the throw
+                    // block stays as dead code, so no control flow/register state changes.
+                    val addr = runCatching { n2x[ii].location?.codeAddress }.getOrNull()
+                    val prevIf = if (addr != null) n2x.indices.lastOrNull { j ->
+                        j < ii && n2x[j].opcode.name == "if-eqz" && runCatching {
+                            (n2x[j] as OffsetInstruction).codeOffset + runCatching { n2x[j].location.codeAddress }.getOrNull()!! == addr
+                        }.getOrDefault(false)
+                    } else null
+                    val ok = if (prevIf != null) runCatching {
+                        val lbl = n2x[ii].location.addNewLabel()
+                        fm!!.implementation!!.replaceInstruction(prevIf, BuilderInstruction21t(Opcode.IF_NEZ, (n2x[prevIf] as OneRegisterInstruction).registerA, lbl))
+                        true
+                    }.getOrDefault(false) else false
+                    tn++
                     // The helper (invoke-static) throws by itself, so the throw never gets
                     // control: drop the call, the move-result and the throw, and restore
                     // v0 (the cases use it as `this`) before falling through.
-                    if (loopLbl != null) runCatching { fm!!.implementation!!.replaceInstruction(ii, BuilderInstruction20t(Opcode.GOTO_16, loopLbl)) }.onFailure { e("TH" + ii, it) } else runCatching { fm!!.implementation!!.replaceInstruction(ii, BuilderInstruction32x(Opcode.MOVE_OBJECT_16, 0, thisReg)) }.onFailure { e("TH" + ii, it) }
                     tn++
                 }
                 runCatching { fm!!.implementation!!.instructions.size }
