@@ -274,7 +274,7 @@ val enablePremiumPatch = bytecodePatch(
         // by neutralising that throw.
         try {
             val na = mutableClassDefByOrNull("Lcom/fusionmedia/investing/feature/news/pager/articles/data/response/ArticlesResponse_ArticleJsonAdapter;")
-            val fm = na?.methods?.firstOrNull { it.name == "fromJson" }
+            val fm = na?.methods?.firstOrNull { it.name == "toJson" }
             val n2 = fm?.implementation?.instructions?.toList() ?: emptyList()
             val tAll = n2.indices.filter { n2[it].opcode.name == "throw" }
             runCatching {
