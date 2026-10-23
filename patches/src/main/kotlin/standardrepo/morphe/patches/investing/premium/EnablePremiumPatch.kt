@@ -335,6 +335,12 @@ val enablePremiumPatch = bytecodePatch(
                 runCatching { fm!!.implementation!!.addInstructions(0, listOf(
                     BuilderInstruction21c(Opcode.CONST_STRING, 0, ImmutableStringReference("CPIT")),
                     BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 0, 0, 0, 0, 0, ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I")))) }.onFailure { e("CPI", it) }
+            runCatching { fm!!.implementation!!.addInstructions(5, listOf(
+                BuilderInstruction35c(Opcode.INVOKE_VIRTUAL, 1, 1, 0, 0, 0, 0, ImmutableMethodReference("Lrpd;", "p", listOf(), "Ljava/lang/String;")),
+                BuilderInstruction11x(Opcode.MOVE_RESULT_OBJECT, 2),
+                BuilderInstruction21c(Opcode.CONST_STRING, 3, ImmutableStringReference("CPP:")),
+                BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 3, 2, 0, 0, 0, ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I"))
+            )) }.onFailure { e("CPP", it) }
             }.onFailure { e("NTHX", it) }
             // The payload offsets are fixed numbers dexlib never re-points; the two
             // dropped check-casts (-3 each) and the +6 cast insert shift every case.
