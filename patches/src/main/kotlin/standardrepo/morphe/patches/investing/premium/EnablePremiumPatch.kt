@@ -308,16 +308,21 @@ val enablePremiumPatch = bytecodePatch(
                 val inLoop = t > 8 && n2[t - 8].opcode.name == "check-cast"
                 val beforeSz = n2.size
                 if (inLoop) {
-                    // The loop round never dispatches the title case when HEADLINE is
-                    // absent, so leave it alone; only the post-loop validation block
-                    // has to be neutralised.
-                    runCatching { java.io.File(tmpDir + "/site.log").appendText("LOOP skip\n") }
+                    // Drop the move-result and jump back to the loop head: that path
+                    // re-igets the adapters (0x4b/0x53/0x57) and re-reads the name, so
+                    // v7/v8 must stay untouched and no fall-through merge happens.
+                    val loopIdx = n2.indices.firstOrNull { n2[it].location?.codeAddress == 0x13 } ?: -1
+                    val lbl = (n2.getOrNull(loopIdx) as? BuilderInstruction)?.location?.labels?.firstOrNull() ?: (if (loopIdx >= 0) fm!!.implementation!!.newLabelForIndex(loopIdx) else null)
+                    if (lbl != null) {
+                        runCatching { fm!!.replaceInstruction(t - 1, "nop") }.onFailure { e("L1", it) }
+                        runCatching { fm!!.replaceInstruction(t, BuilderInstruction20t(Opcode.GOTO_16, lbl)) }.onFailure { e("L2", it) }
+                    }
                 } else {
                     // After the loop the blocks run again as validation. The next block
                     // consumes v8/v7 as its name strings, so the fall-through has to
                     // carry those same constant types, not the reader's adapters.
-                    val nmV15 = n2.firstOrNull { it.opcode.name == "const-string" && (it as? OneRegisterInstruction)?.registerA == 15 }?.let { (it as? ReferenceInstruction)?.reference as? StringReference }?.string
-                    val nmV13 = n2.firstOrNull { it.opcode.name == "const-string" && (it as? OneRegisterInstruction)?.registerA == 13 }?.let { (it as? ReferenceInstruction)?.reference as? StringReference }?.string
+                    val nmV15 = n2.firstOrNull { it.opcode.name == "const-string" && (it as? OneRegisterInstruction)?.registerA == 7 }?.let { (it as? ReferenceInstruction)?.reference as? StringReference }?.string
+                    val nmV13 = n2.firstOrNull { it.opcode.name == "const-string" && (it as? OneRegisterInstruction)?.registerA == 8 }?.let { (it as? ReferenceInstruction)?.reference as? StringReference }?.string
                     runCatching { java.io.File(tmpDir + "/site.log").appendText("ELSE t=" + t + " nm=" + nmV15 + "/" + nmV13 + "\n") }
                     if (nmV15 != null && nmV13 != null) {
                         runCatching { fm!!.replaceInstruction(t - 2, "const-string/jumbo v8, \"$nmV15\"") }.onFailure { e("E1", it) }
