@@ -312,7 +312,7 @@ val enablePremiumPatch = bytecodePatch(
                     // Target the same merge point the normal success path uses (the
                     // one-unit goto at 0x89 that hops to the loop head), not the head
                     // itself, so the verifier sees identical incoming types.
-                    val loopIdx = n2.indexOfFirst { it.opcode.name == "goto" && (it as? OffsetInstruction)?.codeOffset == -118 }
+                    val loopIdx = n2.indices.firstOrNull { n2[it].location?.codeAddress == 0x89 } ?: -1
                     val loc = if (loopIdx >= 0) n2[loopIdx].location else null
                     val lbl = loc?.labels?.firstOrNull() ?: loc?.addNewLabel()
                     runCatching { java.io.File(tmpDir + "/site.log").appendText("LI=" + loopIdx + " L=" + (lbl != null) + " gos=" + n2.indices.filter { n2[it].opcode.name.startsWith("goto") }.map { it.toString() + ":" + (n2[it] as? OffsetInstruction)?.codeOffset + ":" + n2[it].location?.codeAddress }.take(12).joinToString(",") + "\n") }
