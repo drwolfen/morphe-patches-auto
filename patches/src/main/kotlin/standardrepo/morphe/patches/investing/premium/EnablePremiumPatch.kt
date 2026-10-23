@@ -286,6 +286,7 @@ val enablePremiumPatch = bytecodePatch(
             runCatching {
                 java.io.File(tmpDir + "/site.log").appendText("NATH " + tAll.joinToString(",") { i -> i.toString() + ":" + (maxOf(0, i - 12)..i).map { n2[it].opcode.name }.joinToString("|") } + "\n")
             }
+            val e = { tag: String, x: Throwable -> runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + tag + " " + x.message?.take(60) + "\n") } }
             val ti = tAll.firstOrNull { i ->
                 i > 8 && n2[i - 1].opcode.name == "move-result-object" &&
                     n2[i - 8].opcode.name == "check-cast" && (n2[i - 8] as? OneRegisterInstruction)?.registerA == 6
@@ -307,26 +308,25 @@ val enablePremiumPatch = bytecodePatch(
                 val beforeSz = n2.size
                 if (inLoop) {
                     // Never take the branch (v6 is always set), and keep the block itself
-                    // consistent so its dead fall-through merges cleanly: the next block's
-                    // name registers v7/v8 must be Strings on every path.
+                    // consistent so its dead fall-through merges cleanly: the next case
+                    // still needs v7 as its adapter register.
                     val bFld = n2.firstOrNull { it.opcode.name == "iget-object" && ((it as? ReferenceInstruction)?.reference as? FieldReference)?.name == "b" }?.let { (it as? ReferenceInstruction)?.reference as? FieldReference }
-                    runCatching { if (bFld != null) fm!!.replaceInstruction(t - 9, "iget-object v7, v0, " + bFld.definingClass + "." + bFld.name + ":" + bFld.type) }.onFailure { runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + it + "\n") } }
-                    runCatching { fm!!.replaceInstruction(t - 8, "const-string v6, \"\"") }.onFailure { runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + it + "\n") } }
-                    runCatching { fm!!.replaceInstruction(t - 1, "const-string v8, \"\"") }.onFailure { runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + it + "\n") } }
-                    runCatching { fm!!.replaceInstruction(t, "nop\nnop") }.onFailure { runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + it + "\n") } }
+                    if (bFld != null) runCatching { fm!!.replaceInstruction(t - 9, "iget-object v7, v0, " + bFld.definingClass + "." + bFld.name + ":" + bFld.type) }.onFailure { e("R1", it) }
+                    runCatching { fm!!.replaceInstruction(t - 8, "const-string v6, \"\"") }.onFailure { e("R2", it) }
+                    runCatching { fm!!.replaceInstruction(t - 1, "const-string v8, \"\"") }.onFailure { e("R3", it) }
+                    runCatching { fm!!.replaceInstruction(t, "nop\nnop") }.onFailure { e("R4", it) }
                 } else {
                     // After the loop the blocks run again as validation. The next block
                     // consumes v8/v7 as its name strings, so the fall-through has to
                     // carry those same constant types, not the reader's adapters.
                     val nmV15 = n2.firstOrNull { it.opcode.name == "const-string" && (it as? OneRegisterInstruction)?.registerA == 15 }?.let { (it as? ReferenceInstruction)?.reference as? StringReference }?.string
                     val nmV13 = n2.firstOrNull { it.opcode.name == "const-string" && (it as? OneRegisterInstruction)?.registerA == 13 }?.let { (it as? ReferenceInstruction)?.reference as? StringReference }?.string
-                    runCatching { java.io.File(tmpDir + "/site.log").appendText("ELSE t=" + t + " n2=" + n2[t - 2].opcode.name + "," + n2[t - 1].opcode.name + "," + n2[t].opcode.name + "\n") }
+                    runCatching { java.io.File(tmpDir + "/site.log").appendText("ELSE t=" + t + " nm=" + nmV15 + "/" + nmV13 + "\n") }
                     if (nmV15 != null && nmV13 != null) {
-                        runCatching { fm!!.replaceInstruction(t - 2, "const-string v8, \"$nmV15\"") }.onFailure { runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + it + "\n") } }
-                        runCatching { fm!!.replaceInstruction(t - 1, "const-string v7, \"$nmV13\"") }.onFailure { runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + it + "\n") } }
-                        runCatching { fm!!.replaceInstruction(t, "nop\nnop") }.onFailure { runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + it + "\n") } }
+                        runCatching { fm!!.replaceInstruction(t - 2, "const-string v8, \"$nmV15\"") }.onFailure { e("E1", it) }
+                        runCatching { fm!!.replaceInstruction(t - 1, "const-string v7, \"$nmV13\"") }.onFailure { e("E2", it) }
+                        runCatching { fm!!.replaceInstruction(t, "nop\nnop") }.onFailure { e("E3", it) }
                     }
-                    runCatching { java.io.File(tmpDir + "/site.log").appendText("SZ " + n2.size + "\n") }
                 }
             }
         } catch (t: Throwable) {
