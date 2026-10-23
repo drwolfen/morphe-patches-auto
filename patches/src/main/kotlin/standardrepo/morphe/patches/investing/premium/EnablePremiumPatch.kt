@@ -318,25 +318,12 @@ val enablePremiumPatch = bytecodePatch(
                     // Re-point the null test from the throw block to the instruction after it:
                     // both null and non-null then reach the normal path and the throw block
                     // stays as dead code, so register/merge state is unchanged.
-                    val prevIf = (0 until ii).lastOrNull { n2x[it].opcode.name == "if-eqz" }
-                    val off = if (prevIf != null) (n2x[prevIf] as? OffsetInstruction)?.codeOffset else null
-                    var offNow = -1
-                    var ok = false
-                    runCatching {
-                        val taddr = n2x[ii].location?.codeAddress
-                        val cands = (0 until ii).filter { n2x[it].opcode.name == "if-eqz" }.mapNotNull { it ->
-                            val a = n2x[it].location?.codeAddress; val o = (n2x[it] as? OffsetInstruction)?.codeOffset
-                            if (a != null && o != null) "$it:$a+$o" else null
-                        }.takeLast(3)
-                        java.io.File(tmpDir + "/site.log").appendText("THX " + ii + " addr=" + taddr + " c=" + cands.joinToString(",") + "\n")
-                    }
-                    if (prevIf != null) runCatching {
-                        val lbl = n2x[ii + 1].location.addNewLabel()
-                        fm!!.implementation!!.replaceInstruction(prevIf, BuilderInstruction21t(Opcode.IF_EQZ, (n2x[prevIf] as OneRegisterInstruction).registerA, lbl))
-                        offNow = (fm!!.implementation!!.instructions[prevIf] as? OffsetInstruction)?.codeOffset ?: -888
-                        java.io.File(tmpDir + "/site.log").appendText("FLP " + prevIf + " off=" + off + " now=" + offNow + "\n")
-                        ok = true
-                    }.onFailure { e("FI" + ii, it) }
+                    // The helper returns the exception instead of throwing and only peeks
+                    // the value (the value itself is parsed just before). Drop the
+                    // move-result and the throw; v0 keeps `this`, so the cases stay valid.
+                    runCatching { fm!!.implementation!!.replaceInstruction(ii, nop()) }.onFailure { e("TH" + ii, it) }
+                    runCatching { fm!!.implementation!!.replaceInstruction(ii - 1, nop()) }.onFailure { e("THM" + ii, it) }
+                    var ok = true
                     if (ok) tn++
                     // The helper (invoke-static) throws by itself, so the throw never gets
                     // control: drop the call, the move-result and the throw, and restore
