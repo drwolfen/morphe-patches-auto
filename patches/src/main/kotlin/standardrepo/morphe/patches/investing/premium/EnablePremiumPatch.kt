@@ -309,8 +309,8 @@ val enablePremiumPatch = bytecodePatch(
                     // loop, so the next block's name registers (v7, v8) must stay String
                     // and the throw must be neutralised. Units are preserved (3 = 2+1).
                     fm!!.replaceInstruction(t, "nop")
-                    fm!!.replaceInstruction(t - 1, "const-string v8, \"\"")
-                    fm!!.replaceInstructions(t - 2, "const-string v7, \"\"\nnop")
+                    fm!!.replaceInstruction(t - 1, "const-string v7, \"\"")
+                    fm!!.replaceInstructions(t - 2, "const-string v8, \"\"\nnop")
                 }
             }
         } catch (t: Throwable) {
