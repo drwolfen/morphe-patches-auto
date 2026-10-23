@@ -309,9 +309,12 @@ val enablePremiumPatch = bytecodePatch(
                     ii > 2 && n2x[ii].opcode.name == "throw" && n2x[ii - 1].opcode.name == "move-result-object" && n2x[ii - 2].opcode.name == "invoke-static"
                 }
                 for (ii in ths.asReversed()) {
-                    // A throw leaves v0 holding the exception; the cases keep using v0 as
-                    // `this` for iget, so restore it from v28 (the adapter) and fall through.
+                    // The helper (invoke-static) throws by itself, so the throw never gets
+                    // control: drop the call, the move-result and the throw, and restore
+                    // v0 (the cases use it as `this`) before falling through.
                     runCatching { fm!!.implementation!!.replaceInstruction(ii, BuilderInstruction22x(Opcode.MOVE_OBJECT_16, 0, 28)) }.onFailure { e("TH" + ii, it) }
+                    runCatching { fm!!.implementation!!.replaceInstruction(ii - 1, nop()) }.onFailure { e("THM" + ii, it) }
+                    runCatching { fm!!.implementation!!.replaceInstructions(ii - 2, listOf(nop(), nop(), nop())) }.onFailure { e("THI" + ii, it) }
                     tn++
                 }
                 runCatching { fm!!.implementation!!.instructions.size }
