@@ -26,7 +26,9 @@ import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction31c
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction11n
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction22c
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction22x
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction35c
 import com.android.tools.smali.dexlib2.iface.reference.StringReference
+import com.android.tools.smali.dexlib2.immutable.reference.ImmutableMethodReference
 import com.android.tools.smali.dexlib2.iface.instruction.formats.Instruction21t
 import com.android.tools.smali.dexlib2.immutable.reference.ImmutableTypeReference
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction21c
@@ -319,6 +321,9 @@ val enablePremiumPatch = bytecodePatch(
                 }
                 runCatching { fm!!.implementation!!.instructions.size }
                 runCatching { java.io.File(tmpDir + "/site.log").appendText("NTH n=" + tn + "\n") }
+                runCatching { fm!!.implementation!!.addInstructions(0, listOf(
+                    BuilderInstruction21c(Opcode.CONST_STRING, 0, ImmutableStringReference("CPIT")),
+                    BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 0, 0, 0, 0, 0, ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I")))) }.onFailure { e("CPI", it) }
             }.onFailure { e("NTHX", it) }
             // The payload offsets are fixed numbers dexlib never re-points; the two
             // dropped check-casts (-3 each) and the +6 cast insert shift every case.
