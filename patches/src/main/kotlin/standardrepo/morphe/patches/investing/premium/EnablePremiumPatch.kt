@@ -393,6 +393,22 @@ val enablePremiumPatch = bytecodePatch(
             runCatching { java.io.File(tmpDir + "/site.log").appendText("HDRERR " + t + "\n") }
         }
 
+        // DEBUG: log how many list elements the Data adapter actually received.
+        runCatching {
+            val dCls = mutableClassDefByOrNull("Lcom/fusionmedia/investing/feature/news/pager/articles/data/response/ArticlesResponse_DataJsonAdapter;")
+            val dm = dCls?.methods?.firstOrNull { it.name == "fromJson" }
+            val dins = dm?.implementation?.instructions?.toList()
+            val ci = dins?.indexOfFirst { it.opcode.name == "check-cast" && ((it as? ReferenceInstruction)?.reference?.toString()?.contains("Ljava/util/List;") == true) } ?: -1
+            java.io.File(tmpDir + "/site.log").appendText("DLIST ci=" + ci + " n=" + (dins?.size ?: -1) + "\n")
+            if (ci > 0) dm!!.implementation!!.addInstructions(ci + 1, listOf(
+                BuilderInstruction35c(Opcode.INVOKE_VIRTUAL, 1, 1, 0, 0, 0, 0, ImmutableMethodReference("Ljava/util/List;", "size", listOf(), "I")),
+                BuilderInstruction11x(Opcode.MOVE_RESULT, 2),
+                BuilderInstruction35c(Opcode.INVOKE_STATIC, 1, 2, 0, 0, 0, 0, ImmutableMethodReference("Ljava/lang/String;", "valueOf", listOf("I"), "Ljava/lang/String;")),
+                BuilderInstruction11x(Opcode.MOVE_RESULT_OBJECT, 2),
+                BuilderInstruction21c(Opcode.CONST_STRING, 7, ImmutableStringReference("CPL:")),
+                BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 7, 2, 0, 0, 0, ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I"))
+            ))
+        }
         if (newsRepo != null) {
             val nins = newsRepo.implementation?.instructions?.toList() ?: emptyList()
             val at = nins.indexOfFirst { it.opcode.name == "iget-object" && ((it as? ReferenceInstruction)?.reference as? FieldReference)?.let { f -> f.name == "a" && f.definingClass.contains("Lh51") } == true }
