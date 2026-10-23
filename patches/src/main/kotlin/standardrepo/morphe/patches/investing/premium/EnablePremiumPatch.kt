@@ -318,12 +318,7 @@ val enablePremiumPatch = bytecodePatch(
                     runCatching { java.io.File(tmpDir + "/site.log").appendText("LI=" + loopIdx + " L=" + (lbl != null) + " gos=" + n2.indices.filter { n2[it].opcode.name.startsWith("goto") }.map { it.toString() + ":" + (n2[it] as? OffsetInstruction)?.codeOffset + ":" + n2[it].location?.codeAddress }.take(12).joinToString(",") + "\n") }
                     if (lbl != null) runCatching { fm!!.replaceInstruction(t, BuilderInstruction20t(Opcode.GOTO_16, lbl)) }.onFailure { java.io.File(tmpDir + "/site.log").appendText("GOERR " + it + "\n") } else fm!!.replaceInstruction(t, "nop")
                 } else {
-                    // After the constructor these blocks are entered by jumps from the
-                    // loop, so the next block's name registers (v7, v8) must stay String
-                    // and the throw must be neutralised. Units are preserved (3 = 2+1).
-                    fm!!.replaceInstruction(t, "nop")
-                    fm!!.replaceInstruction(t - 1, "const-string v7, \"\"")
-                    fm!!.replaceInstructions(t - 2, "const-string v8, \"\"\nnop")
+                    // leave the post-constructor blocks alone
                 }
             }
         } catch (t: Throwable) {
