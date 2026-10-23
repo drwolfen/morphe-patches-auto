@@ -309,7 +309,10 @@ val enablePremiumPatch = bytecodePatch(
                     fm!!.replaceInstruction(t - 1, "nop")
                     // Jump back to the loop head with a freshly built goto bound to that
                     // location's label (reusing the existing instruction object rebinds it).
-                    val loopIdx = n2.indexOfFirst { it.opcode.name == "invoke-virtual" && ((it as? ReferenceInstruction)?.reference as? MethodReference)?.let { m -> m.name == "s" && m.definingClass == "Lrpd;" } == true }
+                    // Target the same merge point the normal success path uses (the
+                    // one-unit goto at 0x89 that hops to the loop head), not the head
+                    // itself, so the verifier sees identical incoming types.
+                    val loopIdx = n2.indexOfFirst { it.opcode.name == "goto" && (it as? OffsetInstruction)?.codeOffset == -118 }
                     val loc = if (loopIdx >= 0) n2[loopIdx].location else null
                     val lbl = loc?.labels?.firstOrNull() ?: loc?.addNewLabel()
                     runCatching { java.io.File(tmpDir + "/site.log").appendText("LI=" + loopIdx + " L=" + (lbl != null) + "\n") }
