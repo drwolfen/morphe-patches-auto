@@ -326,7 +326,7 @@ val enablePremiumPatch = bytecodePatch(
                     // Numeric operands are not supported by the inline compiler, so the
                     // target has to be a Label.
                     val loopIdx = n2.indices.firstOrNull { runCatching { n2[it].location?.codeAddress }.getOrNull() == 0x120 } ?: -1
-                    val lbl = (n2.getOrNull(loopIdx) as? BuilderInstruction)?.location?.labels?.firstOrNull() ?: (if (loopIdx >= 0) fm!!.implementation!!.newLabelForIndex(loopIdx) else null)
+                    val lbl = runCatching { (n2.getOrNull(loopIdx) as? BuilderInstruction)?.location?.labels?.firstOrNull() }.getOrNull() ?: (if (loopIdx >= 0) fm!!.implementation!!.newLabelForIndex(loopIdx) else null)
                     if (lbl != null) {
                         runCatching { fm!!.implementation!!.replaceInstruction(t - 2, nop) }.onFailure { e("L0c", it) }
                         runCatching { fm!!.implementation!!.replaceInstruction(t - 1, nop) }.onFailure { e("L0", it) }
