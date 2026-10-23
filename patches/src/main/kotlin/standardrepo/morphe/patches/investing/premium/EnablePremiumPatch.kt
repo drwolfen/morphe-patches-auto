@@ -313,7 +313,7 @@ val enablePremiumPatch = bytecodePatch(
                     runCatching { if (bFld != null) fm!!.replaceInstruction(t - 9, "iget-object v7, v0, " + bFld.definingClass + "." + bFld.name + ":" + bFld.type) }.onFailure { runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + it + "\n") } }
                     runCatching { fm!!.replaceInstruction(t - 8, "const-string v6, \"\"") }.onFailure { runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + it + "\n") } }
                     runCatching { fm!!.replaceInstruction(t - 1, "const-string v8, \"\"") }.onFailure { runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + it + "\n") } }
-                    runCatching { fm!!.replaceInstruction(t, "nop") }.onFailure { runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + it + "\n") } }
+                    runCatching { fm!!.replaceInstruction(t, "nop\nnop") }.onFailure { runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + it + "\n") } }
                 } else {
                     // After the loop the blocks run again as validation. The next block
                     // consumes v8/v7 as its name strings, so the fall-through has to
@@ -322,9 +322,9 @@ val enablePremiumPatch = bytecodePatch(
                     val nmV13 = n2.firstOrNull { it.opcode.name == "const-string" && (it as? OneRegisterInstruction)?.registerA == 13 }?.let { (it as? ReferenceInstruction)?.reference as? StringReference }?.string
                     runCatching { java.io.File(tmpDir + "/site.log").appendText("ELSE t=" + t + " n2=" + n2[t - 2].opcode.name + "," + n2[t - 1].opcode.name + "," + n2[t].opcode.name + "\n") }
                     if (nmV15 != null && nmV13 != null) {
-                        runCatching { fm!!.replaceInstruction(t - 2, "const-string/jumbo v8, \"$nmV15\"") }.onFailure { runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + it + "\n") } }
+                        runCatching { fm!!.replaceInstruction(t - 2, "const-string v8, \"$nmV15\"") }.onFailure { runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + it + "\n") } }
                         runCatching { fm!!.replaceInstruction(t - 1, "const-string v7, \"$nmV13\"") }.onFailure { runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + it + "\n") } }
-                        runCatching { fm!!.replaceInstruction(t, "nop") }.onFailure { runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + it + "\n") } }
+                        runCatching { fm!!.replaceInstruction(t, "nop\nnop") }.onFailure { runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + it + "\n") } }
                     }
                     runCatching { java.io.File(tmpDir + "/site.log").appendText("SZ " + n2.size + "\n") }
                 }
