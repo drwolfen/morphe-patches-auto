@@ -281,8 +281,8 @@ val enablePremiumPatch = bytecodePatch(
                 java.io.File(tmpDir + "/site.log").appendText("NATH " + tAll.joinToString(",") { i -> i.toString() + ":" + (maxOf(0, i - 12)..i).map { n2[it].opcode.name }.joinToString("|") } + "\n")
             }
             val ti = tAll.firstOrNull { i ->
-                i > 5 && n2[i - 1].opcode.name == "move-result-object" &&
-                    n2[i - 6].opcode.name == "check-cast" && (n2[i - 6] as? OneRegisterInstruction)?.registerA == 6
+                i > 8 && n2[i - 1].opcode.name == "move-result-object" &&
+                    n2[i - 8].opcode.name == "check-cast" && (n2[i - 8] as? OneRegisterInstruction)?.registerA == 6
             }
             runCatching { java.io.File(tmpDir + "/site.log").appendText("NA ti=" + ti + "\n") }
             if (ti != null) fm!!.replaceInstruction(ti, "const-string v8, \"\"")
