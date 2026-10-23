@@ -346,12 +346,11 @@ val enablePremiumPatch = bytecodePatch(
                 val l0 = fm!!.implementation!!.instructions.toList()
                 val bi = l0.indexOfFirst { it.opcode.name == "packed-switch" }
                 if (bi > 0) fm!!.implementation!!.addInstructions(bi, listOf(
+                    BuilderInstruction22x(Opcode.MOVE_FROM16, 2, 26),
                     BuilderInstruction35c(Opcode.INVOKE_STATIC, 1, 2, 0, 0, 0, 0, ImmutableMethodReference("Ljava/lang/String;", "valueOf", listOf("I"), "Ljava/lang/String;")),
                     BuilderInstruction11x(Opcode.MOVE_RESULT_OBJECT, 3),
                     BuilderInstruction21c(Opcode.CONST_STRING, 2, ImmutableStringReference("CPK:")),
-                    BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 2, 3, 0, 0, 0, ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I")),
-                    BuilderInstruction35c(Opcode.INVOKE_STATIC, 1, 3, 0, 0, 0, 0, ImmutableMethodReference("Ljava/lang/Integer;", "parseInt", listOf("Ljava/lang/String;"), "I")),
-                    BuilderInstruction11x(Opcode.MOVE_RESULT, 2)
+                    BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 2, 3, 0, 0, 0, ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I"))
                 ))
             }.onFailure { e("CPK", it) }
             }.onFailure { e("NTHX", it) }
