@@ -21,6 +21,7 @@ import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction10x
 import com.android.tools.smali.dexlib2.immutable.reference.ImmutableStringReference
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction20t
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction21s
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction31c
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction11n
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction22c
 import com.android.tools.smali.dexlib2.iface.reference.StringReference
@@ -301,9 +302,9 @@ val enablePremiumPatch = bytecodePatch(
             runCatching {
                 val seedI = n2.indices.firstOrNull { runCatching { n2[it].location?.codeAddress }.getOrNull() == 0x1f }
                 if (seedI != null) fm!!.implementation!!.addInstructions(seedI + 1, listOf(
-                    BuilderInstruction21s(Opcode.CONST_WIDE_16, 16, 0),
-                    BuilderInstruction21s(Opcode.CONST_WIDE_16, 17, 0),
-                    BuilderInstruction21s(Opcode.CONST_16, 18, 0)))
+                    BuilderInstruction31c(Opcode.CONST_STRING_JUMBO, 16, ImmutableStringReference("")),
+                    BuilderInstruction31c(Opcode.CONST_STRING_JUMBO, 17, ImmutableStringReference("")),
+                    BuilderInstruction31c(Opcode.CONST_STRING_JUMBO, 18, ImmutableStringReference(""))))
                 runCatching { fm!!.implementation!!.instructions.size }
             }.onFailure { e("S0", it) }
             val n2x = runCatching { fm!!.implementation!!.instructions }.getOrNull() ?: n2
