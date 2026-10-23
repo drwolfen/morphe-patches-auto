@@ -287,7 +287,7 @@ val enablePremiumPatch = bytecodePatch(
             runCatching {
                 java.io.File(tmpDir + "/site.log").appendText("NATH " + tAll.joinToString(",") { i -> i.toString() + ":" + (maxOf(0, i - 12)..i).map { n2[it].opcode.name }.joinToString("|") } + "\n")
             }
-            val e = { tag: String, x: Throwable -> runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + tag + " " + x.message?.take(60) + "\n") } }
+            val e = { tag: String, x: Throwable -> runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + tag + " " + x.toString().take(200) + " @ " + (x.stackTrace.firstOrNull()?.toString() ?: "-") + "\n") } }
             val ti = tAll.firstOrNull { i ->
                 i > 8 && n2[i - 1].opcode.name == "move-result-object" &&
                     n2[i - 8].opcode.name == "check-cast" && (n2[i - 8] as? OneRegisterInstruction)?.registerA == 6
