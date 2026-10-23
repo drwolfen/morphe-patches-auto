@@ -17,6 +17,8 @@ import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.formats.Instruction35c
 import com.android.tools.smali.dexlib2.iface.instruction.OffsetInstruction
 import com.android.tools.smali.dexlib2.builder.BuilderInstruction
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction31t
+import com.android.tools.smali.dexlib2.Opcode
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import com.android.tools.smali.dexlib2.iface.reference.FieldReference
 import com.android.tools.smali.dexlib2.iface.reference.TypeReference
@@ -305,11 +307,12 @@ val enablePremiumPatch = bytecodePatch(
                     // differently-typed fall-through. move-result-object (2u) -> nop (1u)
                     // pays for goto/16 (2u), keeping the code size unchanged.
                     fm!!.replaceInstruction(t - 1, "nop")
-                    // Reuse the success path's own goto to the loop tail; the verifier
-                    // then sees the same merge point it already knows.
-                    val loopGoto = n2.firstOrNull { it.opcode.name == "goto/16" && (it as? OffsetInstruction)?.codeOffset == -151 } as? BuilderInstruction
-                    runCatching { java.io.File(tmpDir + "/site.log").appendText("LG=" + (loopGoto != null) + " offs=" + n2.filter { it.opcode.name == "goto/16" }.map { (it as? OffsetInstruction)?.codeOffset }.take(8).joinToString(",") + "\n") }
-                    if (loopGoto != null) fm!!.replaceInstruction(t, loopGoto) else fm!!.replaceInstruction(t, "nop")
+                    // Jump back to the loop head with a freshly built goto bound to that
+                    // location's label (reusing the existing instruction object rebinds it).
+                    val loopIdx = n2.indexOfFirst { it.opcode.name == "invoke-virtual" && ((it as? ReferenceInstruction)?.reference as? MethodReference)?.let { m -> m.name == "s" && m.definingClass == "Lrpd;" } == true }
+                    val loc = if (loopIdx >= 0) n2[loopIdx].location else null
+                    val lbl = loc?.labels?.firstOrNull() ?: loc?.addNewLabel()
+                    if (lbl != null) fm!!.replaceInstruction(t, BuilderInstruction31t(Opcode.GOTO_16, 0, lbl)) else fm!!.replaceInstruction(t, "nop")
                 } else {
                     // After the constructor these blocks are entered by jumps from the
                     // loop, so the next block's name registers (v7, v8) must stay String
