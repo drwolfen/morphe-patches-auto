@@ -11,6 +11,7 @@ import app.morphe.patcher.extensions.InstructionExtensions.removeInstructions
 import app.morphe.util.returnEarly
 import standardrepo.morphe.compatibility.Compat
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
+import app.morphe.patcher.extensions.InstructionExtensions.replaceInstructions
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.formats.Instruction35c
@@ -302,8 +303,12 @@ val enablePremiumPatch = bytecodePatch(
                     fm!!.replaceInstruction(t - 1, "const-string v8, \"\"")
                     fm!!.replaceInstruction(t, "nop")
                 } else {
-                    // After the constructor: the object is built, so just return it.
-                    fm!!.replaceInstruction(t, "return-object v3")
+                    // After the constructor these blocks are entered by jumps from the
+                    // loop, so the next block's name registers (v7, v8) must stay String
+                    // and the throw must be neutralised. Units are preserved (3 = 2+1).
+                    fm!!.replaceInstruction(t, "nop")
+                    fm!!.replaceInstruction(t - 1, "const-string v8, \"\"")
+                    fm!!.replaceInstructions(t - 2, "const-string v7, \"\"\nnop")
                 }
             }
         } catch (t: Throwable) {
