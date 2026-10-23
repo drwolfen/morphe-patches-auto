@@ -18,6 +18,7 @@ import com.android.tools.smali.dexlib2.iface.instruction.formats.Instruction35c
 import com.android.tools.smali.dexlib2.iface.instruction.OffsetInstruction
 import com.android.tools.smali.dexlib2.builder.BuilderInstruction
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction20t
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction22c
 import com.android.tools.smali.dexlib2.iface.reference.StringReference
 import com.android.tools.smali.dexlib2.Opcode
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
@@ -314,7 +315,7 @@ val enablePremiumPatch = bytecodePatch(
                     val igets = n2.filter { it.opcode.name == "iget-object" }.mapNotNull { (it as? ReferenceInstruction)?.reference as? FieldReference }.take(4).joinToString("|") { it.definingClass + "." + it.name + ":" + it.type }
                     runCatching { java.io.File(tmpDir + "/site.log").appendText("IGS " + bFld + " :: " + n2.count { it.opcode.name == "iget-object" } + " / " + n2.size + " / " + t + " :: " + n2.indexOfFirst { it.opcode.name == "iget-object" } + " :: " + n2.firstOrNull { (it as? ReferenceInstruction)?.reference is FieldReference && ((it as? ReferenceInstruction)?.reference as FieldReference)?.name == "b" }?.let { (it as? ReferenceInstruction)?.reference as FieldReference }?.let { f -> f.definingClass + "." + f.name + ":" + f.type } + "\n") }
                     if (bFld != null) runCatching { java.io.File(tmpDir + "/site.log").appendText("BSM <" + "iget-object v7, v0, " + bFld.definingClass + "." + bFld.name + ":" + bFld.type + ">\n") }
-                    if (bFld != null) runCatching { fm!!.replaceInstruction(t - 9, "iget-object v7, v0, " + bFld.definingClass + "." + bFld.name + ":" + bFld.type) }.onFailure { e("R1", it) }
+                    if (bFld != null) runCatching { fm!!.replaceInstruction(t - 9, BuilderInstruction22c(Opcode.IGET_OBJECT, 7, 0, bFld)) }.onFailure { e("R1", it) }
                     runCatching { fm!!.replaceInstruction(t - 8, "const-string v6, \"\"") }.onFailure { e("R2", it) }
                     runCatching { fm!!.replaceInstruction(t - 1, "const-string v8, \"\"") }.onFailure { e("R3", it) }
                     runCatching { fm!!.replaceInstruction(t, "nop\nnop") }.onFailure { e("R4", it) }
