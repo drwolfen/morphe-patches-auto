@@ -299,7 +299,9 @@ val enablePremiumPatch = bytecodePatch(
                 // one the verifier expects to be a String.
                 val inLoop = t > 8 && n2[t - 8].opcode.name == "check-cast"
                 if (inLoop) {
-                    // Loop: default the value slot and fall through to the next field case.
+                    // Loop: never branch to the throwing blocks (two nops = always fall
+                    // through, same size as if-eqz), default the value slot and continue.
+                    fm!!.replaceInstruction(t - 7, "nop\nnop")
                     fm!!.replaceInstruction(t - 1, "const-string v8, \"\"")
                     fm!!.replaceInstruction(t, "nop")
                 } else {
