@@ -298,6 +298,7 @@ val enablePremiumPatch = bytecodePatch(
                     (n2[i - 2] as? Instruction35c)?.let { it.registerC == 15 && it.registerD == 13 } == true
             }
             for (t in tis.asReversed()) {
+                runCatching { java.io.File(tmpDir + "/site.log").appendText("TK t=" + t + " c2=" + n2[t - 2].opcode.name + " c8=" + (if (t > 8) n2[t - 8].opcode.name else "-") + " regA8=" + (if (t > 8) ((n2[t - 8] as? OneRegisterInstruction)?.registerA?.toString() ?: "-") else "-") + "\n") }
                 // Same-size replacements keep the code size, so the switch payload
                 // offsets (which dexlib does not re-point) stay valid. In the loop the
                 // value slot is v8; after the constructor the name register v7 is the
