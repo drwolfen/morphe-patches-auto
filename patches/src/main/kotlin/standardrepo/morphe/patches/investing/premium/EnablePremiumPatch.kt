@@ -268,6 +268,20 @@ val enablePremiumPatch = bytecodePatch(
         }
         // DEBUG: dump the news fetch failure stack to logcat (System.out shows in logcat).
         val newsRepo = mutableClassDefByOrNull("Lore;")?.methods?.firstOrNull { it.name == "a" && it.parameterTypes.size == 3 }
+        // The news ArticleJsonAdapter throws when a required field is absent; give
+        // 'title' (JSON name HEADLINE, Article field d / ctor arg v8) an empty default
+        // by neutralising that throw.
+        try {
+            val na = mutableClassDefByOrNull("Lcom/fusionmedia/investing/feature/news/pager/articles/data/response/ArticlesResponse_ArticleJsonAdapter;")
+            val fm = na?.methods?.firstOrNull { it.name == "fromJson" }
+            val n2 = fm?.implementation?.instructions?.toList() ?: emptyList()
+            val ti = n2.indices.firstOrNull { i -> n2[i].opcode.name == "throw" && i + 1 < n2.size && n2[i + 1].opcode.name == "invoke-virtual" && (n2[i + 1] as? OneRegisterInstruction)?.registerA == 7 }
+            runCatching { java.io.File(tmpDir + "/site.log").appendText("NA ti=" + ti + "\n") }
+            if (ti != null) fm!!.replaceInstruction(ti, "const-string v8, \"\"")
+        } catch (t: Throwable) {
+            runCatching { java.io.File(tmpDir + "/site.log").appendText("NAERR " + t + "\n") }
+        }
+
         // Dump the news request headers so we can see what the client actually sends.
         try {
             val j67 = mutableClassDefByOrNull("Lj67;")
