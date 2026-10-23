@@ -315,8 +315,6 @@ val enablePremiumPatch = bytecodePatch(
                     // control: drop the call, the move-result and the throw, and restore
                     // v0 (the cases use it as `this`) before falling through.
                     runCatching { fm!!.implementation!!.replaceInstruction(ii, BuilderInstruction22x(Opcode.MOVE_OBJECT_16, 0, 28)) }.onFailure { e("TH" + ii, it) }
-                    runCatching { fm!!.implementation!!.replaceInstruction(ii - 1, nop()) }.onFailure { e("THM" + ii, it) }
-                    runCatching { fm!!.implementation!!.replaceInstructions(ii - 2, listOf(nop(), nop(), nop())) }.onFailure { e("THI" + ii, it) }
                     tn++
                 }
                 runCatching { fm!!.implementation!!.instructions.size }
