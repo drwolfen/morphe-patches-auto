@@ -278,8 +278,8 @@ val enablePremiumPatch = bytecodePatch(
             val n2 = fm?.implementation?.instructions?.toList() ?: emptyList()
             // The title throw is preceded by check-cast of its String value into v6.
             val ti = n2.indices.firstOrNull { i ->
-                i > 2 && n2[i].opcode.name == "throw" && n2[i - 1].opcode.name == "move-result-object" &&
-                    n2[i - 3].opcode.name == "check-cast" && (n2[i - 3] as? OneRegisterInstruction)?.registerA == 6
+                i > 5 && n2[i].opcode.name == "throw" && n2[i - 1].opcode.name == "move-result-object" &&
+                    n2[i - 6].opcode.name == "check-cast" && (n2[i - 6] as? OneRegisterInstruction)?.registerA == 6
             }
             runCatching { java.io.File(tmpDir + "/site.log").appendText("NA ti=" + ti + "\n") }
             if (ti != null) fm!!.replaceInstruction(ti, "const-string v8, \"\"")
