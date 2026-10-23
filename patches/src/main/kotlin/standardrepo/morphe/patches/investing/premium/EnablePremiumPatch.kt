@@ -20,6 +20,8 @@ import com.android.tools.smali.dexlib2.builder.BuilderInstruction
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction10x
 import com.android.tools.smali.dexlib2.immutable.reference.ImmutableStringReference
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction20t
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction21s
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction11n
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction22c
 import com.android.tools.smali.dexlib2.iface.reference.StringReference
 import com.android.tools.smali.dexlib2.iface.instruction.formats.Instruction21t
@@ -296,11 +298,20 @@ val enablePremiumPatch = bytecodePatch(
             }
             fun nop() = BuilderInstruction10x(Opcode.NOP)
             val e = { tag: String, x: Throwable -> runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + tag + " " + x.toString().take(200) + " @ " + (x.stackTrace.firstOrNull()?.toString() ?: "-") + "\n") } }
+            runCatching {
+                val seedI = n2.indices.firstOrNull { runCatching { n2[it].location?.codeAddress }.getOrNull() == 0x1f }
+                if (seedI != null) fm!!.implementation!!.addInstructions(seedI + 1, listOf(
+                    BuilderInstruction21s(Opcode.CONST_WIDE_16, 16, 0),
+                    BuilderInstruction21s(Opcode.CONST_WIDE_16, 17, 0),
+                    BuilderInstruction11n(Opcode.CONST_4, 18, 0)))
+                runCatching { fm!!.implementation!!.instructions.size }
+            }.onFailure { e("S0", it) }
+            val n2x = runCatching { fm!!.implementation!!.instructions }.getOrNull() ?: n2
             fun idxAt(a: Int): Int = fm!!.implementation!!.instructions.indexOfFirst { runCatching { it.location?.codeAddress }.getOrNull() == a }
             runCatching {
                 var tn = 0
-                for (ii in 2 until n2.size) {
-                    if (n2[ii].opcode.name == "throw" && n2[ii - 1].opcode.name == "move-result-object" && n2[ii - 2].opcode.name == "invoke-static") {
+                for (ii in 2 until n2x.size) {
+                    if (n2x[ii].opcode.name == "throw" && n2x[ii - 1].opcode.name == "move-result-object" && n2x[ii - 2].opcode.name == "invoke-static") {
                         runCatching { fm!!.implementation!!.replaceInstruction(ii, nop()) }.onFailure { e("TH" + ii, it) }
                         tn++
                     }
