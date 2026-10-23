@@ -329,7 +329,7 @@ val enablePremiumPatch = bytecodePatch(
                         fm!!.implementation!!.replaceInstruction(prevIf, BuilderInstruction21t(Opcode.IF_EQZ, (n2x[prevIf] as OneRegisterInstruction).registerA, lbl))
                         true
                     }.getOrDefault(false) else false
-                    tn++
+                    if (ok) tn++
                     // The helper (invoke-static) throws by itself, so the throw never gets
                     // control: drop the call, the move-result and the throw, and restore
                     // v0 (the cases use it as `this`) before falling through.
