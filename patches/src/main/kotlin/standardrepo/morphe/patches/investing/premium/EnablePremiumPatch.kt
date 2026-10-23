@@ -315,6 +315,7 @@ val enablePremiumPatch = bytecodePatch(
                 // offsets (which dexlib does not re-point) stay valid. In the loop the
                 // value slot is v8; after the constructor the name register v7 is the
                 // one the verifier expects to be a String.
+                runCatching { java.io.File(tmpDir + "/site.log").appendText("TCHK old=" + tOld + " new=" + t + " " + (t - 2) + ":" + n2.getOrNull(t - 2)?.opcode?.name + "," + (t - 1) + ":" + n2.getOrNull(t - 1)?.opcode?.name + "," + t + ":" + n2.getOrNull(t)?.opcode?.name + "\n") }
                 val inLoop = tOld > 8 && n2[tOld - 8].opcode.name == "check-cast"
                 val beforeSz = n2.size
                 // The first field slot v16 is seeded from the const/4 zero at 0x0a and
