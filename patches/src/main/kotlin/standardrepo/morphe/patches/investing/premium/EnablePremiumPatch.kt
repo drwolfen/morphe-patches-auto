@@ -15,6 +15,8 @@ import app.morphe.patcher.extensions.InstructionExtensions.replaceInstructions
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.formats.Instruction35c
+import com.android.tools.smali.dexlib2.iface.instruction.OffsetInstruction
+import com.android.tools.smali.dexlib2.builder.BuilderInstruction
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import com.android.tools.smali.dexlib2.iface.reference.FieldReference
 import com.android.tools.smali.dexlib2.iface.reference.TypeReference
@@ -303,7 +305,10 @@ val enablePremiumPatch = bytecodePatch(
                     // differently-typed fall-through. move-result-object (2u) -> nop (1u)
                     // pays for goto/16 (2u), keeping the code size unchanged.
                     fm!!.replaceInstruction(t - 1, "nop")
-                    fm!!.replaceInstruction(t, "goto/16 0013")
+                    // Reuse the success path's own goto to the loop tail; the verifier
+                    // then sees the same merge point it already knows.
+                    val loopGoto = n2.firstOrNull { it.opcode.name == "goto/16" && (it as? OffsetInstruction)?.codeOffset == 0x89 } as? BuilderInstruction
+                    if (loopGoto != null) fm!!.replaceInstruction(t, loopGoto) else fm!!.replaceInstruction(t, "nop")
                 } else {
                     // After the constructor these blocks are entered by jumps from the
                     // loop, so the next block's name registers (v7, v8) must stay String
