@@ -304,8 +304,8 @@ val enablePremiumPatch = bytecodePatch(
                     n2[i - 2].opcode.name == "invoke-static" &&
                     (n2[i - 2] as? Instruction35c)?.let { it.registerC == 15 && it.registerD == 13 } == true
             }
-            runCatching { java.io.File(tmpDir + "/site.log").appendText("TIS " + tis.size + " i149=" + (n2.indices.firstOrNull { n2[it].location?.codeAddress == 0x149 }) + "\n") }
-            val i149 = n2.indices.firstOrNull { n2[it].location?.codeAddress == 0x149 }
+            runCatching { java.io.File(tmpDir + "/site.log").appendText("TIS " + tis.size + " i149=" + (n2.indices.firstOrNull { runCatching { n2[it].location?.codeAddress }.getOrNull() == 0x149 }) + "\n") }
+            val i149 = n2.indices.firstOrNull { runCatching { n2[it].location?.codeAddress }.getOrNull() == 0x149 }
             if (i149 != null) runCatching { fm!!.implementation!!.addInstructions(i149, listOf(BuilderInstruction21c(Opcode.CHECK_CAST, 16, ImmutableTypeReference("Ljava/lang/Long;")))) }.onFailure { e("C0", it) }
             for ((tOld, t) in tis.zip(if (i149 != null) tis.map { if (it >= i149) it + 2 else it } else tis).asReversed()) {
                 runCatching { java.io.File(tmpDir + "/site.log").appendText("TK t=" + t + " c2=" + n2[t - 2].opcode.name + " c8=" + (if (t > 8) n2[t - 8].opcode.name else "-") + " regA8=" + (if (t > 8) ((n2[t - 8] as? OneRegisterInstruction)?.registerA?.toString() ?: "-") else "-") + "\n") }
@@ -318,14 +318,14 @@ val enablePremiumPatch = bytecodePatch(
                 // The first field slot v16 is seeded from the const/4 zero at 0x0a and
                 // verifies as Object, which the longValue() call at the exit rejects.
                 // Seed it as a wide zero instead so the slot is Long-typed from the start.
-                val i16 = n2.indices.firstOrNull { n2[it].location?.codeAddress == 0x1f }
+                val i16 = n2.indices.firstOrNull { runCatching { n2[it].location?.codeAddress }.getOrNull() == 0x1f }
                 if (false) runCatching { fm!!.replaceInstruction(i16!!, "const-wide/32 v16, 0") }.onFailure { e("W0", it) }
                 if (inLoop) {
                     // Hop to the shared tail (0x120 -> 0x89 -> 0x13): the tail re-enters
                     // the loop head, which re-igets the adapters, and v7/v8 stay untouched.
                     // Numeric operands are not supported by the inline compiler, so the
                     // target has to be a Label.
-                    val loopIdx = n2.indices.firstOrNull { n2[it].location?.codeAddress == 0x120 } ?: -1
+                    val loopIdx = n2.indices.firstOrNull { runCatching { n2[it].location?.codeAddress }.getOrNull() == 0x120 } ?: -1
                     val lbl = (n2.getOrNull(loopIdx) as? BuilderInstruction)?.location?.labels?.firstOrNull() ?: (if (loopIdx >= 0) fm!!.implementation!!.newLabelForIndex(loopIdx) else null)
                     if (lbl != null) {
                         runCatching { fm!!.implementation!!.replaceInstruction(t - 2, nop) }.onFailure { e("L0c", it) }
