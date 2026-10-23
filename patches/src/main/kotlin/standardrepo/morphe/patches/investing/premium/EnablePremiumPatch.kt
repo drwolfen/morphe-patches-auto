@@ -311,7 +311,10 @@ val enablePremiumPatch = bytecodePatch(
                     fm!!.replaceInstruction(t - 1, "const-string v8, \"\"")
                     fm!!.replaceInstruction(t, "nop")
                 } else {
-                    // leave the post-constructor blocks alone
+                    // After the loop the blocks run again as validation. Their own
+                    // prologue restores v7/v8, so a plain nop keeps the fall-through
+                    // into the next block consistent and costs no space.
+                    fm!!.replaceInstruction(t, "nop")
                 }
             }
         } catch (t: Throwable) {
