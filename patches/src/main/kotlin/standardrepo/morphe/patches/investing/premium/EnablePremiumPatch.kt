@@ -374,7 +374,10 @@ val enablePremiumPatch = bytecodePatch(
                 val plOld = live0.firstOrNull { it.opcode.name == "packed-switch-payload" } as? BuilderPackedSwitchPayload
                 if (swI != null && plOld != null) {
                     val reg = (live0[swI] as BuilderInstruction31t).registerA
-                    val lbls = plOld.switchElements.map { el -> el.getTarget().location.addNewLabel() }
+                    val owner = HashMap<Int, com.android.tools.smali.dexlib2.builder.MethodLocation>()
+                    var curA = 0
+                    for (ins in live0) { val u = ins.codeUnits; for (d in 0 until u) owner[curA + d] = ins.location; curA += u }
+                    val lbls = plOld.switchElements.map { el -> (owner[el.getTarget().codeAddress] ?: el.getTarget().location).addNewLabel() }
                     val sz = runCatching { fm!!.implementation!!.instructions.size }.getOrNull() ?: 0
                     val newPl = BuilderPackedSwitchPayload(plOld.switchElements.first().getKey(), lbls)
                     // Append payload + a trailing nop: a payload that is the very last
