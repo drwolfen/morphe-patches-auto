@@ -278,7 +278,7 @@ val enablePremiumPatch = bytecodePatch(
             val n2 = fm?.implementation?.instructions?.toList() ?: emptyList()
             val tAll = n2.indices.filter { n2[it].opcode.name == "throw" }
             runCatching {
-                java.io.File(tmpDir + "/site.log").appendText("NATH " + tAll.joinToString(",") { i -> i.toString() + ":" + (maxOf(0, i - 6)..i).map { n2[it].opcode.name }.joinToString("|") } + "\n")
+                java.io.File(tmpDir + "/site.log").appendText("NATH " + tAll.joinToString(",") { i -> i.toString() + ":" + (maxOf(0, i - 12)..i).map { n2[it].opcode.name }.joinToString("|") } + "\n")
             }
             val ti = tAll.firstOrNull { i ->
                 i > 5 && n2[i - 1].opcode.name == "move-result-object" &&
