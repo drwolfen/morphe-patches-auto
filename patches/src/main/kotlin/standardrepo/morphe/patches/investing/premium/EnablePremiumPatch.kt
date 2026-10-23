@@ -297,7 +297,7 @@ val enablePremiumPatch = bytecodePatch(
                 java.io.File(tmpDir + "/site.log").appendText("NATH " + tAll.joinToString(",") { i -> i.toString() + ":" + (maxOf(0, i - 12)..i).map { n2[it].opcode.name }.joinToString("|") } + "\n")
             }
             fun nop() = BuilderInstruction10x(Opcode.NOP)
-            val e = { tag: String, x: Throwable -> runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + tag + " " + x.toString().take(200) + " @ " + (x.stackTrace.firstOrNull()?.toString() ?: "-") + "\n") } }
+            val e = { tag: String, x: Throwable -> runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + tag + " " + x.toString().take(200) + " @ " + (x.stackTrace.take(4).joinToString(" | ") { it.toString() }) + "\n") } }
             runCatching {
                 val seedI = n2.indices.firstOrNull { runCatching { n2[it].location?.codeAddress }.getOrNull() == 0x1f }
                 if (seedI != null) fm!!.implementation!!.addInstructions(seedI + 1, listOf(
@@ -325,25 +325,26 @@ val enablePremiumPatch = bytecodePatch(
             // here reads n2 (the live instruction objects) because getInstructions()
             // throws while the payload is stale.
             runCatching {
-                val swI = n2x.indices.firstOrNull { n2x[it].opcode.name == "packed-switch" }
-                if (swI != null) {
-                    // Drop the switch first: with it pointing at a stale payload address,
-                    // fixInstructions() refuses to run. A nop frees the payload check.
-                    runCatching { fm!!.implementation!!.replaceInstruction(swI, nop()) }.onFailure { e("SW1", it) }
-                    runCatching { fm!!.implementation!!.instructions.size }.onFailure { e("FX1", it) }
-                    val n3 = runCatching { fm!!.implementation!!.instructions }.getOrNull()
-                    val plI = n3?.indices?.firstOrNull { n2x.getOrNull(it)?.opcode?.name == "packed-switch-payload" }
-                    val pl = plI?.let { n2x[it] as? BuilderPackedSwitchPayload }
-                    if (n3 != null && plI != null && pl != null) {
-                        val reg = (n2x[swI] as BuilderInstruction31t).registerA
-                        val lbls = pl.switchElements.map { el -> el.getTarget().location.addNewLabel() }
-                        runCatching { fm!!.implementation!!.replaceInstruction(plI, BuilderPackedSwitchPayload(pl.switchElements.first().getKey(), lbls)) }.onFailure { e("SWP", it) }
-                        val newPlLbl = n2x[plI].location.addNewLabel()
-                        runCatching { fm!!.implementation!!.replaceInstruction(swI, BuilderInstruction31t(Opcode.PACKED_SWITCH, reg, newPlLbl)) }.onFailure { e("SW2", it) }
-                        runCatching { fm!!.implementation!!.instructions.size }.onFailure { e("FX2", it) }
-                        runCatching { java.io.File(tmpDir + "/site.log").appendText("SWOK s=" + swI + " p=" + plI + "\n") }
-                    } else runCatching { java.io.File(tmpDir + "/site.log").appendText("PLNONE\n") }
-                }
+                val live0 = runCatching { fm!!.implementation!!.instructions }.getOrNull() ?: n2x
+                val swI = live0.indices.firstOrNull { live0[it].opcode.name == "packed-switch" }
+                val plOld = live0.firstOrNull { it.opcode.name == "packed-switch-payload" } as? BuilderPackedSwitchPayload
+                if (swI != null && plOld != null) {
+                    val reg = (live0[swI] as BuilderInstruction31t).registerA
+                    val lbls = plOld.switchElements.map { el -> el.getTarget().location.addNewLabel() }
+                    val sz = runCatching { fm!!.implementation!!.instructions.size }.getOrNull() ?: 0
+                    val newPl = BuilderPackedSwitchPayload(plOld.switchElements.first().getKey(), lbls)
+                    // Append payload + a trailing nop: a payload that is the very last
+                    // instruction sits at address == size and the switch check fails.
+                    val lastRet = live0.lastOrNull { it.opcode.name == "return-object" }
+                    val retLbl = runCatching { (lastRet as? BuilderInstruction)?.location?.addNewLabel() }.getOrNull()
+                    runCatching { fm!!.implementation!!.addInstructions(sz, listOfNotNull(newPl, nop(), retLbl?.let { BuilderInstruction20t(Opcode.GOTO_16, it) })) }.onFailure { e("SWA", it) }
+                    val plLbl = runCatching { newPl.location.addNewLabel() }.getOrNull()
+                    if (plLbl != null) {
+                        runCatching { fm!!.implementation!!.replaceInstruction(swI, BuilderInstruction31t(Opcode.PACKED_SWITCH, reg, plLbl)) }.onFailure { e("SW2", it) }
+                    } else e("SWNL", Throwable("no payload label"))
+                    runCatching { fm!!.implementation!!.instructions.size }.onFailure { e("FX2", it) }
+                    runCatching { java.io.File(tmpDir + "/site.log").appendText("SWOK s=" + swI + " sz=" + sz + "\n") }
+                } else runCatching { java.io.File(tmpDir + "/site.log").appendText("PLNONE\n") }
             }.onFailure { e("PL", it) }
         } catch (t: Throwable) {
             runCatching { java.io.File(tmpDir + "/site.log").appendText("NAERR " + t + " @ " + (t.stackTrace.firstOrNull()?.toString() ?: "-") + "\n") }
