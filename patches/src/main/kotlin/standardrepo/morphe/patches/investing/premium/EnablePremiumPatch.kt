@@ -320,7 +320,7 @@ val enablePremiumPatch = bytecodePatch(
                     val nmV13 = n2.firstOrNull { it.opcode.name == "const-string" && (it as? OneRegisterInstruction)?.registerA == 13 }?.let { (it as? ReferenceInstruction)?.reference as? StringReference }?.string
                     runCatching { java.io.File(tmpDir + "/site.log").appendText("ELSE t=" + t + " nm=" + nmV15 + "/" + nmV13 + "\n") }
                     if (nmV15 != null && nmV13 != null) {
-                        runCatching { fm!!.replaceInstruction(t - 2, "const-string v8, \"$nmV15\"\nnop") }.onFailure { e("E1", it) }
+                        runCatching { fm!!.replaceInstruction(t - 2, "move-object/from16 v8, v8") }.onFailure { e("E1", it) }
                         runCatching { fm!!.replaceInstruction(t - 1, "const-string v7, \"$nmV13\"") }.onFailure { e("E2", it) }
                         runCatching { fm!!.replaceInstruction(t, "nop") }.onFailure { e("E3", it) }
                     }
