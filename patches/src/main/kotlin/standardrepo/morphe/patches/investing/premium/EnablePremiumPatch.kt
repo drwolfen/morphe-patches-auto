@@ -276,11 +276,10 @@ val enablePremiumPatch = bytecodePatch(
             val na = mutableClassDefByOrNull("Lcom/fusionmedia/investing/feature/news/pager/articles/data/response/ArticlesResponse_ArticleJsonAdapter;")
             val fm = na?.methods?.firstOrNull { it.name == "fromJson" }
             val n2 = fm?.implementation?.instructions?.toList() ?: emptyList()
-            // The title throw is the one whose preceding JsonDataException call got (title, HEADLINE, reader).
+            // The title throw is preceded by check-cast of its String value into v6.
             val ti = n2.indices.firstOrNull { i ->
-                i > 1 && n2[i].opcode.name == "throw" &&
-                    n2[i - 2].opcode.name == "invoke-static" &&
-                    (n2[i - 2] as? Instruction35c)?.let { it.registerC == 15 && it.registerD == 13 } == true
+                i > 2 && n2[i].opcode.name == "throw" && n2[i - 1].opcode.name == "move-result-object" &&
+                    n2[i - 3].opcode.name == "check-cast" && (n2[i - 3] as? OneRegisterInstruction)?.registerA == 6
             }
             runCatching { java.io.File(tmpDir + "/site.log").appendText("NA ti=" + ti + "\n") }
             if (ti != null) fm!!.replaceInstruction(ti, "const-string v8, \"\"")
