@@ -296,7 +296,8 @@ val enablePremiumPatch = bytecodePatch(
         // by neutralising that throw.
         try {
             val na = mutableClassDefByOrNull("Lcom/fusionmedia/investing/feature/news/pager/articles/data/response/ArticlesResponse_ArticleJsonAdapter;")
-            val fm = na?.methods?.firstOrNull { it.name == "fromJson" }
+            for (fm0 in na?.methods?.filter { it.name == "fromJson" } ?: emptyList()) {
+                val fm = fm0
             val n2 = fm?.implementation?.instructions?.toList() ?: emptyList()
             val tAll = n2.indices.filter { n2[it].opcode.name == "throw" }
             runCatching {
@@ -359,6 +360,7 @@ val enablePremiumPatch = bytecodePatch(
                     runCatching { java.io.File(tmpDir + "/site.log").appendText("SWOK s=" + swI + " sz=" + sz + "\n") }
                 } else runCatching { java.io.File(tmpDir + "/site.log").appendText("PLNONE\n") }
             }.onFailure { e("PL", it) }
+            }
         } catch (t: Throwable) {
             runCatching { java.io.File(tmpDir + "/site.log").appendText("NAERR " + t + " @ " + (t.stackTrace.firstOrNull()?.toString() ?: "-") + "\n") }
         }
