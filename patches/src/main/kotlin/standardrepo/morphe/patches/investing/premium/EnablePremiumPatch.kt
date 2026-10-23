@@ -20,6 +20,8 @@ import com.android.tools.smali.dexlib2.builder.BuilderInstruction
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction20t
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction22c
 import com.android.tools.smali.dexlib2.iface.reference.StringReference
+import com.android.tools.smali.dexlib2.immutable.reference.ImmutableTypeReference
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction21c
 import com.android.tools.smali.dexlib2.Opcode
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import com.android.tools.smali.dexlib2.iface.reference.FieldReference
@@ -320,6 +322,12 @@ val enablePremiumPatch = bytecodePatch(
                     val loopIdx = n2.indices.firstOrNull { n2[it].location?.codeAddress == 0x120 } ?: -1
                     val lbl = (n2.getOrNull(loopIdx) as? BuilderInstruction)?.location?.labels?.firstOrNull() ?: (if (loopIdx >= 0) fm!!.implementation!!.newLabelForIndex(loopIdx) else null)
                     if (lbl != null) {
+                        // The exit block unboxes v16 as Long; if the id case has not run
+                        // yet the slot is still the initial zero, so cast it first — a
+                        // check-cast from Object/Zero to Long is always verifier-safe.
+                        val i149 = n2.indices.firstOrNull { n2[it].location?.codeAddress == 0x149 }
+                        if (i149 != null) runCatching { fm!!.implementation!!.addInstructions(i149, listOf(BuilderInstruction21c(Opcode.CHECK_CAST, 16, ImmutableTypeReference("Ljava/lang/Long;")))) }.onFailure { e("C0", it) }
+                        runCatching { fm!!.replaceInstruction(t - 2, "nop") }.onFailure { e("L0c", it) }
                         runCatching { fm!!.replaceInstruction(t - 1, "nop") }.onFailure { e("L0", it) }
                         runCatching { fm!!.implementation!!.replaceInstruction(t, BuilderInstruction20t(Opcode.GOTO_16, lbl)) }.onFailure { e("L1", it) }
                     }
