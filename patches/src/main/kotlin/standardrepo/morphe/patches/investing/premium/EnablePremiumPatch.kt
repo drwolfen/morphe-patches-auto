@@ -303,6 +303,7 @@ val enablePremiumPatch = bytecodePatch(
                 // value slot is v8; after the constructor the name register v7 is the
                 // one the verifier expects to be a String.
                 val inLoop = t > 8 && n2[t - 8].opcode.name == "check-cast"
+                val beforeSz = n2.size
                 if (inLoop) {
                     // Never take the branch (v6 is always set), and keep the block itself
                     // consistent so its dead fall-through merges cleanly: the next block's
@@ -317,11 +318,13 @@ val enablePremiumPatch = bytecodePatch(
                     // carry those same constant types, not the reader's adapters.
                     val nmV15 = n2.firstOrNull { it.opcode.name == "const-string" && (it as? OneRegisterInstruction)?.registerA == 15 }?.let { (it as? ReferenceInstruction)?.reference as? StringReference }?.string
                     val nmV13 = n2.firstOrNull { it.opcode.name == "const-string" && (it as? OneRegisterInstruction)?.registerA == 13 }?.let { (it as? ReferenceInstruction)?.reference as? StringReference }?.string
+                    runCatching { java.io.File(tmpDir + "/site.log").appendText("ELSE t=" + t + " n2=" + n2[t - 2].opcode.name + "," + n2[t - 1].opcode.name + "," + n2[t].opcode.name + "\n") }
                     if (nmV15 != null && nmV13 != null) {
                         fm!!.replaceInstruction(t - 2, "const-string/jumbo v8, \"$nmV15\"")
                         fm!!.replaceInstruction(t - 1, "const-string v7, \"$nmV13\"")
                         fm!!.replaceInstruction(t, "nop")
                     }
+                    runCatching { java.io.File(tmpDir + "/site.log").appendText("SZ " + n2.size + "\n") }
                 }
             }
         } catch (t: Throwable) {
