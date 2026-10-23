@@ -18,6 +18,7 @@ import com.android.tools.smali.dexlib2.iface.instruction.formats.Instruction35c
 import com.android.tools.smali.dexlib2.iface.instruction.OffsetInstruction
 import com.android.tools.smali.dexlib2.builder.BuilderInstruction
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction20t
+import com.android.tools.smali.dexlib2.iface.reference.StringReference
 import com.android.tools.smali.dexlib2.Opcode
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import com.android.tools.smali.dexlib2.iface.reference.FieldReference
@@ -311,10 +312,16 @@ val enablePremiumPatch = bytecodePatch(
                     fm!!.replaceInstruction(t - 1, "const-string v8, \"\"")
                     fm!!.replaceInstruction(t, "nop")
                 } else {
-                    // After the loop the blocks run again as validation. Their own
-                    // prologue restores v7/v8, so a plain nop keeps the fall-through
-                    // into the next block consistent and costs no space.
-                    fm!!.replaceInstruction(t, "nop")
+                    // After the loop the blocks run again as validation. The next block
+                    // consumes v8/v7 as its name strings, so the fall-through has to
+                    // carry those same constant types, not the reader's adapters.
+                    val nmV15 = n2.firstOrNull { it.opcode.name == "const-string" && (it as? OneRegisterInstruction)?.registerA == 15 }?.let { (it as? ReferenceInstruction)?.reference as? StringReference }?.string
+                    val nmV13 = n2.firstOrNull { it.opcode.name == "const-string" && (it as? OneRegisterInstruction)?.registerA == 13 }?.let { (it as? ReferenceInstruction)?.reference as? StringReference }?.string
+                    if (nmV15 != null && nmV13 != null) {
+                        fm!!.replaceInstruction(t - 2, "const-string v8, \"$nmV15\"\nnop")
+                        fm!!.replaceInstruction(t - 1, "const-string v7, \"$nmV13\"")
+                        fm!!.replaceInstruction(t, "nop")
+                    }
                 }
             }
         } catch (t: Throwable) {
