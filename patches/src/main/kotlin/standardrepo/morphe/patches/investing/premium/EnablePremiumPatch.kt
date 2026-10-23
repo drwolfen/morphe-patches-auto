@@ -317,19 +317,11 @@ val enablePremiumPatch = bytecodePatch(
                     // the remaining registers and re-enters the loop head, which re-igets
                     // the adapters. v7/v8 stay untouched, so no merge conflict arises,
                     // and a plain 1-unit goto keeps the code size identical.
-                    runCatching { fm!!.replaceInstruction(t, "goto 0120") }.onFailure { e("L0", it) }
+                    runCatching { fm!!.replaceInstruction(t, "goto 0x120") }.onFailure { e("L0", it) }
                 } else {
-                    // After the loop the blocks run again as validation. The next block
-                    // consumes v8/v7 as its name strings, so the fall-through has to
-                    // carry those same constant types, not the reader's adapters.
-                    val nmV15 = n2.firstOrNull { it.opcode.name == "const-string" && (it as? OneRegisterInstruction)?.registerA == 7 }?.let { (it as? ReferenceInstruction)?.reference as? StringReference }?.string
-                    val nmV13 = n2.firstOrNull { it.opcode.name == "const-string" && (it as? OneRegisterInstruction)?.registerA == 8 }?.let { (it as? ReferenceInstruction)?.reference as? StringReference }?.string
-                    runCatching { java.io.File(tmpDir + "/site.log").appendText("ELSE t=" + t + " nm=" + nmV15 + "/" + nmV13 + "\n") }
-                    if (nmV15 != null && nmV13 != null) {
-                        runCatching { fm!!.replaceInstruction(t - 2, "const-string/jumbo v8, \"$nmV15\"") }.onFailure { e("E1", it) }
-                        runCatching { fm!!.replaceInstruction(t - 1, "const-string v7, \"$nmV13\"") }.onFailure { e("E2", it) }
-                        runCatching { fm!!.replaceInstruction(t, "nop") }.onFailure { e("E3", it) }
-                    }
+                    // Every validation block is neutralised: its own throw becomes a
+                    // plain nop so the chain falls through to the constructor.
+                    runCatching { fm!!.replaceInstruction(t, "nop") }.onFailure { e("E3", it) }
                 }
             }
         } catch (t: Throwable) {
