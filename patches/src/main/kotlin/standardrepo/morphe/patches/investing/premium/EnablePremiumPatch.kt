@@ -306,7 +306,7 @@ val enablePremiumPatch = bytecodePatch(
                     // Never take the branch (v6 is always set), and keep the block itself
                     // consistent so its dead fall-through merges cleanly: the next block's
                     // name registers v7/v8 must be Strings on every path.
-                    fm!!.replaceInstruction(t - 9, "const-string v7, \"\"")
+                    fm!!.replaceInstruction(t - 9, "iget-object v7, v0, Lcom/fusionmedia/investing/feature/news/pager/articles/data/response/ArticlesResponse_ArticleJsonAdapter;.b:Lend;")
                     fm!!.replaceInstruction(t - 8, "const-string v6, \"\"")
                     fm!!.replaceInstruction(t - 1, "const-string v8, \"\"")
                     fm!!.replaceInstruction(t, "nop")
