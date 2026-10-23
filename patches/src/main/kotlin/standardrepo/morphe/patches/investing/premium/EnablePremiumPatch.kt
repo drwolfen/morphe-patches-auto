@@ -299,16 +299,8 @@ val enablePremiumPatch = bytecodePatch(
             }
             fun nop() = BuilderInstruction10x(Opcode.NOP)
             val e = { tag: String, x: Throwable -> runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + tag + " " + x.toString().take(200) + " @ " + (x.stackTrace.take(4).joinToString(" | ") { it.toString() }) + "\n") } }
-            runCatching {
-                val seedI = n2.indices.firstOrNull { runCatching { n2[it].location?.codeAddress }.getOrNull() == 0x1f }
-                if (seedI != null) fm!!.implementation!!.addInstructions(seedI + 1, listOf(
-                    BuilderInstruction31c(Opcode.CONST_STRING_JUMBO, 16, ImmutableStringReference("")),
-                    BuilderInstruction31c(Opcode.CONST_STRING_JUMBO, 17, ImmutableStringReference("")),
-                    BuilderInstruction31c(Opcode.CONST_STRING_JUMBO, 18, ImmutableStringReference(""))))
-                runCatching { fm!!.implementation!!.instructions.size }
-            }.onFailure { e("S0", it) }
-            val n2x = runCatching { fm!!.implementation!!.instructions }.getOrNull() ?: n2
             fun idxAt(a: Int): Int = fm!!.implementation!!.instructions.indexOfFirst { runCatching { it.location?.codeAddress }.getOrNull() == a }
+            val n2x = runCatching { fm!!.implementation!!.instructions }.getOrNull() ?: n2
             runCatching {
                 var tn = 0
                 for (ii in 2 until n2x.size) {
