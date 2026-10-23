@@ -17,7 +17,7 @@ import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.formats.Instruction35c
 import com.android.tools.smali.dexlib2.iface.instruction.OffsetInstruction
 import com.android.tools.smali.dexlib2.builder.BuilderInstruction
-import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction30t
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction20t
 import com.android.tools.smali.dexlib2.Opcode
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import com.android.tools.smali.dexlib2.iface.reference.FieldReference
@@ -313,7 +313,7 @@ val enablePremiumPatch = bytecodePatch(
                     val loc = if (loopIdx >= 0) n2[loopIdx].location else null
                     val lbl = loc?.labels?.firstOrNull() ?: loc?.addNewLabel()
                     runCatching { java.io.File(tmpDir + "/site.log").appendText("LI=" + loopIdx + " L=" + (lbl != null) + "\n") }
-                    if (lbl != null) runCatching { fm!!.replaceInstruction(t, BuilderInstruction30t(Opcode.GOTO_16, lbl)) }.onFailure { java.io.File(tmpDir + "/site.log").appendText("GOERR " + it + "\n") } else fm!!.replaceInstruction(t, "nop")
+                    if (lbl != null) runCatching { fm!!.replaceInstruction(t, BuilderInstruction20t(Opcode.GOTO_16, lbl)) }.onFailure { java.io.File(tmpDir + "/site.log").appendText("GOERR " + it + "\n") } else fm!!.replaceInstruction(t, "nop")
                 } else {
                     // After the constructor these blocks are entered by jumps from the
                     // loop, so the next block's name registers (v7, v8) must stay String
