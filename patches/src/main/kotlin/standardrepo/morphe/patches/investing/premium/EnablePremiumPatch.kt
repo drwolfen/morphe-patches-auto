@@ -315,7 +315,7 @@ val enablePremiumPatch = bytecodePatch(
                     val loopIdx = n2.indexOfFirst { it.opcode.name == "goto" && (it as? OffsetInstruction)?.codeOffset == -118 }
                     val loc = if (loopIdx >= 0) n2[loopIdx].location else null
                     val lbl = loc?.labels?.firstOrNull() ?: loc?.addNewLabel()
-                    runCatching { java.io.File(tmpDir + "/site.log").appendText("LI=" + loopIdx + " L=" + (lbl != null) + "\n") }
+                    runCatching { java.io.File(tmpDir + "/site.log").appendText("LI=" + loopIdx + " L=" + (lbl != null) + " gos=" + n2.indices.filter { n2[it].opcode.name.startsWith("goto") }.map { it.toString() + ":" + (n2[it] as? OffsetInstruction)?.codeOffset + ":" + n2[it].location?.codeAddress }.take(12).joinToString(",") + "\n") }
                     if (lbl != null) runCatching { fm!!.replaceInstruction(t, BuilderInstruction20t(Opcode.GOTO_16, lbl)) }.onFailure { java.io.File(tmpDir + "/site.log").appendText("GOERR " + it + "\n") } else fm!!.replaceInstruction(t, "nop")
                 } else {
                     // After the constructor these blocks are entered by jumps from the
