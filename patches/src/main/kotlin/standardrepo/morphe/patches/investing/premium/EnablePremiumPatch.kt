@@ -359,13 +359,11 @@ val enablePremiumPatch = bytecodePatch(
                     val dflt = n2[swI - 1].location.codeAddress
                     val editsAddr = loopAddr + listOf(0x149)
                     runCatching { java.io.File(tmpDir + "/site.log").appendText("PLQ plA=" + runCatching { n2[plI].location.codeAddress }.getOrNull() + " swA=" + runCatching { n2[swI].location.codeAddress }.getOrNull() + " off=" + pl.switchElements.map { it.getOffset() }.joinToString(",") + "\n") }
-                        val labels = pl.switchElements.map { it.getTarget() }
-                    val newPl = BuilderPackedSwitchPayload(pl.switchElements.first().getKey(), labels)
-                    fm!!.implementation!!.addInstruction(swI + 1, newPl)
-                    val newPlLbl = fm!!.implementation!!.newLabelForIndex(swI + 1)
+                        val newPlLbl = n2[plI].location.addNewLabel()
                     runCatching { java.io.File(tmpDir + "/site.log").appendText("PLOK plI=" + plI + "\n") }
                     val reg = sw.registerA
-                    fm!!.implementation!!.replaceInstruction(swI, BuilderInstruction31t(Opcode.PACKED_SWITCH, reg, newPlLbl))
+                    runCatching { fm!!.implementation!!.replaceInstruction(swI, BuilderInstruction31t(Opcode.PACKED_SWITCH, reg, newPlLbl)) }.onFailure { e("PLR", it) }
+                    runCatching { fm!!.implementation!!.instructions.size }.onFailure { e("PLF", it) }
                 } else runCatching { java.io.File(tmpDir + "/site.log").appendText("PLNONE\n") }
             }.onFailure { e("PL", it) }
         } catch (t: Throwable) {
