@@ -318,7 +318,7 @@ val enablePremiumPatch = bytecodePatch(
                     val nmV15 = n2.firstOrNull { it.opcode.name == "const-string" && (it as? OneRegisterInstruction)?.registerA == 15 }?.let { (it as? ReferenceInstruction)?.reference as? StringReference }?.string
                     val nmV13 = n2.firstOrNull { it.opcode.name == "const-string" && (it as? OneRegisterInstruction)?.registerA == 13 }?.let { (it as? ReferenceInstruction)?.reference as? StringReference }?.string
                     if (nmV15 != null && nmV13 != null) {
-                        fm!!.replaceInstruction(t - 2, "const-string v8, \"$nmV15\"\nnop")
+                        fm!!.replaceInstruction(t - 2, "const-string/jumbo v8, \"$nmV15\"")
                         fm!!.replaceInstruction(t - 1, "const-string v7, \"$nmV13\"")
                         fm!!.replaceInstruction(t, "nop")
                     }
