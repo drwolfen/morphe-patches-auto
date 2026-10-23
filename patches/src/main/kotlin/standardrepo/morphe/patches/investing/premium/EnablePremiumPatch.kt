@@ -307,7 +307,7 @@ val enablePremiumPatch = bytecodePatch(
                     fm!!.replaceInstruction(t - 1, "nop")
                     // Reuse the success path's own goto to the loop tail; the verifier
                     // then sees the same merge point it already knows.
-                    val loopGoto = n2.firstOrNull { it.opcode.name == "goto/16" && (it as? OffsetInstruction)?.codeOffset == 0x89 } as? BuilderInstruction
+                    val loopGoto = n2.firstOrNull { it.opcode.name == "goto/16" && (it as? OffsetInstruction)?.codeOffset == -151 } as? BuilderInstruction
                     runCatching { java.io.File(tmpDir + "/site.log").appendText("LG=" + (loopGoto != null) + " offs=" + n2.filter { it.opcode.name == "goto/16" }.map { (it as? OffsetInstruction)?.codeOffset }.take(8).joinToString(",") + "\n") }
                     if (loopGoto != null) fm!!.replaceInstruction(t, loopGoto) else fm!!.replaceInstruction(t, "nop")
                 } else {
