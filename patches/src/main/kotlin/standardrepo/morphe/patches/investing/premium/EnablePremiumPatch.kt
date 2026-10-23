@@ -326,20 +326,19 @@ val enablePremiumPatch = bytecodePatch(
                     } else null
                     val off = if (prevIf != null) (n2x[prevIf] as? OffsetInstruction)?.codeOffset else null
                     var offNow = -999
-                    val ok = if (prevIf != null) runCatching {
+                    var ok = false
+                    if (prevIf != null) runCatching {
                         val lbl = n2x[ii + 1].location.addNewLabel()
                         fm!!.implementation!!.replaceInstruction(prevIf, BuilderInstruction21t(Opcode.IF_EQZ, (n2x[prevIf] as OneRegisterInstruction).registerA, lbl))
                         offNow = (fm!!.implementation!!.instructions[prevIf] as? OffsetInstruction)?.codeOffset ?: -888
                         java.io.File(tmpDir + "/site.log").appendText("FLP " + prevIf + " off=" + off + " now=" + offNow + "\n")
-                        true
-                    }.getOrDefault(false) else false
+                        ok = true
+                    }.onFailure { e("FI" + ii, it) }
                     if (ok) tn++
                     // The helper (invoke-static) throws by itself, so the throw never gets
                     // control: drop the call, the move-result and the throw, and restore
                     // v0 (the cases use it as `this`) before falling through.
-                    tn++
                 }
-                runCatching { fm!!.implementation!!.instructions.size }
                 runCatching { java.io.File(tmpDir + "/site.log").appendText("NTH n=" + tn + "\n") }
                 runCatching { fm!!.implementation!!.addInstructions(0, listOf(
                     BuilderInstruction21c(Opcode.CONST_STRING, 0, ImmutableStringReference("CPIT")),
