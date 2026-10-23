@@ -318,12 +318,7 @@ val enablePremiumPatch = bytecodePatch(
                     // Re-point the null test from the throw block to the instruction after it:
                     // both null and non-null then reach the normal path and the throw block
                     // stays as dead code, so register/merge state is unchanged.
-                    val prevIf = (0 until ii).lastOrNull { j ->
-                        n2x[j].opcode.name == "if-eqz" && runCatching {
-                            val a = n2x[j].location?.codeAddress; val o = (n2x[j] as OffsetInstruction).codeOffset
-                            a != null && a + o == n2x[ii].location?.codeAddress
-                        }.getOrDefault(false)
-                    }
+                    val prevIf = (0 until ii).lastOrNull { n2x[it].opcode.name == "if-eqz" }
                     val off = if (prevIf != null) (n2x[prevIf] as? OffsetInstruction)?.codeOffset else null
                     var offNow = -1
                     var ok = false
