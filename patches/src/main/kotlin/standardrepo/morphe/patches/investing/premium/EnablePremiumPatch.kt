@@ -317,7 +317,8 @@ val enablePremiumPatch = bytecodePatch(
                     // the remaining registers and re-enters the loop head, which re-igets
                     // the adapters. v7/v8 stay untouched, so no merge conflict arises,
                     // and a plain 1-unit goto keeps the code size identical.
-                    runCatching { fm!!.replaceInstruction(t, "goto 0x120") }.onFailure { e("L0", it) }
+                    runCatching { fm!!.replaceInstruction(t - 1, "nop") }.onFailure { e("L0", it) }
+                    runCatching { fm!!.replaceInstruction(t, "goto/16 0x120") }.onFailure { e("L1", it) }
                 } else {
                     // Every validation block is neutralised: its own throw becomes a
                     // plain nop so the chain falls through to the constructor.
