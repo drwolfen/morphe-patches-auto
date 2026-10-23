@@ -28,6 +28,7 @@ import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction11n
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction22c
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction22x
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction35c
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction3rc
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction32x
 import com.android.tools.smali.dexlib2.iface.reference.StringReference
 import com.android.tools.smali.dexlib2.immutable.reference.ImmutableMethodReference
@@ -346,10 +347,10 @@ val enablePremiumPatch = bytecodePatch(
                 val bi = l0.indexOfFirst { (it as? ReferenceInstruction)?.reference?.let { r -> r is MethodReference && r.name == "b0" } == true }
                 val kr = (l0[bi + 1] as OneRegisterInstruction).registerA
                 fm!!.implementation!!.addInstructions(bi + 2, listOf(
-                    BuilderInstruction35c(Opcode.INVOKE_STATIC, 1, kr, 0, 0, 0, 0, ImmutableMethodReference("Ljava/lang/String;", "valueOf", listOf("I"), "Ljava/lang/String;")),
+                    BuilderInstruction3rc(Opcode.INVOKE_STATIC_RANGE, kr, 1, ImmutableMethodReference("Ljava/lang/String;", "valueOf", listOf("I"), "Ljava/lang/String;")),
                     BuilderInstruction11x(Opcode.MOVE_RESULT_OBJECT, 27),
-                    BuilderInstruction21c(Opcode.CONST_STRING, 3, ImmutableStringReference("CPK:")),
-                    BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 3, 27, 0, 0, 0, ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I"))
+                    BuilderInstruction21c(Opcode.CONST_STRING, 26, ImmutableStringReference("CPK:")),
+                    BuilderInstruction3rc(Opcode.INVOKE_STATIC_RANGE, 26, 2, ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I"))
                 ))
             }.onFailure { e("CPK", it) }
             }.onFailure { e("NTHX", it) }
