@@ -318,11 +318,23 @@ val enablePremiumPatch = bytecodePatch(
                     // Re-point the null test from the throw block to the instruction after it:
                     // both null and non-null then reach the normal path and the throw block
                     // stays as dead code, so register/merge state is unchanged.
-                    val prevIf = if (ii > 3 && n2x[ii - 3].opcode.name == "if-eqz") ii - 3 else null
+                    val prevIf = (0 until ii).lastOrNull { j ->
+                        n2x[j].opcode.name == "if-eqz" && runCatching {
+                            val a = n2x[j].location?.codeAddress; val o = (n2x[j] as OffsetInstruction).codeOffset
+                            a != null && a + o == n2x[ii].location?.codeAddress
+                        }.getOrDefault(false)
+                    }
                     val off = if (prevIf != null) (n2x[prevIf] as? OffsetInstruction)?.codeOffset else null
                     var offNow = -1
                     var ok = false
-                    runCatching { java.io.File(tmpDir + "/site.log").appendText("THX " + ii + " p=" + prevIf + " n3=" + n2x.getOrNull(maxOf(0, ii - 3))?.opcode?.name + "\n") }
+                    runCatching {
+                        val taddr = n2x[ii].location?.codeAddress
+                        val cands = (0 until ii).filter { n2x[it].opcode.name == "if-eqz" }.mapNotNull { it ->
+                            val a = n2x[it].location?.codeAddress; val o = (n2x[it] as? OffsetInstruction)?.codeOffset
+                            if (a != null && o != null) "$it:$a+$o" else null
+                        }.takeLast(3)
+                        java.io.File(tmpDir + "/site.log").appendText("THX " + ii + " addr=" + taddr + " c=" + cands.joinToString(",") + "\n")
+                    }
                     if (prevIf != null) runCatching {
                         val lbl = n2x[ii + 1].location.addNewLabel()
                         fm!!.implementation!!.replaceInstruction(prevIf, BuilderInstruction21t(Opcode.IF_EQZ, (n2x[prevIf] as OneRegisterInstruction).registerA, lbl))
