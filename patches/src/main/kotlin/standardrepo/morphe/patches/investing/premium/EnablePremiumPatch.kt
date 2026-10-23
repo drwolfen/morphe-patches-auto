@@ -303,20 +303,13 @@ val enablePremiumPatch = bytecodePatch(
                 // one the verifier expects to be a String.
                 val inLoop = t > 8 && n2[t - 8].opcode.name == "check-cast"
                 if (inLoop) {
-                    // Jump straight back to the loop head so nothing merges with a
-                    // differently-typed fall-through. move-result-object (2u) -> nop (1u)
-                    // pays for goto/16 (2u), keeping the code size unchanged.
-                    fm!!.replaceInstruction(t - 1, "nop")
-                    // Jump back to the loop head with a freshly built goto bound to that
-                    // location's label (reusing the existing instruction object rebinds it).
-                    // Target the same merge point the normal success path uses (the
-                    // one-unit goto at 0x89 that hops to the loop head), not the head
-                    // itself, so the verifier sees identical incoming types.
-                    val loopIdx = n2.indices.firstOrNull { n2[it].location?.codeAddress == 0x89 } ?: -1
-                    val loc = if (loopIdx >= 0) n2[loopIdx].location else null
-                    val lbl = loc?.labels?.firstOrNull() ?: loc?.addNewLabel()
-                    runCatching { java.io.File(tmpDir + "/site.log").appendText("LI=" + loopIdx + " L=" + (lbl != null) + " gos=" + n2.indices.filter { n2[it].opcode.name.startsWith("goto") }.map { it.toString() + ":" + (n2[it] as? OffsetInstruction)?.codeOffset + ":" + n2[it].location?.codeAddress }.take(12).joinToString(",") + "\n") }
-                    if (lbl != null) runCatching { fm!!.replaceInstruction(t, BuilderInstruction20t(Opcode.GOTO_16, lbl)) }.onFailure { java.io.File(tmpDir + "/site.log").appendText("GOERR " + it + "\n") } else fm!!.replaceInstruction(t, "nop")
+                    // Never take the branch (v6 is always set), and keep the block itself
+                    // consistent so its dead fall-through merges cleanly: the next block's
+                    // name registers v7/v8 must be Strings on every path.
+                    fm!!.replaceInstruction(t - 9, "const-string v7, \"\"")
+                    fm!!.replaceInstruction(t - 8, "const-string v6, \"\"")
+                    fm!!.replaceInstruction(t - 1, "const-string v8, \"\"")
+                    fm!!.replaceInstruction(t, "nop")
                 } else {
                     // leave the post-constructor blocks alone
                 }
