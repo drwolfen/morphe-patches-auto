@@ -307,6 +307,11 @@ val enablePremiumPatch = bytecodePatch(
                 // one the verifier expects to be a String.
                 val inLoop = t > 8 && n2[t - 8].opcode.name == "check-cast"
                 val beforeSz = n2.size
+                // The first field slot v16 is seeded from the const/4 zero at 0x0a and
+                // verifies as Object, which the longValue() call at the exit rejects.
+                // Seed it as a wide zero instead so the slot is Long-typed from the start.
+                val i16 = n2.indices.firstOrNull { n2[it].location?.codeAddress == 0x1f }
+                if (i16 != null) runCatching { fm!!.replaceInstruction(i16, "const-wide/32 v16, 0") }.onFailure { e("W0", it) }
                 if (inLoop) {
                     // Drop the move-result and jump back to the loop head: that path
                     // re-igets the adapters (0x4b/0x53/0x57) and re-reads the name, so
