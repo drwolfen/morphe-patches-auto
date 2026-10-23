@@ -296,54 +296,18 @@ val enablePremiumPatch = bytecodePatch(
             }
             fun nop() = BuilderInstruction10x(Opcode.NOP)
             val e = { tag: String, x: Throwable -> runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + tag + " " + x.toString().take(200) + " @ " + (x.stackTrace.firstOrNull()?.toString() ?: "-") + "\n") } }
-            val ti = tAll.firstOrNull { i ->
-                i > 8 && n2[i - 1].opcode.name == "move-result-object" &&
-                    n2[i - 8].opcode.name == "check-cast" && (n2[i - 8] as? OneRegisterInstruction)?.registerA == 6
-            }
-            runCatching { java.io.File(tmpDir + "/site.log").appendText("NA ti=" + ti + "\n") }
-            // There are two validation rounds (l then f), each throwing for title.
-            val loopIdx = 13
-            val loopIdx120 = n2.indices.firstOrNull { runCatching { n2[it].location?.codeAddress }.getOrNull() == 0x120 }
-            val tis = n2.indices.filter { i ->
-                i > 8 && n2[i].opcode.name == "throw" && n2[i - 1].opcode.name == "move-result-object" &&
-                    n2[i - 2].opcode.name == "invoke-static" &&
-                    (n2[i - 2] as? Instruction35c)?.let { i2 -> (i2.registerC == 99 && i2.registerD == 13) || (i2.registerC == 98 && i2.registerD == 7) } == true
-            }
-            val exitIdx = n2.indices.firstOrNull { i ->
-                n2[i].opcode.name == "if-eqz" && (n2[i] as? Instruction21t)?.let { it.registerA == 16 && (n2[i] as? OffsetInstruction)?.codeOffset == 0x4a } == true
-            }
             fun idxAt(a: Int): Int = fm!!.implementation!!.instructions.indexOfFirst { runCatching { it.location?.codeAddress }.getOrNull() == a }
-            fun addrOf(i: Int): Int? = runCatching { n2[i].location?.codeAddress }.getOrNull()
-            runCatching { java.io.File(tmpDir + "/site.log").appendText("TIS " + tis.size + " exitIdx=" + exitIdx + "\n") }
-            if (exitIdx != null) runCatching {
-                fm!!.implementation!!.addInstructions(exitIdx, listOf(
-                    BuilderInstruction21c(Opcode.CHECK_CAST, 16, ImmutableTypeReference("Ljava/lang/Long;")),
-                    BuilderInstruction21c(Opcode.CHECK_CAST, 17, ImmutableTypeReference("Ljava/lang/Long;")),
-                    BuilderInstruction21c(Opcode.CHECK_CAST, 18, ImmutableTypeReference("Ljava/lang/Integer;")),
-                ))
-            }.onFailure { e("C0", it) }
-            val loopAddr = mutableListOf<Int>()
-            val tis2 = if (exitIdx != null) tis.map { if (it >= exitIdx) it + 3 else it } else tis
-            for ((tOld, t) in tis.zip(tis2).asReversed()) {
-                val inLoop = tOld > 8 && n2[tOld - 8].opcode.name == "check-cast"
-                if (inLoop) {
-                    val a8 = addrOf(tOld - 8); if (a8 != null) loopAddr.add(a8!!); val a2 = addrOf(tOld - 2); val a1 = addrOf(tOld - 1); val a0 = addrOf(tOld)
-                    val lbl = runCatching { (n2.getOrNull(loopIdx) as? BuilderInstruction)?.location?.labels?.firstOrNull() }.getOrNull() ?: fm!!.implementation!!.newLabelForIndex(loopIdx)
-                    if (lbl != null && a8 != null && a2 != null && a1 != null && a0 != null) {
-                        runCatching { fm!!.implementation!!.replaceInstruction(idxAt(a8!!), nop()) }.onFailure { e("L1", it) }
-                        runCatching { fm!!.implementation!!.replaceInstruction(idxAt(a2!!), nop()) }.onFailure { e("L2", it) }
-                        runCatching { fm!!.implementation!!.replaceInstruction(idxAt(a1!!), nop()) }.onFailure { e("L3", it) }
-                        runCatching { fm!!.implementation!!.replaceInstruction(idxAt(a0!!), BuilderInstruction20t(Opcode.GOTO_16, lbl)) }.onFailure { e("L4", it) }
-                    } else runCatching { java.io.File(tmpDir + "/site.log").appendText("LNOLBL a=" + a8 + "/" + a2 + "/" + a1 + "/" + a0 + " lbl=" + (lbl != null) + "\n") }
-                } else {
-                    val isTitle = (n2[tOld - 2] as? Instruction35c)?.let { it.registerC == 15 && it.registerD == 13 } == true
-                    if (isTitle) {
-                        runCatching { fm!!.implementation!!.replaceInstructions(idxAt(addrOf(tOld - 2) ?: -1), listOf(BuilderInstruction21c(Opcode.CONST_STRING, 8, ImmutableStringReference("id")), BuilderInstruction21c(Opcode.CONST_STRING, 7, ImmutableStringReference("news_ID")), nop(), nop())) }.onFailure { e("E1 t=" + t + "/" + tOld, it) }
-                    } else {
-                        runCatching { fm!!.implementation!!.replaceInstructions(idxAt(addrOf(tOld - 2) ?: -1), listOf(nop(), nop(), nop(), nop(), nop(), nop())) }.onFailure { e("E4 t=" + t + "/" + tOld, it) }
+            runCatching {
+                var tn = 0
+                for (ii in 2 until n2.size) {
+                    if (n2[ii].opcode.name == "throw" && n2[ii - 1].opcode.name == "move-result-object" && n2[ii - 2].opcode.name == "invoke-static") {
+                        runCatching { fm!!.implementation!!.replaceInstruction(ii, nop()) }.onFailure { e("TH" + ii, it) }
+                        tn++
                     }
                 }
-            }
+                runCatching { fm!!.implementation!!.instructions.size }
+                runCatching { java.io.File(tmpDir + "/site.log").appendText("NTH n=" + tn + "\n") }
+            }.onFailure { e("NTHX", it) }
             // The payload offsets are fixed numbers dexlib never re-points; the two
             // dropped check-casts (-3 each) and the +6 cast insert shift every case.
             // Rebuild the payload from the live addresses plus those deltas. Everything
@@ -355,9 +319,10 @@ val enablePremiumPatch = bytecodePatch(
                 if (swI != null && plI != null) {
                     val sw = n2[swI] as BuilderInstruction31t
                     val pl = n2[plI] as BuilderPackedSwitchPayload
+                    val loopAddr = mutableListOf<Int>()
                     val base = n2[plI].location.codeAddress
                     val dflt = n2[swI - 1].location.codeAddress
-                    val editsAddr = loopAddr + listOf(0x149)
+                    val editsAddr = loopAddr
                     runCatching { java.io.File(tmpDir + "/site.log").appendText("PLQ plA=" + runCatching { n2[plI].location.codeAddress }.getOrNull() + " swA=" + runCatching { n2[swI].location.codeAddress }.getOrNull() + " off=" + pl.switchElements.map { it.getOffset() }.joinToString(",") + "\n") }
                         val newPlLbl = n2[plI].location.addNewLabel()
                     runCatching { java.io.File(tmpDir + "/site.log").appendText("PLOK plI=" + plI + "\n") }
