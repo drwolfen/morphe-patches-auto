@@ -285,11 +285,17 @@ val enablePremiumPatch = bytecodePatch(
                     n2[i - 8].opcode.name == "check-cast" && (n2[i - 8] as? OneRegisterInstruction)?.registerA == 6
             }
             runCatching { java.io.File(tmpDir + "/site.log").appendText("NA ti=" + ti + "\n") }
-            if (ti != null) {
+            // There are two validation rounds (l then f), each throwing for title.
+            val tis = n2.indices.filter { i ->
+                i > 8 && n2[i].opcode.name == "throw" && n2[i - 1].opcode.name == "move-result-object" &&
+                    n2[i - 2].opcode.name == "invoke-static" &&
+                    (n2[i - 2] as? Instruction35c)?.let { it.registerC == 15 && it.registerD == 13 } == true
+            }
+            for (t in tis.asReversed()) {
                 // Same-size replacements keep the code size, so the switch payload
                 // offsets (which dexlib does not re-point) stay valid.
-                fm!!.replaceInstruction(ti - 1, "const-string v8, \"\"")
-                fm!!.replaceInstruction(ti, "nop")
+                fm!!.replaceInstruction(t - 1, "const-string v8, \"\"")
+                fm!!.replaceInstruction(t, "nop")
             }
         } catch (t: Throwable) {
             runCatching { java.io.File(tmpDir + "/site.log").appendText("NAERR " + t + "\n") }
