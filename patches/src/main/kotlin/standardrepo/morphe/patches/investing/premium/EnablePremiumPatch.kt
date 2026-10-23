@@ -25,6 +25,8 @@ import com.android.tools.smali.dexlib2.iface.reference.StringReference
 import com.android.tools.smali.dexlib2.iface.instruction.formats.Instruction21t
 import com.android.tools.smali.dexlib2.immutable.reference.ImmutableTypeReference
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction21c
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction31t
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderPackedSwitchPayload
 import com.android.tools.smali.dexlib2.Opcode
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import com.android.tools.smali.dexlib2.iface.reference.FieldReference
@@ -292,7 +294,7 @@ val enablePremiumPatch = bytecodePatch(
             runCatching {
                 java.io.File(tmpDir + "/site.log").appendText("NATH " + tAll.joinToString(",") { i -> i.toString() + ":" + (maxOf(0, i - 12)..i).map { n2[it].opcode.name }.joinToString("|") } + "\n")
             }
-            val nop = BuilderInstruction10x(Opcode.NOP)
+            fun nop() = BuilderInstruction10x(Opcode.NOP)
             val e = { tag: String, x: Throwable -> runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + tag + " " + x.toString().take(200) + " @ " + (x.stackTrace.firstOrNull()?.toString() ?: "-") + "\n") } }
             val ti = tAll.firstOrNull { i ->
                 i > 8 && n2[i - 1].opcode.name == "move-result-object" &&
@@ -300,42 +302,72 @@ val enablePremiumPatch = bytecodePatch(
             }
             runCatching { java.io.File(tmpDir + "/site.log").appendText("NA ti=" + ti + "\n") }
             // There are two validation rounds (l then f), each throwing for title.
+            val loopIdx = 13
+            val loopIdx120 = n2.indices.firstOrNull { runCatching { n2[it].location?.codeAddress }.getOrNull() == 0x120 }
             val tis = n2.indices.filter { i ->
                 i > 8 && n2[i].opcode.name == "throw" && n2[i - 1].opcode.name == "move-result-object" &&
                     n2[i - 2].opcode.name == "invoke-static" &&
-                    (n2[i - 2] as? Instruction35c)?.let { it.registerC == 15 && it.registerD == 13 } == true
+                    (n2[i - 2] as? Instruction35c)?.let { i2 -> (i2.registerC == 15 && i2.registerD == 13) || (i2.registerC == 8 && i2.registerD == 7) } == true
             }
-            runCatching { java.io.File(tmpDir + "/site.log").appendText("T21 " + n2.indices.filter { (n2[it] as? Instruction21t)?.registerA == 16 }.map { it.toString() + ":" + (n2[it] as? Instruction21t)?.codeOffset + ":" + n2[it].opcode.name }.take(6).joinToString(",") + "\n") }
-            val i149 = n2.indices.firstOrNull { (n2[it] as? Instruction21t)?.let { i2 -> n2[it].opcode.name == "if-eqz" && i2.registerA == 16 && (n2[it] as? OffsetInstruction)?.codeOffset == 0x4a } == true }
-            runCatching { java.io.File(tmpDir + "/site.log").appendText("TIS " + tis.size + " i149=" + i149 + "\n") }
-            if (i149 != null) runCatching { fm!!.implementation!!.addInstructions(i149, listOf(BuilderInstruction21c(Opcode.CHECK_CAST, 16, ImmutableTypeReference("Ljava/lang/Long;")), BuilderInstruction21c(Opcode.CHECK_CAST, 17, ImmutableTypeReference("Ljava/lang/Long;")), BuilderInstruction21c(Opcode.CHECK_CAST, 18, ImmutableTypeReference("Ljava/lang/Integer;")))) }.onFailure { e("C0", it) }
-            runCatching { java.io.File(tmpDir + "/site.log").appendText("CAND " + n2.indices.filter { n2[it].opcode.name == "throw" && n2[it - 1].opcode.name == "move-result-object" }.map { it.toString() + ":" + ((n2[it - 2] as? Instruction35c)?.registerC?.toString() ?: "-") + "/" + ((n2[it - 2] as? Instruction35c)?.registerD?.toString() ?: "-") }.take(30).joinToString(",") + "\n") }
-            for ((tOld, t) in tis.zip(if (i149 != null) tis.map { it } else tis).asReversed()) {
-                runCatching { java.io.File(tmpDir + "/site.log").appendText("TK t=" + t + " c2=" + n2[t - 2].opcode.name + " c8=" + (if (t > 8) n2[t - 8].opcode.name else "-") + " regA8=" + (if (t > 8) ((n2[t - 8] as? OneRegisterInstruction)?.registerA?.toString() ?: "-") else "-") + "\n") }
-                // Same-size replacements keep the code size, so the switch payload
-                // offsets (which dexlib does not re-point) stay valid. In the loop the
-                // value slot is v8; after the constructor the name register v7 is the
-                // one the verifier expects to be a String.
-                runCatching { java.io.File(tmpDir + "/site.log").appendText("TCHK old=" + tOld + " new=" + t + " " + (t - 2) + ":" + n2.getOrNull(t - 2)?.opcode?.name + "," + (t - 1) + ":" + n2.getOrNull(t - 1)?.opcode?.name + "," + t + ":" + n2.getOrNull(t)?.opcode?.name + "\n") }
+            val exitIdx = n2.indices.firstOrNull { i ->
+                n2[i].opcode.name == "if-eqz" && (n2[i] as? Instruction21t)?.let { it.registerA == 16 && (n2[i] as? OffsetInstruction)?.codeOffset == 0x4a } == true
+            }
+            fun idxAt(a: Int): Int = fm!!.implementation!!.instructions.indexOfFirst { runCatching { it.location?.codeAddress }.getOrNull() == a }
+            fun addrOf(i: Int): Int? = runCatching { n2[i].location?.codeAddress }.getOrNull()
+            runCatching { java.io.File(tmpDir + "/site.log").appendText("TIS " + tis.size + " exitIdx=" + exitIdx + "\n") }
+            if (exitIdx != null) runCatching {
+                fm!!.implementation!!.addInstructions(exitIdx, listOf(
+                    BuilderInstruction21c(Opcode.CHECK_CAST, 16, ImmutableTypeReference("Ljava/lang/Long;")),
+                    BuilderInstruction21c(Opcode.CHECK_CAST, 17, ImmutableTypeReference("Ljava/lang/Long;")),
+                    BuilderInstruction21c(Opcode.CHECK_CAST, 18, ImmutableTypeReference("Ljava/lang/Integer;")),
+                ))
+            }.onFailure { e("C0", it) }
+            val loopAddr = mutableListOf<Int>()
+            val tis2 = if (exitIdx != null) tis.map { if (it >= exitIdx) it + 3 else it } else tis
+            for ((tOld, t) in tis.zip(tis2).asReversed()) {
                 val inLoop = tOld > 8 && n2[tOld - 8].opcode.name == "check-cast"
-                val beforeSz = n2.size
-                // The first field slot v16 is seeded from the const/4 zero at 0x0a and
-                // verifies as Object, which the longValue() call at the exit rejects.
-                // Seed it as a wide zero instead so the slot is Long-typed from the start.
-                val i16 = n2.indices.firstOrNull { runCatching { n2[it].location?.codeAddress }.getOrNull() == 0x1f }
-                if (false) runCatching { fm!!.replaceInstruction(i16!!, "const-wide/32 v16, 0") }.onFailure { e("W0", it) }
                 if (inLoop) {
-                    runCatching { java.io.File(tmpDir + "/site.log").appendText("LOOP skip\n") }
+                    val a8 = addrOf(tOld - 8); if (a8 != null) loopAddr.add(a8!!); val a2 = addrOf(tOld - 2); val a1 = addrOf(tOld - 1); val a0 = addrOf(tOld)
+                    val lbl = runCatching { (n2.getOrNull(loopIdx) as? BuilderInstruction)?.location?.labels?.firstOrNull() }.getOrNull() ?: fm!!.implementation!!.newLabelForIndex(loopIdx)
+                    if (lbl != null && a8 != null && a2 != null && a1 != null && a0 != null) {
+                        runCatching { fm!!.implementation!!.replaceInstruction(idxAt(a8!!), nop()) }.onFailure { e("L1", it) }
+                        runCatching { fm!!.implementation!!.replaceInstruction(idxAt(a2!!), nop()) }.onFailure { e("L2", it) }
+                        runCatching { fm!!.implementation!!.replaceInstruction(idxAt(a1!!), nop()) }.onFailure { e("L3", it) }
+                        runCatching { fm!!.implementation!!.replaceInstruction(idxAt(a0!!), BuilderInstruction20t(Opcode.GOTO_16, lbl)) }.onFailure { e("L4", it) }
+                    } else runCatching { java.io.File(tmpDir + "/site.log").appendText("LNOLBL a=" + a8 + "/" + a2 + "/" + a1 + "/" + a0 + " lbl=" + (lbl != null) + "\n") }
                 } else {
-                    val nmV7 = n2.firstOrNull { it.opcode.name == "const-string" && (it as? OneRegisterInstruction)?.registerA == 7 }?.let { (it as? ReferenceInstruction)?.reference as? StringReference }?.string
-                    val nmV8 = n2.firstOrNull { it.opcode.name == "const-string" && (it as? OneRegisterInstruction)?.registerA == 8 }?.let { (it as? ReferenceInstruction)?.reference as? StringReference }?.string
-                    if (nmV7 != null && nmV8 != null) {
-                        runCatching { fm!!.replaceInstruction(t - 2, "const-string/jumbo v8, \"$nmV8\"") }.onFailure { e("E1", it) }
-                        runCatching { fm!!.replaceInstruction(t - 1, "const-string v7, \"$nmV7\"") }.onFailure { e("E2", it) }
-                        runCatching { fm!!.replaceInstruction(t, "nop") }.onFailure { e("E3", it) }
+                    val isTitle = (n2[tOld - 2] as? Instruction35c)?.let { it.registerC == 15 && it.registerD == 13 } == true
+                    if (isTitle) {
+                        runCatching { fm!!.implementation!!.replaceInstructions(idxAt(addrOf(tOld - 2) ?: -1), listOf(BuilderInstruction21c(Opcode.CONST_STRING, 8, ImmutableStringReference("id")), BuilderInstruction21c(Opcode.CONST_STRING, 7, ImmutableStringReference("news_ID")), nop(), nop())) }.onFailure { e("E1 t=" + t + "/" + tOld, it) }
+                    } else {
+                        runCatching { fm!!.implementation!!.replaceInstructions(idxAt(addrOf(tOld - 2) ?: -1), listOf(nop(), nop(), nop(), nop(), nop(), nop())) }.onFailure { e("E4 t=" + t + "/" + tOld, it) }
                     }
                 }
             }
+            // The payload offsets are fixed numbers dexlib never re-points; the two
+            // dropped check-casts (-3 each) and the +6 cast insert shift every case.
+            // Rebuild the payload from the live addresses plus those deltas. Everything
+            // here reads n2 (the live instruction objects) because getInstructions()
+            // throws while the payload is stale.
+            runCatching {
+                val swI = n2.indices.firstOrNull { n2[it].opcode.name == "packed-switch" }
+                val plI = n2.indices.firstOrNull { n2[it].opcode.name == "packed-switch-payload" }
+                if (swI != null && plI != null) {
+                    val sw = n2[swI] as BuilderInstruction31t
+                    val pl = n2[plI] as BuilderPackedSwitchPayload
+                    val base = n2[plI].location.codeAddress
+                    val dflt = n2[swI - 1].location.codeAddress
+                    val editsAddr = loopAddr + listOf(0x149)
+                    runCatching { java.io.File(tmpDir + "/site.log").appendText("PLQ plA=" + runCatching { n2[plI].location.codeAddress }.getOrNull() + " swA=" + runCatching { n2[swI].location.codeAddress }.getOrNull() + " off=" + pl.switchElements.map { it.getOffset() }.joinToString(",") + "\n") }
+                        val labels = pl.switchElements.map { it.getTarget() }
+                    val newPl = BuilderPackedSwitchPayload(pl.switchElements.first().getKey(), labels)
+                    fm!!.implementation!!.addInstruction(swI + 1, newPl)
+                    val newPlLbl = fm!!.implementation!!.newLabelForIndex(swI + 1)
+                    runCatching { java.io.File(tmpDir + "/site.log").appendText("PLOK plI=" + plI + "\n") }
+                    val reg = sw.registerA
+                    fm!!.implementation!!.replaceInstruction(swI, BuilderInstruction31t(Opcode.PACKED_SWITCH, reg, newPlLbl))
+                } else runCatching { java.io.File(tmpDir + "/site.log").appendText("PLNONE\n") }
+            }.onFailure { e("PL", it) }
         } catch (t: Throwable) {
             runCatching { java.io.File(tmpDir + "/site.log").appendText("NAERR " + t + " @ " + (t.stackTrace.firstOrNull()?.toString() ?: "-") + "\n") }
         }
