@@ -322,7 +322,8 @@ val enablePremiumPatch = bytecodePatch(
                         // Drop the exception build entirely (nop nop) and spend the
                         // freed units on the 2-unit goto so the block stays 4 units,
                         // exactly 2 less than the original 6.
-                        runCatching { fm!!.replaceInstruction(t - 2, "nop") }.onFailure { e("L0", it) }
+                        runCatching { fm!!.replaceInstruction(t - 8, "nop") }.onFailure { e("L0", it) }
+                        runCatching { fm!!.replaceInstruction(t - 2, "nop") }.onFailure { e("L0b", it) }
                         runCatching { fm!!.replaceInstruction(t - 1, "nop") }.onFailure { e("L1", it) }
                         runCatching { fm!!.replaceInstruction(t, BuilderInstruction20t(Opcode.GOTO_16, lbl)) }.onFailure { e("L2", it) }
                     }
