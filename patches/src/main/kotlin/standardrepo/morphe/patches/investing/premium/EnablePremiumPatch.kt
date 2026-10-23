@@ -25,6 +25,7 @@ import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction11x
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction31c
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction11n
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction22c
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction22x
 import com.android.tools.smali.dexlib2.iface.reference.StringReference
 import com.android.tools.smali.dexlib2.iface.instruction.formats.Instruction21t
 import com.android.tools.smali.dexlib2.immutable.reference.ImmutableTypeReference
@@ -304,11 +305,14 @@ val enablePremiumPatch = bytecodePatch(
             val n2x = runCatching { fm!!.implementation!!.instructions }.getOrNull() ?: n2
             runCatching {
                 var tn = 0
-                for (ii in 2 until n2x.size) {
-                    if (n2x[ii].opcode.name == "throw" && n2x[ii - 1].opcode.name == "move-result-object" && n2x[ii - 2].opcode.name == "invoke-static") {
-                        runCatching { fm!!.implementation!!.replaceInstruction(ii, nop()) }.onFailure { e("TH" + ii, it) }
-                        tn++
-                    }
+                val ths = n2x.indices.filter { ii ->
+                    ii > 2 && n2x[ii].opcode.name == "throw" && n2x[ii - 1].opcode.name == "move-result-object" && n2x[ii - 2].opcode.name == "invoke-static"
+                }
+                for (ii in ths.asReversed()) {
+                    // A throw leaves v0 holding the exception; the cases keep using v0 as
+                    // `this` for iget, so restore it from v28 (the adapter) and fall through.
+                    runCatching { fm!!.implementation!!.replaceInstruction(ii, BuilderInstruction22x(Opcode.MOVE_OBJECT_16, 0, 28)) }.onFailure { e("TH" + ii, it) }
+                    tn++
                 }
                 runCatching { fm!!.implementation!!.instructions.size }
                 runCatching { java.io.File(tmpDir + "/site.log").appendText("NTH n=" + tn + "\n") }
