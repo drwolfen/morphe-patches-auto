@@ -276,9 +276,12 @@ val enablePremiumPatch = bytecodePatch(
             val na = mutableClassDefByOrNull("Lcom/fusionmedia/investing/feature/news/pager/articles/data/response/ArticlesResponse_ArticleJsonAdapter;")
             val fm = na?.methods?.firstOrNull { it.name == "fromJson" }
             val n2 = fm?.implementation?.instructions?.toList() ?: emptyList()
-            // The title throw is preceded by check-cast of its String value into v6.
-            val ti = n2.indices.firstOrNull { i ->
-                i > 5 && n2[i].opcode.name == "throw" && n2[i - 1].opcode.name == "move-result-object" &&
+            val tAll = n2.indices.filter { n2[it].opcode.name == "throw" }
+            runCatching {
+                java.io.File(tmpDir + "/site.log").appendText("NATH " + tAll.joinToString(",") { i -> i.toString() + ":" + (maxOf(0, i - 6)..i).map { n2[it].opcode.name }.joinToString("|") } + "\n")
+            }
+            val ti = tAll.firstOrNull { i ->
+                i > 5 && n2[i - 1].opcode.name == "move-result-object" &&
                     n2[i - 6].opcode.name == "check-cast" && (n2[i - 6] as? OneRegisterInstruction)?.registerA == 6
             }
             runCatching { java.io.File(tmpDir + "/site.log").appendText("NA ti=" + ti + "\n") }
