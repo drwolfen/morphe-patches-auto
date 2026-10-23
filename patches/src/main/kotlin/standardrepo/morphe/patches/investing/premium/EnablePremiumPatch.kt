@@ -308,7 +308,7 @@ val enablePremiumPatch = bytecodePatch(
             runCatching { java.io.File(tmpDir + "/site.log").appendText("T21 " + n2.indices.filter { (n2[it] as? Instruction21t)?.registerA == 16 }.map { it.toString() + ":" + (n2[it] as? Instruction21t)?.codeOffset + ":" + n2[it].opcode.name }.take(6).joinToString(",") + "\n") }
             val i149 = n2.indices.firstOrNull { (n2[it] as? Instruction21t)?.let { i2 -> n2[it].opcode.name == "if-eqz" && i2.registerA == 16 && (n2[it] as? OffsetInstruction)?.codeOffset == 0x4a } == true }
             runCatching { java.io.File(tmpDir + "/site.log").appendText("TIS " + tis.size + " i149=" + i149 + "\n") }
-            if (i149 != null) runCatching { fm!!.implementation!!.addInstructions(i149, listOf(BuilderInstruction21c(Opcode.CHECK_CAST, 16, ImmutableTypeReference("Ljava/lang/Long;")))) }.onFailure { e("C0", it) }
+            if (i149 != null) runCatching { fm!!.implementation!!.addInstructions(i149, listOf(BuilderInstruction21c(Opcode.CHECK_CAST, 16, ImmutableTypeReference("Ljava/lang/Long;")), BuilderInstruction21c(Opcode.CHECK_CAST, 17, ImmutableTypeReference("Ljava/lang/Long;")), BuilderInstruction21c(Opcode.CHECK_CAST, 18, ImmutableTypeReference("Ljava/lang/Integer;")))) }.onFailure { e("C0", it) }
             for ((tOld, t) in tis.zip(if (i149 != null) tis.map { if (it >= i149) it + 2 else it } else tis).asReversed()) {
                 runCatching { java.io.File(tmpDir + "/site.log").appendText("TK t=" + t + " c2=" + n2[t - 2].opcode.name + " c8=" + (if (t > 8) n2[t - 8].opcode.name else "-") + " regA8=" + (if (t > 8) ((n2[t - 8] as? OneRegisterInstruction)?.registerA?.toString() ?: "-") else "-") + "\n") }
                 // Same-size replacements keep the code size, so the switch payload
@@ -330,6 +330,7 @@ val enablePremiumPatch = bytecodePatch(
                     val loopIdx = n2.indices.firstOrNull { runCatching { n2[it].location?.codeAddress }.getOrNull() == 0x120 } ?: -1
                     val lbl = runCatching { (n2.getOrNull(loopIdx) as? BuilderInstruction)?.location?.labels?.firstOrNull() }.getOrNull() ?: (if (loopIdx >= 0) fm!!.implementation!!.newLabelForIndex(loopIdx) else null)
                     if (lbl != null) {
+                        runCatching { fm!!.implementation!!.replaceInstruction(t - 8, nop) }.onFailure { e("L0b", it) }
                         runCatching { fm!!.implementation!!.replaceInstruction(t - 2, nop) }.onFailure { e("L0c", it) }
                         runCatching { fm!!.implementation!!.replaceInstruction(t - 1, nop) }.onFailure { e("L0", it) }
                         runCatching { fm!!.implementation!!.replaceInstruction(t, BuilderInstruction20t(Opcode.GOTO_16, lbl)) }.onFailure { e("L1", it) }
@@ -340,14 +341,10 @@ val enablePremiumPatch = bytecodePatch(
                     // merge sees the adapter types and reports a Conflict.
                     val isTitle = n2[tOld - 2].let { (it as? Instruction35c)?.let { i2 -> i2.registerC == 15 && i2.registerD == 13 } == true }
                     if (isTitle) {
-                        runCatching { fm!!.implementation!!.replaceInstruction(t - 2, BuilderInstruction21c(Opcode.CONST_STRING, 8, ImmutableStringReference("id"))) }.onFailure { e("E1", it) }
-                        runCatching { fm!!.implementation!!.replaceInstruction(t - 1, BuilderInstruction21c(Opcode.CONST_STRING, 7, ImmutableStringReference("news_ID"))) }.onFailure { e("E2", it) }
-                        runCatching { fm!!.implementation!!.replaceInstruction(t, nop) }.onFailure { e("E3", it) }
+                        runCatching { fm!!.implementation!!.replaceInstructions(t - 2, listOf(BuilderInstruction21c(Opcode.CONST_STRING, 8, ImmutableStringReference("id")), BuilderInstruction21c(Opcode.CONST_STRING, 7, ImmutableStringReference("news_ID")), nop, nop)) }.onFailure { e("E1", it) }
                     } else {
                         // Last block: three nops keep the six-unit block size.
-                        runCatching { fm!!.implementation!!.replaceInstructions(t - 2, listOf(nop, nop, nop)) }.onFailure { e("E4", it) }
-                        runCatching { fm!!.implementation!!.replaceInstruction(t - 1, nop) }.onFailure { e("E5", it) }
-                        runCatching { fm!!.implementation!!.replaceInstruction(t, nop) }.onFailure { e("E6", it) }
+                        runCatching { fm!!.implementation!!.replaceInstructions(t - 2, listOf(nop, nop, nop, nop, nop, nop)) }.onFailure { e("E4", it) }
                     }
                 }
             }
