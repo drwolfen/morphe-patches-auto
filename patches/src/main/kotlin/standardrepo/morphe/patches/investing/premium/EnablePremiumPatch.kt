@@ -298,6 +298,7 @@ val enablePremiumPatch = bytecodePatch(
             val na = mutableClassDefByOrNull("Lcom/fusionmedia/investing/feature/news/pager/articles/data/response/ArticlesResponse_ArticleJsonAdapter;")
             for (fm0 in na?.methods?.filter { it.name == "fromJson" } ?: emptyList()) {
                 val fm = fm0
+                val thisReg = (fm!!.implementation!!.registerCount) - 2
             val n2 = fm?.implementation?.instructions?.toList() ?: emptyList()
             val tAll = n2.indices.filter { n2[it].opcode.name == "throw" }
             runCatching {
@@ -316,7 +317,7 @@ val enablePremiumPatch = bytecodePatch(
                     // The helper (invoke-static) throws by itself, so the throw never gets
                     // control: drop the call, the move-result and the throw, and restore
                     // v0 (the cases use it as `this`) before falling through.
-                    runCatching { fm!!.implementation!!.replaceInstruction(ii, BuilderInstruction32x(Opcode.MOVE_OBJECT_16, 0, 28)) }.onFailure { e("TH" + ii, it) }
+                    runCatching { fm!!.implementation!!.replaceInstruction(ii, BuilderInstruction32x(Opcode.MOVE_OBJECT_16, 0, thisReg)) }.onFailure { e("TH" + ii, it) }
                     tn++
                 }
                 runCatching { fm!!.implementation!!.instructions.size }
