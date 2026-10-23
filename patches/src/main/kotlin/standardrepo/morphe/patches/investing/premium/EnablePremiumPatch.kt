@@ -321,7 +321,7 @@ val enablePremiumPatch = bytecodePatch(
                     val lbl = (n2.getOrNull(loopIdx) as? BuilderInstruction)?.location?.labels?.firstOrNull() ?: (if (loopIdx >= 0) fm!!.implementation!!.newLabelForIndex(loopIdx) else null)
                     if (lbl != null) {
                         runCatching { fm!!.replaceInstruction(t - 1, "nop") }.onFailure { e("L0", it) }
-                        runCatching { fm!!.replaceInstruction(t, BuilderInstruction20t(Opcode.GOTO_16, lbl)) }.onFailure { e("L1", it) }
+                        runCatching { fm!!.implementation!!.replaceInstruction(t, BuilderInstruction20t(Opcode.GOTO_16, lbl)) }.onFailure { e("L1", it) }
                     }
                 } else {
                     // Every validation block is neutralised: its own throw becomes a
