@@ -301,13 +301,15 @@ val enablePremiumPatch = bytecodePatch(
                     n2[i - 2].opcode.name == "invoke-static" &&
                     (n2[i - 2] as? Instruction35c)?.let { it.registerC == 15 && it.registerD == 13 } == true
             }
-            for (t in tis.asReversed()) {
+            val i149 = n2.indices.firstOrNull { n2[it].location?.codeAddress == 0x149 }
+            if (i149 != null) runCatching { fm!!.implementation!!.addInstructions(i149, listOf(BuilderInstruction21c(Opcode.CHECK_CAST, 16, ImmutableTypeReference("Ljava/lang/Long;")))) }.onFailure { e("C0", it) }
+            for ((tOld, t) in tis.zip(if (i149 != null) tis.map { if (it >= i149) it + 2 else it } else tis).asReversed()) {
                 runCatching { java.io.File(tmpDir + "/site.log").appendText("TK t=" + t + " c2=" + n2[t - 2].opcode.name + " c8=" + (if (t > 8) n2[t - 8].opcode.name else "-") + " regA8=" + (if (t > 8) ((n2[t - 8] as? OneRegisterInstruction)?.registerA?.toString() ?: "-") else "-") + "\n") }
                 // Same-size replacements keep the code size, so the switch payload
                 // offsets (which dexlib does not re-point) stay valid. In the loop the
                 // value slot is v8; after the constructor the name register v7 is the
                 // one the verifier expects to be a String.
-                val inLoop = t > 8 && n2[t - 8].opcode.name == "check-cast"
+                val inLoop = tOld > 8 && n2[tOld - 8].opcode.name == "check-cast"
                 val beforeSz = n2.size
                 // The first field slot v16 is seeded from the const/4 zero at 0x0a and
                 // verifies as Object, which the longValue() call at the exit rejects.
@@ -325,8 +327,6 @@ val enablePremiumPatch = bytecodePatch(
                         // The exit block unboxes v16 as Long; if the id case has not run
                         // yet the slot is still the initial zero, so cast it first — a
                         // check-cast from Object/Zero to Long is always verifier-safe.
-                        val i149 = n2.indices.firstOrNull { n2[it].location?.codeAddress == 0x149 }
-                        if (i149 != null) runCatching { fm!!.implementation!!.addInstructions(i149, listOf(BuilderInstruction21c(Opcode.CHECK_CAST, 16, ImmutableTypeReference("Ljava/lang/Long;")))) }.onFailure { e("C0", it) }
                         runCatching { fm!!.replaceInstruction(t - 2, "nop") }.onFailure { e("L0c", it) }
                         runCatching { fm!!.replaceInstruction(t - 1, "nop") }.onFailure { e("L0", it) }
                         runCatching { fm!!.implementation!!.replaceInstruction(t, BuilderInstruction20t(Opcode.GOTO_16, lbl)) }.onFailure { e("L1", it) }
