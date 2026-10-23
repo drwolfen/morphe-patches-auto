@@ -299,11 +299,11 @@ val enablePremiumPatch = bytecodePatch(
                 // one the verifier expects to be a String.
                 val inLoop = t > 8 && n2[t - 8].opcode.name == "check-cast"
                 if (inLoop) {
-                    // Loop: never branch to the throwing blocks (two nops = always fall
-                    // through, same size as if-eqz), default the value slot and continue.
-                    fm!!.replaceInstruction(t - 7, "nop\nnop")
-                    fm!!.replaceInstruction(t - 1, "const-string v8, \"\"")
-                    fm!!.replaceInstruction(t, "nop")
+                    // Jump straight back to the loop head so nothing merges with a
+                    // differently-typed fall-through. move-result-object (2u) -> nop (1u)
+                    // pays for goto/16 (2u), keeping the code size unchanged.
+                    fm!!.replaceInstruction(t - 1, "nop")
+                    fm!!.replaceInstruction(t, "goto/16 0013")
                 } else {
                     // After the constructor these blocks are entered by jumps from the
                     // loop, so the next block's name registers (v7, v8) must stay String
