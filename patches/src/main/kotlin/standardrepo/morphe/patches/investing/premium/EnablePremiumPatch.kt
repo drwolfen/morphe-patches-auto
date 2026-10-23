@@ -406,12 +406,12 @@ val enablePremiumPatch = bytecodePatch(
                 BuilderInstruction11x(Opcode.MOVE_RESULT, 2),
                 BuilderInstruction35c(Opcode.INVOKE_STATIC, 1, 2, 0, 0, 0, 0, ImmutableMethodReference("Ljava/lang/String;", "valueOf", listOf("I"), "Ljava/lang/String;")),
                 BuilderInstruction11x(Opcode.MOVE_RESULT_OBJECT, 2),
-                BuilderInstruction21c(Opcode.CONST_STRING, 7, ImmutableStringReference("CPL:")),
-                BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 7, 2, 0, 0, 0, ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I"))
+                BuilderInstruction21c(Opcode.CONST_STRING, 4, ImmutableStringReference("CPL:")),
+                BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 4, 2, 0, 0, 0, ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I"))
             ))
             if (ri > 0) rfm!!.implementation!!.addInstructions(ri, listOf(
-                BuilderInstruction21c(Opcode.CONST_STRING, 7, ImmutableStringReference("CPE:")),
-                BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 7, 7, 0, 0, 0, ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I"))
+                BuilderInstruction21c(Opcode.CONST_STRING, 4, ImmutableStringReference("CPE:")),
+                BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 4, 4, 0, 0, 0, ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I"))
             ))
         }
         if (newsRepo != null) {
