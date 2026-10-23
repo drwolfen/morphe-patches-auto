@@ -27,6 +27,8 @@ import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction31c
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction11n
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction22c
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction22x
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction23x
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction22b
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction35c
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction3rc
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction32x
@@ -38,6 +40,7 @@ import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction21c
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction31t
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderPackedSwitchPayload
 import com.android.tools.smali.dexlib2.Opcode
+import com.android.tools.smali.dexlib2.immutable.reference.ImmutableFieldReference
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import com.android.tools.smali.dexlib2.iface.reference.FieldReference
 import com.android.tools.smali.dexlib2.iface.reference.TypeReference
@@ -351,10 +354,12 @@ val enablePremiumPatch = bytecodePatch(
                     BuilderInstruction11x(Opcode.MOVE_RESULT_OBJECT, 3),
                     BuilderInstruction21c(Opcode.CONST_STRING, 2, ImmutableStringReference("CPK:")),
                     BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 2, 3, 0, 0, 0, ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I")),
-                    BuilderInstruction35c(Opcode.INVOKE_VIRTUAL, 1, 1, 0, 0, 0, 0, ImmutableMethodReference("Lrpd;", "p", listOf(), "Ljava/lang/String;")),
-                    BuilderInstruction11x(Opcode.MOVE_RESULT_OBJECT, 3),
-                    BuilderInstruction21c(Opcode.CONST_STRING, 2, ImmutableStringReference("CPN:")),
-                    BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 2, 3, 0, 0, 0, ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I"))
+                    BuilderInstruction22c(Opcode.IGET_OBJECT, 2, 1, ImmutableFieldReference("Lrpd;", "d", "[Ljava/lang/String;")),
+                    BuilderInstruction22c(Opcode.IGET, 3, 1, ImmutableFieldReference("Lrpd;", "b", "I")),
+                    BuilderInstruction22b(Opcode.ADD_INT_LIT8, 3, 3, -1),
+                    BuilderInstruction23x(Opcode.AGET_OBJECT, 2, 2, 3),
+                    BuilderInstruction21c(Opcode.CONST_STRING, 3, ImmutableStringReference("CPN:")),
+                    BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 3, 2, 0, 0, 0, ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I"))
                 ))
             }.onFailure { e("CPK", it) }
             }.onFailure { e("NTHX", it) }
