@@ -306,8 +306,8 @@ val enablePremiumPatch = bytecodePatch(
                     (n2[i - 2] as? Instruction35c)?.let { it.registerC == 15 && it.registerD == 13 } == true
             }
             runCatching { java.io.File(tmpDir + "/site.log").appendText("T21 " + n2.indices.filter { (n2[it] as? Instruction21t)?.registerA == 16 }.map { it.toString() + ":" + (n2[it] as? Instruction21t)?.codeOffset + ":" + n2[it].opcode.name }.take(6).joinToString(",") + "\n") }
-            runCatching { java.io.File(tmpDir + "/site.log").appendText("TIS " + tis.size + " i149=" + (n2.indices.firstOrNull { runCatching { n2[it].location?.codeAddress }.getOrNull() == 0x149 }) + "\n") }
-            val i149 = n2.indices.firstOrNull { runCatching { n2[it].location?.codeAddress }.getOrNull() == 0x149 }
+            val i149 = n2.indices.firstOrNull { (n2[it] as? Instruction21t)?.let { i2 -> n2[it].opcode.name == "if-eqz" && i2.registerA == 16 && (n2[it] as? OffsetInstruction)?.codeOffset == 0x4a } == true }
+            runCatching { java.io.File(tmpDir + "/site.log").appendText("TIS " + tis.size + " i149=" + i149 + "\n") }
             if (i149 != null) runCatching { fm!!.implementation!!.addInstructions(i149, listOf(BuilderInstruction21c(Opcode.CHECK_CAST, 16, ImmutableTypeReference("Ljava/lang/Long;")))) }.onFailure { e("C0", it) }
             for ((tOld, t) in tis.zip(if (i149 != null) tis.map { if (it >= i149) it + 2 else it } else tis).asReversed()) {
                 runCatching { java.io.File(tmpDir + "/site.log").appendText("TK t=" + t + " c2=" + n2[t - 2].opcode.name + " c8=" + (if (t > 8) n2[t - 8].opcode.name else "-") + " regA8=" + (if (t > 8) ((n2[t - 8] as? OneRegisterInstruction)?.registerA?.toString() ?: "-") else "-") + "\n") }
