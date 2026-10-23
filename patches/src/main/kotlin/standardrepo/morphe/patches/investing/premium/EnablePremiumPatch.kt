@@ -329,7 +329,7 @@ val enablePremiumPatch = bytecodePatch(
                     val newPl = BuilderPackedSwitchPayload(plOld.switchElements.first().getKey(), lbls)
                     // Append payload + a trailing nop: a payload that is the very last
                     // instruction sits at address == size and the switch check fails.
-                    runCatching { fm!!.implementation!!.addInstructions(sz, listOf(newPl, BuilderInstruction11x(Opcode.RETURN_OBJECT, 0))) }.onFailure { e("SWA", it) }
+                    runCatching { fm!!.implementation!!.addInstructions(sz, listOf(BuilderInstruction11x(Opcode.RETURN_OBJECT, 0), newPl, BuilderInstruction11x(Opcode.RETURN_OBJECT, 0))) }.onFailure { e("SWA", it) }
                     val plLbl = runCatching { newPl.location.addNewLabel() }.getOrNull()
                     if (plLbl != null) {
                         runCatching { fm!!.implementation!!.replaceInstruction(swI, BuilderInstruction31t(Opcode.PACKED_SWITCH, reg, plLbl)) }.onFailure { e("SW2", it) }
