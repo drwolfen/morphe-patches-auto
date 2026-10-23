@@ -309,7 +309,7 @@ val enablePremiumPatch = bytecodePatch(
             val i149 = n2.indices.firstOrNull { (n2[it] as? Instruction21t)?.let { i2 -> n2[it].opcode.name == "if-eqz" && i2.registerA == 16 && (n2[it] as? OffsetInstruction)?.codeOffset == 0x4a } == true }
             runCatching { java.io.File(tmpDir + "/site.log").appendText("TIS " + tis.size + " i149=" + i149 + "\n") }
             if (i149 != null) runCatching { fm!!.implementation!!.addInstructions(i149, listOf(BuilderInstruction21c(Opcode.CHECK_CAST, 16, ImmutableTypeReference("Ljava/lang/Long;")), BuilderInstruction21c(Opcode.CHECK_CAST, 17, ImmutableTypeReference("Ljava/lang/Long;")), BuilderInstruction21c(Opcode.CHECK_CAST, 18, ImmutableTypeReference("Ljava/lang/Integer;")))) }.onFailure { e("C0", it) }
-            for ((tOld, t) in tis.zip(if (i149 != null) tis.map { if (it >= i149) it + 2 else it } else tis).asReversed()) {
+            for ((tOld, t) in tis.zip(if (i149 != null) tis.map { if (it >= i149) it + 3 else it } else tis).asReversed()) {
                 runCatching { java.io.File(tmpDir + "/site.log").appendText("TK t=" + t + " c2=" + n2[t - 2].opcode.name + " c8=" + (if (t > 8) n2[t - 8].opcode.name else "-") + " regA8=" + (if (t > 8) ((n2[t - 8] as? OneRegisterInstruction)?.registerA?.toString() ?: "-") else "-") + "\n") }
                 // Same-size replacements keep the code size, so the switch payload
                 // offsets (which dexlib does not re-point) stay valid. In the loop the
