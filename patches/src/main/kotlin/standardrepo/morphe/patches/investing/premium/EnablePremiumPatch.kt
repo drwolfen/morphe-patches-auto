@@ -286,7 +286,7 @@ val enablePremiumPatch = bytecodePatch(
             }
             runCatching { java.io.File(tmpDir + "/site.log").appendText("NA ti=" + ti + "\n") }
             if (ti != null) fm!!.addInstructions(0, """
-                nop
+                const-string v8, ""
             """)
         } catch (t: Throwable) {
             runCatching { java.io.File(tmpDir + "/site.log").appendText("NAERR " + t + "\n") }
