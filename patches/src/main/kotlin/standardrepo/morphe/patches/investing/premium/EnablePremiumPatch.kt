@@ -308,18 +308,10 @@ val enablePremiumPatch = bytecodePatch(
                 val inLoop = t > 8 && n2[t - 8].opcode.name == "check-cast"
                 val beforeSz = n2.size
                 if (inLoop) {
-                    // Never take the branch (v6 is always set), and keep the block itself
-                    // consistent so its dead fall-through merges cleanly: the next case
-                    // still needs v7 as its adapter register.
-                    val bFld = n2.firstOrNull { it.opcode.name == "iget-object" && (it as? OneRegisterInstruction)?.registerA == 7 }?.let { (it as? ReferenceInstruction)?.reference as? FieldReference }
-                    val igets = n2.filter { it.opcode.name == "iget-object" }.mapNotNull { (it as? ReferenceInstruction)?.reference as? FieldReference }.take(4).joinToString("|") { it.definingClass + "." + it.name + ":" + it.type }
-                    runCatching { java.io.File(tmpDir + "/site.log").appendText("IGS2 " + n2.indices.filter { n2[it].opcode.name == "iget-object" }.take(6).joinToString(",") { i -> i.toString() + ":" + ((n2[i] as? OneRegisterInstruction)?.registerA) + ":" + ((n2[i] as? ReferenceInstruction)?.reference as? FieldReference)?.let { f -> f.name + ":" + f.type } } + "\n") }
-                    runCatching { java.io.File(tmpDir + "/site.log").appendText("IGS " + bFld + " :: " + n2.count { it.opcode.name == "iget-object" } + " / " + n2.size + " / " + t + " :: " + n2.indexOfFirst { it.opcode.name == "iget-object" } + " :: " + n2.firstOrNull { (it as? ReferenceInstruction)?.reference is FieldReference && ((it as? ReferenceInstruction)?.reference as FieldReference)?.name == "b" }?.let { (it as? ReferenceInstruction)?.reference as FieldReference }?.let { f -> f.definingClass + "." + f.name + ":" + f.type } + "\n") }
-                    if (bFld != null) runCatching { java.io.File(tmpDir + "/site.log").appendText("BSM <" + BuilderInstruction22c(Opcode.IGET_OBJECT, 7, 0, bFld).toString() + "> <" + "iget-object v7, v0, " + bFld.definingClass + "." + bFld.name + ":" + bFld.type + ">\n") }
-                    if (bFld != null) runCatching { fm!!.replaceInstruction(t - 9, "sget-object v7, Ljava/lang/System;->out:Ljava/io/PrintStream;") }.onFailure { e("R1", it) }
-                    runCatching { fm!!.replaceInstruction(t - 8, "const-string v6, \"\"") }.onFailure { e("R2", it) }
-                    runCatching { fm!!.replaceInstruction(t - 1, "const-string v8, \"\"") }.onFailure { e("R3", it) }
-                    runCatching { fm!!.replaceInstruction(t, "nop\nnop") }.onFailure { e("R4", it) }
+                    // The loop round never dispatches the title case when HEADLINE is
+                    // absent, so leave it alone; only the post-loop validation block
+                    // has to be neutralised.
+                    runCatching { java.io.File(tmpDir + "/site.log").appendText("LOOP skip\n") }
                 } else {
                     // After the loop the blocks run again as validation. The next block
                     // consumes v8/v7 as its name strings, so the fall-through has to
@@ -328,9 +320,9 @@ val enablePremiumPatch = bytecodePatch(
                     val nmV13 = n2.firstOrNull { it.opcode.name == "const-string" && (it as? OneRegisterInstruction)?.registerA == 13 }?.let { (it as? ReferenceInstruction)?.reference as? StringReference }?.string
                     runCatching { java.io.File(tmpDir + "/site.log").appendText("ELSE t=" + t + " nm=" + nmV15 + "/" + nmV13 + "\n") }
                     if (nmV15 != null && nmV13 != null) {
-                        runCatching { fm!!.replaceInstruction(t - 2, "const-string v8, \"$nmV15\"") }.onFailure { e("E1", it) }
+                        runCatching { fm!!.replaceInstruction(t - 2, "const-string v8, \"$nmV15\"\nnop") }.onFailure { e("E1", it) }
                         runCatching { fm!!.replaceInstruction(t - 1, "const-string v7, \"$nmV13\"") }.onFailure { e("E2", it) }
-                        runCatching { fm!!.replaceInstruction(t, "nop\nnop") }.onFailure { e("E3", it) }
+                        runCatching { fm!!.replaceInstruction(t, "nop") }.onFailure { e("E3", it) }
                     }
                 }
             }
