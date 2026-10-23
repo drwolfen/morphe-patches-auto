@@ -313,12 +313,16 @@ val enablePremiumPatch = bytecodePatch(
                 val i16 = n2.indices.firstOrNull { n2[it].location?.codeAddress == 0x1f }
                 if (false) runCatching { fm!!.replaceInstruction(i16!!, "const-wide/32 v16, 0") }.onFailure { e("W0", it) }
                 if (inLoop) {
-                    // Hop to the shared tail: 0x120 -> 0x89 -> 0x13. The tail restores
-                    // the remaining registers and re-enters the loop head, which re-igets
-                    // the adapters. v7/v8 stay untouched, so no merge conflict arises,
-                    // and a plain 1-unit goto keeps the code size identical.
-                    runCatching { fm!!.replaceInstruction(t - 1, "nop") }.onFailure { e("L0", it) }
-                    runCatching { fm!!.replaceInstruction(t, "goto/16 0x120") }.onFailure { e("L1", it) }
+                    // Hop to the shared tail (0x120 -> 0x89 -> 0x13): the tail re-enters
+                    // the loop head, which re-igets the adapters, and v7/v8 stay untouched.
+                    // Numeric operands are not supported by the inline compiler, so the
+                    // target has to be a Label.
+                    val loopIdx = n2.indices.firstOrNull { n2[it].location?.codeAddress == 0x120 } ?: -1
+                    val lbl = (n2.getOrNull(loopIdx) as? BuilderInstruction)?.location?.labels?.firstOrNull() ?: (if (loopIdx >= 0) fm!!.implementation!!.newLabelForIndex(loopIdx) else null)
+                    if (lbl != null) {
+                        runCatching { fm!!.replaceInstruction(t - 1, "nop") }.onFailure { e("L0", it) }
+                        runCatching { fm!!.replaceInstruction(t, BuilderInstruction20t(Opcode.GOTO_16, lbl)) }.onFailure { e("L1", it) }
+                    }
                 } else {
                     // Every validation block is neutralised: its own throw becomes a
                     // plain nop so the chain falls through to the constructor.
