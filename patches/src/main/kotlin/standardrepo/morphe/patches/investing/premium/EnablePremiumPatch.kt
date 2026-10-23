@@ -13,6 +13,7 @@ import standardrepo.morphe.compatibility.Compat
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
+import com.android.tools.smali.dexlib2.iface.instruction.formats.Instruction35c
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import com.android.tools.smali.dexlib2.iface.reference.FieldReference
 import com.android.tools.smali.dexlib2.iface.reference.TypeReference
@@ -275,7 +276,7 @@ val enablePremiumPatch = bytecodePatch(
             val na = mutableClassDefByOrNull("Lcom/fusionmedia/investing/feature/news/pager/articles/data/response/ArticlesResponse_ArticleJsonAdapter;")
             val fm = na?.methods?.firstOrNull { it.name == "fromJson" }
             val n2 = fm?.implementation?.instructions?.toList() ?: emptyList()
-            val ti = n2.indices.firstOrNull { i -> n2[i].opcode.name == "throw" && i + 1 < n2.size && n2[i + 1].opcode.name == "invoke-virtual" && (n2[i + 1] as? OneRegisterInstruction)?.registerA == 7 }
+            val ti = n2.indices.firstOrNull { i -> n2[i].opcode.name == "throw" && i + 1 < n2.size && n2[i + 1].opcode.name == "invoke-virtual" && (n2[i + 1] as? Instruction35c)?.registerC == 7 }
             runCatching { java.io.File(tmpDir + "/site.log").appendText("NA ti=" + ti + "\n") }
             if (ti != null) fm!!.replaceInstruction(ti, "const-string v8, \"\"")
         } catch (t: Throwable) {
