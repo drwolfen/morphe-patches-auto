@@ -311,7 +311,7 @@ val enablePremiumPatch = bytecodePatch(
                 // verifies as Object, which the longValue() call at the exit rejects.
                 // Seed it as a wide zero instead so the slot is Long-typed from the start.
                 val i16 = n2.indices.firstOrNull { n2[it].location?.codeAddress == 0x1f }
-                if (i16 != null) runCatching { fm!!.replaceInstruction(i16, "const-wide/32 v16, 0") }.onFailure { e("W0", it) }
+                if (i16 != null) runCatching { fm!!.replaceInstruction(i16!!, "const-wide/32 v16, 0") }.onFailure { e("W0", it) }
                 if (inLoop) {
                     // Hop to the shared tail: 0x120 -> 0x89 -> 0x13. The tail restores
                     // the remaining registers and re-enters the loop head, which re-igets
