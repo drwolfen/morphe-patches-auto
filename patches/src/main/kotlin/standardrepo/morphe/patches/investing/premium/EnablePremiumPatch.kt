@@ -21,6 +21,7 @@ import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction10x
 import com.android.tools.smali.dexlib2.immutable.reference.ImmutableStringReference
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction20t
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction21s
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction11x
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction31c
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction11n
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction22c
@@ -328,9 +329,7 @@ val enablePremiumPatch = bytecodePatch(
                     val newPl = BuilderPackedSwitchPayload(plOld.switchElements.first().getKey(), lbls)
                     // Append payload + a trailing nop: a payload that is the very last
                     // instruction sits at address == size and the switch check fails.
-                    val lastRet = live0.lastOrNull { it.opcode.name == "return-object" }
-                    val retLbl = runCatching { (lastRet as? BuilderInstruction)?.location?.addNewLabel() }.getOrNull()
-                    runCatching { fm!!.implementation!!.addInstructions(sz, listOfNotNull(newPl, nop(), retLbl?.let { BuilderInstruction20t(Opcode.GOTO_16, it) })) }.onFailure { e("SWA", it) }
+                    runCatching { fm!!.implementation!!.addInstructions(sz, listOf(newPl, BuilderInstruction11x(Opcode.RETURN_OBJECT, 0))) }.onFailure { e("SWA", it) }
                     val plLbl = runCatching { newPl.location.addNewLabel() }.getOrNull()
                     if (plLbl != null) {
                         runCatching { fm!!.implementation!!.replaceInstruction(swI, BuilderInstruction31t(Opcode.PACKED_SWITCH, reg, plLbl)) }.onFailure { e("SW2", it) }
