@@ -278,9 +278,9 @@ val enablePremiumPatch = bytecodePatch(
             val n2 = fm?.implementation?.instructions?.toList() ?: emptyList()
             // The title throw is the one whose preceding JsonDataException call got (title, HEADLINE, reader).
             val ti = n2.indices.firstOrNull { i ->
-                i > 0 && n2[i].opcode.name == "throw" &&
-                    n2[i - 1].opcode.name == "invoke-static" &&
-                    (n2[i - 1] as? Instruction35c)?.let { it.registerC == 15 && it.registerD == 13 } == true
+                i > 1 && n2[i].opcode.name == "throw" &&
+                    n2[i - 2].opcode.name == "invoke-static" &&
+                    (n2[i - 2] as? Instruction35c)?.let { it.registerC == 15 && it.registerD == 13 } == true
             }
             runCatching { java.io.File(tmpDir + "/site.log").appendText("NA ti=" + ti + "\n") }
             if (ti != null) fm!!.replaceInstruction(ti, "const-string v8, \"\"")
