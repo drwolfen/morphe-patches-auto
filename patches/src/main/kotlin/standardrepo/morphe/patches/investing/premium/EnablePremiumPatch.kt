@@ -393,20 +393,25 @@ val enablePremiumPatch = bytecodePatch(
             runCatching { java.io.File(tmpDir + "/site.log").appendText("HDRERR " + t + "\n") }
         }
 
-        // DEBUG: log how many list elements the Data adapter actually received.
+        // DEBUG: list size + completion in the top-level response adapter.
         runCatching {
-            val dCls = mutableClassDefByOrNull("Lcom/fusionmedia/investing/feature/news/pager/articles/data/response/ArticlesResponse_DataJsonAdapter;")
-            val dm = dCls?.methods?.firstOrNull { it.name == "fromJson" }
-            val dins = dm?.implementation?.instructions?.toList()
-            val ci = dins?.indexOfFirst { it.opcode.name == "check-cast" } ?: -1
-            java.io.File(tmpDir + "/site.log").appendText("DLIST ci=" + ci + " n=" + (dins?.size ?: -1) + "\n")
-            if (ci > 0) dm!!.implementation!!.addInstructions(ci + 1, listOf(
+            val rCls = mutableClassDefByOrNull("Lcom/fusionmedia/investing/feature/news/pager/articles/data/response/ArticlesResponseJsonAdapter;")
+            val rfm = rCls?.methods?.firstOrNull { it.name == "fromJson" }
+            val rins = rfm?.implementation?.instructions?.toList()
+            val ci = rins?.indexOfFirst { it.opcode.name == "check-cast" && ((it as? ReferenceInstruction)?.reference?.toString()?.contains("List") == true) } ?: -1
+            val ri = rins?.indexOfFirst { it.opcode.name == "return-object" } ?: -1
+            java.io.File(tmpDir + "/site.log").appendText("RLIST ci=" + ci + " ret=" + ri + " n=" + (rins?.size ?: -1) + "\n")
+            if (ci > 0) rfm!!.implementation!!.addInstructions(ci + 1, listOf(
                 BuilderInstruction35c(Opcode.INVOKE_VIRTUAL, 1, 1, 0, 0, 0, 0, ImmutableMethodReference("Ljava/util/List;", "size", listOf(), "I")),
                 BuilderInstruction11x(Opcode.MOVE_RESULT, 2),
                 BuilderInstruction35c(Opcode.INVOKE_STATIC, 1, 2, 0, 0, 0, 0, ImmutableMethodReference("Ljava/lang/String;", "valueOf", listOf("I"), "Ljava/lang/String;")),
                 BuilderInstruction11x(Opcode.MOVE_RESULT_OBJECT, 2),
                 BuilderInstruction21c(Opcode.CONST_STRING, 7, ImmutableStringReference("CPL:")),
                 BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 7, 2, 0, 0, 0, ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I"))
+            ))
+            if (ri > 0) rfm!!.implementation!!.addInstructions(ri, listOf(
+                BuilderInstruction21c(Opcode.CONST_STRING, 7, ImmutableStringReference("CPE:")),
+                BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 7, 7, 0, 0, 0, ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I"))
             ))
         }
         if (newsRepo != null) {
