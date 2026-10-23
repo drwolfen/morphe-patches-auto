@@ -17,6 +17,8 @@ import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.formats.Instruction35c
 import com.android.tools.smali.dexlib2.iface.instruction.OffsetInstruction
 import com.android.tools.smali.dexlib2.builder.BuilderInstruction
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction10x
+import com.android.tools.smali.dexlib2.immutable.reference.ImmutableStringReference
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction20t
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction22c
 import com.android.tools.smali.dexlib2.iface.reference.StringReference
@@ -289,6 +291,7 @@ val enablePremiumPatch = bytecodePatch(
             runCatching {
                 java.io.File(tmpDir + "/site.log").appendText("NATH " + tAll.joinToString(",") { i -> i.toString() + ":" + (maxOf(0, i - 12)..i).map { n2[it].opcode.name }.joinToString("|") } + "\n")
             }
+            val nop = BuilderInstruction10x(Opcode.NOP)
             val e = { tag: String, x: Throwable -> runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + tag + " " + x.toString().take(200) + " @ " + (x.stackTrace.firstOrNull()?.toString() ?: "-") + "\n") } }
             val ti = tAll.firstOrNull { i ->
                 i > 8 && n2[i - 1].opcode.name == "move-result-object" &&
@@ -324,17 +327,25 @@ val enablePremiumPatch = bytecodePatch(
                     val loopIdx = n2.indices.firstOrNull { n2[it].location?.codeAddress == 0x120 } ?: -1
                     val lbl = (n2.getOrNull(loopIdx) as? BuilderInstruction)?.location?.labels?.firstOrNull() ?: (if (loopIdx >= 0) fm!!.implementation!!.newLabelForIndex(loopIdx) else null)
                     if (lbl != null) {
-                        // The exit block unboxes v16 as Long; if the id case has not run
-                        // yet the slot is still the initial zero, so cast it first — a
-                        // check-cast from Object/Zero to Long is always verifier-safe.
-                        runCatching { fm!!.replaceInstruction(t - 2, "nop") }.onFailure { e("L0c", it) }
-                        runCatching { fm!!.replaceInstruction(t - 1, "nop") }.onFailure { e("L0", it) }
+                        runCatching { fm!!.implementation!!.replaceInstruction(t - 2, nop) }.onFailure { e("L0c", it) }
+                        runCatching { fm!!.implementation!!.replaceInstruction(t - 1, nop) }.onFailure { e("L0", it) }
                         runCatching { fm!!.implementation!!.replaceInstruction(t, BuilderInstruction20t(Opcode.GOTO_16, lbl)) }.onFailure { e("L1", it) }
                     }
                 } else {
-                    // Every validation block is neutralised: its own throw becomes a
-                    // plain nop so the chain falls through to the constructor.
-                    runCatching { fm!!.replaceInstruction(t, "nop") }.onFailure { e("E3", it) }
+                    // Validation block: its throw becomes a fall-through. The title block
+                    // must hand the next (id) block its own name constants, otherwise the
+                    // merge sees the adapter types and reports a Conflict.
+                    val isTitle = n2[tOld - 2].let { (it as? Instruction35c)?.let { i2 -> i2.registerC == 15 && i2.registerD == 13 } == true }
+                    if (isTitle) {
+                        runCatching { fm!!.implementation!!.replaceInstruction(t - 2, BuilderInstruction21c(Opcode.CONST_STRING, 8, ImmutableStringReference("id"))) }.onFailure { e("E1", it) }
+                        runCatching { fm!!.implementation!!.replaceInstruction(t - 1, BuilderInstruction21c(Opcode.CONST_STRING, 7, ImmutableStringReference("news_ID"))) }.onFailure { e("E2", it) }
+                        runCatching { fm!!.implementation!!.replaceInstruction(t, nop) }.onFailure { e("E3", it) }
+                    } else {
+                        // Last block: three nops keep the six-unit block size.
+                        runCatching { fm!!.implementation!!.replaceInstructions(t - 2, listOf(nop, nop, nop)) }.onFailure { e("E4", it) }
+                        runCatching { fm!!.implementation!!.replaceInstruction(t - 1, nop) }.onFailure { e("E5", it) }
+                        runCatching { fm!!.implementation!!.replaceInstruction(t, nop) }.onFailure { e("E6", it) }
+                    }
                 }
             }
         } catch (t: Throwable) {
