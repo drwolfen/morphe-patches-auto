@@ -285,7 +285,12 @@ val enablePremiumPatch = bytecodePatch(
                     n2[i - 8].opcode.name == "check-cast" && (n2[i - 8] as? OneRegisterInstruction)?.registerA == 6
             }
             runCatching { java.io.File(tmpDir + "/site.log").appendText("NA ti=" + ti + "\n") }
-            if (ti != null) fm!!.replaceInstruction(ti, "const-string v8, \"\"")
+            if (ti != null) {
+                fm!!.addInstructions(ti, """
+                    const-string v8, ""
+                """)
+                fm!!.replaceInstruction(ti + 1, "nop")
+            }
         } catch (t: Throwable) {
             runCatching { java.io.File(tmpDir + "/site.log").appendText("NAERR " + t + "\n") }
         }
