@@ -310,7 +310,7 @@ val enablePremiumPatch = bytecodePatch(
                     // Never take the branch (v6 is always set), and keep the block itself
                     // consistent so its dead fall-through merges cleanly: the next case
                     // still needs v7 as its adapter register.
-                    val bFld = n2.firstOrNull { it.opcode.name == "iget-object" && ((it as? ReferenceInstruction)?.reference as? FieldReference)?.name == "b" }?.let { (it as? ReferenceInstruction)?.reference as? FieldReference }
+                    val bFld = n2.firstOrNull { it.opcode.name == "iget-object" && (it as? OneRegisterInstruction)?.registerA == 7 }?.let { (it as? ReferenceInstruction)?.reference as? FieldReference }
                     val igets = n2.filter { it.opcode.name == "iget-object" }.mapNotNull { (it as? ReferenceInstruction)?.reference as? FieldReference }.take(4).joinToString("|") { it.definingClass + "." + it.name + ":" + it.type }
                     runCatching { java.io.File(tmpDir + "/site.log").appendText("IGS " + bFld + " :: " + n2.count { it.opcode.name == "iget-object" } + " / " + n2.size + " / " + t + " :: " + n2.indexOfFirst { it.opcode.name == "iget-object" } + " :: " + n2.firstOrNull { (it as? ReferenceInstruction)?.reference is FieldReference && ((it as? ReferenceInstruction)?.reference as FieldReference)?.name == "b" }?.let { (it as? ReferenceInstruction)?.reference as FieldReference }?.let { f -> f.definingClass + "." + f.name + ":" + f.type } + "\n") }
                     if (bFld != null) runCatching { java.io.File(tmpDir + "/site.log").appendText("BSM <" + "iget-object v7, v0, " + bFld.definingClass + "." + bFld.name + ":" + bFld.type + ">\n") }
