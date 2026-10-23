@@ -402,7 +402,7 @@ val enablePremiumPatch = bytecodePatch(
             val ri = rins?.indexOfFirst { it.opcode.name == "return-object" } ?: -1
             java.io.File(tmpDir + "/site.log").appendText("RLIST ci=" + ci + " ret=" + ri + " n=" + (rins?.size ?: -1) + "\n")
             if (ci > 0) rfm!!.implementation!!.addInstructions(ci + 1, listOf(
-                BuilderInstruction35c(Opcode.INVOKE_VIRTUAL, 1, 1, 0, 0, 0, 0, ImmutableMethodReference("Ljava/util/List;", "size", listOf(), "I")),
+                BuilderInstruction35c(Opcode.INVOKE_VIRTUAL, 1, 0, 0, 0, 0, 0, ImmutableMethodReference("Ljava/util/List;", "size", listOf(), "I")),
                 BuilderInstruction11x(Opcode.MOVE_RESULT, 2),
                 BuilderInstruction35c(Opcode.INVOKE_STATIC, 1, 2, 0, 0, 0, 0, ImmutableMethodReference("Ljava/lang/String;", "valueOf", listOf("I"), "Ljava/lang/String;")),
                 BuilderInstruction11x(Opcode.MOVE_RESULT_OBJECT, 2),
