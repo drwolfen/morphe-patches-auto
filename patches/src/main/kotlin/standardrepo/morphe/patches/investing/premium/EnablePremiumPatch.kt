@@ -307,7 +307,7 @@ val enablePremiumPatch = bytecodePatch(
             val tis = n2.indices.filter { i ->
                 i > 8 && n2[i].opcode.name == "throw" && n2[i - 1].opcode.name == "move-result-object" &&
                     n2[i - 2].opcode.name == "invoke-static" &&
-                    (n2[i - 2] as? Instruction35c)?.let { i2 -> (i2.registerC == 15 && i2.registerD == 13) || (i2.registerC == 8 && i2.registerD == 7) } == true
+                    (n2[i - 2] as? Instruction35c)?.let { i2 -> (i2.registerC == 99 && i2.registerD == 13) || (i2.registerC == 98 && i2.registerD == 7) } == true
             }
             val exitIdx = n2.indices.firstOrNull { i ->
                 n2[i].opcode.name == "if-eqz" && (n2[i] as? Instruction21t)?.let { it.registerA == 16 && (n2[i] as? OffsetInstruction)?.codeOffset == 0x4a } == true
