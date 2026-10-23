@@ -312,6 +312,7 @@ val enablePremiumPatch = bytecodePatch(
                     val loopIdx = n2.indexOfFirst { it.opcode.name == "invoke-virtual" && ((it as? ReferenceInstruction)?.reference as? MethodReference)?.let { m -> m.name == "s" && m.definingClass == "Lrpd;" } == true }
                     val loc = if (loopIdx >= 0) n2[loopIdx].location else null
                     val lbl = loc?.labels?.firstOrNull() ?: loc?.addNewLabel()
+                    runCatching { java.io.File(tmpDir + "/site.log").appendText("LI=" + loopIdx + " L=" + (lbl != null) + "\n") }
                     if (lbl != null) fm!!.replaceInstruction(t, BuilderInstruction31t(Opcode.GOTO_16, 0, lbl)) else fm!!.replaceInstruction(t, "nop")
                 } else {
                     // After the constructor these blocks are entered by jumps from the
