@@ -285,7 +285,12 @@ val enablePremiumPatch = bytecodePatch(
                     n2[i - 8].opcode.name == "check-cast" && (n2[i - 8] as? OneRegisterInstruction)?.registerA == 6
             }
             runCatching { java.io.File(tmpDir + "/site.log").appendText("NA ti=" + ti + "\n") }
-            if (ti != null) fm!!.replaceInstruction(0, "move-object/from16 v0, v28")
+            if (ti != null) {
+                // Same-size replacements keep the code size, so the switch payload
+                // offsets (which dexlib does not re-point) stay valid.
+                fm!!.replaceInstruction(ti - 1, "const-string v8, \"\"")
+                fm!!.replaceInstruction(ti, "nop")
+            }
         } catch (t: Throwable) {
             runCatching { java.io.File(tmpDir + "/site.log").appendText("NAERR " + t + "\n") }
         }
