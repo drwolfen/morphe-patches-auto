@@ -27,6 +27,7 @@ import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction11n
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction22c
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction22x
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction35c
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction32x
 import com.android.tools.smali.dexlib2.iface.reference.StringReference
 import com.android.tools.smali.dexlib2.immutable.reference.ImmutableMethodReference
 import com.android.tools.smali.dexlib2.iface.instruction.formats.Instruction21t
@@ -314,7 +315,7 @@ val enablePremiumPatch = bytecodePatch(
                     // The helper (invoke-static) throws by itself, so the throw never gets
                     // control: drop the call, the move-result and the throw, and restore
                     // v0 (the cases use it as `this`) before falling through.
-                    runCatching { fm!!.implementation!!.replaceInstruction(ii, BuilderInstruction22x(Opcode.MOVE_OBJECT_16, 0, 28)) }.onFailure { e("TH" + ii, it) }
+                    runCatching { fm!!.implementation!!.replaceInstruction(ii, BuilderInstruction32x(Opcode.MOVE_OBJECT_16, 0, 28)) }.onFailure { e("TH" + ii, it) }
                     tn++
                 }
                 runCatching { fm!!.implementation!!.instructions.size }
