@@ -293,8 +293,11 @@ val enablePremiumPatch = bytecodePatch(
             }
             for (t in tis.asReversed()) {
                 // Same-size replacements keep the code size, so the switch payload
-                // offsets (which dexlib does not re-point) stay valid.
-                fm!!.replaceInstruction(t - 1, "const-string v8, \"\"")
+                // offsets (which dexlib does not re-point) stay valid. In the loop the
+                // value slot is v8; after the constructor the name register v7 is the
+                // one the verifier expects to be a String.
+                val inLoop = t > 8 && n2[t - 8].opcode.name == "check-cast"
+                fm!!.replaceInstruction(t - 1, if (inLoop) "const-string v8, \"\"" else "const-string v7, \"\"")
                 fm!!.replaceInstruction(t, "nop")
             }
         } catch (t: Throwable) {
