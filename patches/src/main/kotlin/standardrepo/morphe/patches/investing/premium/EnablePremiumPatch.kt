@@ -313,7 +313,7 @@ val enablePremiumPatch = bytecodePatch(
                     val loc = if (loopIdx >= 0) n2[loopIdx].location else null
                     val lbl = loc?.labels?.firstOrNull() ?: loc?.addNewLabel()
                     runCatching { java.io.File(tmpDir + "/site.log").appendText("LI=" + loopIdx + " L=" + (lbl != null) + "\n") }
-                    if (lbl != null) fm!!.replaceInstruction(t, BuilderInstruction30t(Opcode.GOTO_16, lbl)) else fm!!.replaceInstruction(t, "nop")
+                    if (lbl != null) runCatching { fm!!.replaceInstruction(t, BuilderInstruction30t(Opcode.GOTO_16, lbl)) }.onFailure { java.io.File(tmpDir + "/site.log").appendText("GOERR " + it + "\n") } else fm!!.replaceInstruction(t, "nop")
                 } else {
                     // After the constructor these blocks are entered by jumps from the
                     // loop, so the next block's name registers (v7, v8) must stay String
