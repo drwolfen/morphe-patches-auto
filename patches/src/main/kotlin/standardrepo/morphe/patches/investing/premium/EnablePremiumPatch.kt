@@ -297,8 +297,14 @@ val enablePremiumPatch = bytecodePatch(
                 // value slot is v8; after the constructor the name register v7 is the
                 // one the verifier expects to be a String.
                 val inLoop = t > 8 && n2[t - 8].opcode.name == "check-cast"
-                fm!!.replaceInstruction(t - 1, if (inLoop) "const-string v8, \"\"" else "const-string v7, \"\"")
-                fm!!.replaceInstruction(t, "nop")
+                if (inLoop) {
+                    // Loop: default the value slot and fall through to the next field case.
+                    fm!!.replaceInstruction(t - 1, "const-string v8, \"\"")
+                    fm!!.replaceInstruction(t, "nop")
+                } else {
+                    // After the constructor: the object is built, so just return it.
+                    fm!!.replaceInstruction(t, "return-object v3")
+                }
             }
         } catch (t: Throwable) {
             runCatching { java.io.File(tmpDir + "/site.log").appendText("NAERR " + t + "\n") }
