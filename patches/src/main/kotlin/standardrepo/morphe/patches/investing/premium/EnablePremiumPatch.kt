@@ -321,8 +321,10 @@ val enablePremiumPatch = bytecodePatch(
                     // The helper returns the exception instead of throwing and only peeks
                     // the value (the value itself is parsed just before). Drop the
                     // move-result and the throw; v0 keeps `this`, so the cases stay valid.
-                    runCatching { fm!!.implementation!!.replaceInstruction(ii, nop()) }.onFailure { e("TH" + ii, it) }
-                    runCatching { fm!!.implementation!!.replaceInstruction(ii - 1, nop()) }.onFailure { e("THM" + ii, it) }
+                    // Remove the whole helper+throw block (invoke, move-result, throw) so no
+                    // dead code with mismatched register types stays behind; the branch
+                    // offsets are recomputed by the fixer.
+                    runCatching { fm!!.implementation!!.removeInstructions(ii - 2, 3) }.onFailure { e("TH" + ii, it) }
                     var ok = true
                     if (ok) tn++
                     // The helper (invoke-static) throws by itself, so the throw never gets
