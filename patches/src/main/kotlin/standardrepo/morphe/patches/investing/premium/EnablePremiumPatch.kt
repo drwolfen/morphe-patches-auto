@@ -315,9 +315,9 @@ val enablePremiumPatch = bytecodePatch(
                     ii > 2 && n2x[ii].opcode.name == "throw" && n2x[ii - 1].opcode.name == "move-result-object" && n2x[ii - 2].opcode.name == "invoke-static"
                 }
                 for (ii in ths.asReversed()) {
-                    // Flip the null test that branches to this throw block into if-nez:
-                    // a missing field then falls through to the normal path and the throw
-                    // block stays as dead code, so no control flow/register state changes.
+                    // Re-point the null test from the throw block to the instruction after it:
+                    // both null and non-null then reach the normal path and the throw block
+                    // stays as dead code, so register/merge state is unchanged.
                     val addr = runCatching { n2x[ii].location?.codeAddress }.getOrNull()
                     val prevIf = if (addr != null) n2x.indices.lastOrNull { j ->
                         j < ii && n2x[j].opcode.name == "if-eqz" && runCatching {
@@ -325,8 +325,8 @@ val enablePremiumPatch = bytecodePatch(
                         }.getOrDefault(false)
                     } else null
                     val ok = if (prevIf != null) runCatching {
-                        val lbl = n2x[ii].location.addNewLabel()
-                        fm!!.implementation!!.replaceInstruction(prevIf, BuilderInstruction21t(Opcode.IF_NEZ, (n2x[prevIf] as OneRegisterInstruction).registerA, lbl))
+                        val lbl = n2x[ii + 1].location.addNewLabel()
+                        fm!!.implementation!!.replaceInstruction(prevIf, BuilderInstruction21t(Opcode.IF_EQZ, (n2x[prevIf] as OneRegisterInstruction).registerA, lbl))
                         true
                     }.getOrDefault(false) else false
                     tn++
