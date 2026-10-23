@@ -398,7 +398,7 @@ val enablePremiumPatch = bytecodePatch(
             val dCls = mutableClassDefByOrNull("Lcom/fusionmedia/investing/feature/news/pager/articles/data/response/ArticlesResponse_DataJsonAdapter;")
             val dm = dCls?.methods?.firstOrNull { it.name == "fromJson" }
             val dins = dm?.implementation?.instructions?.toList()
-            val ci = dins?.indexOfFirst { it.opcode.name == "check-cast" && ((it as? ReferenceInstruction)?.reference?.toString()?.contains("Ljava/util/List;") == true) } ?: -1
+            val ci = dins?.indexOfFirst { it.opcode.name == "check-cast" } ?: -1
             java.io.File(tmpDir + "/site.log").appendText("DLIST ci=" + ci + " n=" + (dins?.size ?: -1) + "\n")
             if (ci > 0) dm!!.implementation!!.addInstructions(ci + 1, listOf(
                 BuilderInstruction35c(Opcode.INVOKE_VIRTUAL, 1, 1, 0, 0, 0, 0, ImmutableMethodReference("Ljava/util/List;", "size", listOf(), "I")),
