@@ -311,6 +311,8 @@ val enablePremiumPatch = bytecodePatch(
                     // consistent so its dead fall-through merges cleanly: the next case
                     // still needs v7 as its adapter register.
                     val bFld = n2.firstOrNull { it.opcode.name == "iget-object" && ((it as? ReferenceInstruction)?.reference as? FieldReference)?.name == "b" }?.let { (it as? ReferenceInstruction)?.reference as? FieldReference }
+                    val igets = n2.filter { it.opcode.name == "iget-object" }.mapNotNull { (it as? ReferenceInstruction)?.reference as? FieldReference }.take(4).joinToString("|") { it.definingClass + "." + it.name + ":" + it.type }
+                    runCatching { java.io.File(tmpDir + "/site.log").appendText("IGS " + bFld + " :: " + n2.count { it.opcode.name == "iget-object" } + " / " + n2.size + " / " + t + " :: " + n2.indexOfFirst { it.opcode.name == "iget-object" } + " :: " + n2.firstOrNull { (it as? ReferenceInstruction)?.reference is FieldReference && ((it as? ReferenceInstruction)?.reference as FieldReference)?.name == "b" }?.let { (it as? ReferenceInstruction)?.reference as FieldReference }?.let { f -> f.definingClass + "." + f.name + ":" + f.type } + "\n") }
                     if (bFld != null) runCatching { fm!!.replaceInstruction(t - 9, "iget-object v7, v0, " + bFld.definingClass + "." + bFld.name + ":" + bFld.type) }.onFailure { e("R1", it) }
                     runCatching { fm!!.replaceInstruction(t - 8, "const-string v6, \"\"") }.onFailure { e("R2", it) }
                     runCatching { fm!!.replaceInstruction(t - 1, "const-string v8, \"\"") }.onFailure { e("R3", it) }
