@@ -324,9 +324,13 @@ val enablePremiumPatch = bytecodePatch(
                             (n2x[j] as OffsetInstruction).codeOffset + runCatching { n2x[j].location.codeAddress }.getOrNull()!! == addr
                         }.getOrDefault(false)
                     } else null
+                    val off = if (prevIf != null) (n2x[prevIf] as? OffsetInstruction)?.codeOffset else null
+                    var offNow = -999
                     val ok = if (prevIf != null) runCatching {
                         val lbl = n2x[ii + 1].location.addNewLabel()
                         fm!!.implementation!!.replaceInstruction(prevIf, BuilderInstruction21t(Opcode.IF_EQZ, (n2x[prevIf] as OneRegisterInstruction).registerA, lbl))
+                        offNow = (fm!!.implementation!!.instructions[prevIf] as? OffsetInstruction)?.codeOffset ?: -888
+                        java.io.File(tmpDir + "/site.log").appendText("FLP " + prevIf + " off=" + off + " now=" + offNow + "\n")
                         true
                     }.getOrDefault(false) else false
                     if (ok) tn++
