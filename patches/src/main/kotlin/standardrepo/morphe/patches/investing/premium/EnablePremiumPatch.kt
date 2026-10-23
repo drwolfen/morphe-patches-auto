@@ -313,20 +313,11 @@ val enablePremiumPatch = bytecodePatch(
                 val i16 = n2.indices.firstOrNull { n2[it].location?.codeAddress == 0x1f }
                 if (i16 != null) runCatching { fm!!.replaceInstruction(i16, "const-wide/32 v16, 0") }.onFailure { e("W0", it) }
                 if (inLoop) {
-                    // Drop the move-result and jump back to the loop head: that path
-                    // re-igets the adapters (0x4b/0x53/0x57) and re-reads the name, so
-                    // v7/v8 must stay untouched and no fall-through merge happens.
-                    val loopIdx = n2.indices.firstOrNull { n2[it].location?.codeAddress == 0x13 } ?: -1
-                    val lbl = (n2.getOrNull(loopIdx) as? BuilderInstruction)?.location?.labels?.firstOrNull() ?: (if (loopIdx >= 0) fm!!.implementation!!.newLabelForIndex(loopIdx) else null)
-                    if (lbl != null) {
-                        // Drop the exception build entirely (nop nop) and spend the
-                        // freed units on the 2-unit goto so the block stays 4 units,
-                        // exactly 2 less than the original 6.
-                        runCatching { fm!!.replaceInstruction(t - 8, "nop") }.onFailure { e("L0", it) }
-                        runCatching { fm!!.replaceInstruction(t - 2, "nop") }.onFailure { e("L0b", it) }
-                        runCatching { fm!!.replaceInstruction(t - 1, "nop") }.onFailure { e("L1", it) }
-                        runCatching { fm!!.replaceInstruction(t, BuilderInstruction20t(Opcode.GOTO_16, lbl)) }.onFailure { e("L2", it) }
-                    }
+                    // Hop to the shared tail: 0x120 -> 0x89 -> 0x13. The tail restores
+                    // the remaining registers and re-enters the loop head, which re-igets
+                    // the adapters. v7/v8 stay untouched, so no merge conflict arises,
+                    // and a plain 1-unit goto keeps the code size identical.
+                    runCatching { fm!!.replaceInstruction(t, "goto 0120") }.onFailure { e("L0", it) }
                 } else {
                     // After the loop the blocks run again as validation. The next block
                     // consumes v8/v7 as its name strings, so the fall-through has to
