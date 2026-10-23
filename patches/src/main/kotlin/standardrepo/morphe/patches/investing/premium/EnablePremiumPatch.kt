@@ -305,6 +305,7 @@ val enablePremiumPatch = bytecodePatch(
                     n2[i - 2].opcode.name == "invoke-static" &&
                     (n2[i - 2] as? Instruction35c)?.let { it.registerC == 15 && it.registerD == 13 } == true
             }
+            runCatching { java.io.File(tmpDir + "/site.log").appendText("T21 " + n2.indices.filter { (n2[it] as? Instruction21t)?.registerA == 16 }.map { it.toString() + ":" + (n2[it] as? Instruction21t)?.codeOffset + ":" + n2[it].opcode.name }.take(6).joinToString(",") + "\n") }
             runCatching { java.io.File(tmpDir + "/site.log").appendText("TIS " + tis.size + " i149=" + (n2.indices.firstOrNull { runCatching { n2[it].location?.codeAddress }.getOrNull() == 0x149 }) + "\n") }
             val i149 = n2.indices.firstOrNull { runCatching { n2[it].location?.codeAddress }.getOrNull() == 0x149 }
             if (i149 != null) runCatching { fm!!.implementation!!.addInstructions(i149, listOf(BuilderInstruction21c(Opcode.CHECK_CAST, 16, ImmutableTypeReference("Ljava/lang/Long;")))) }.onFailure { e("C0", it) }
