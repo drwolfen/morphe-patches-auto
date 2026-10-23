@@ -310,7 +310,7 @@ val enablePremiumPatch = bytecodePatch(
             runCatching { java.io.File(tmpDir + "/site.log").appendText("TIS " + tis.size + " i149=" + i149 + "\n") }
             if (i149 != null) runCatching { fm!!.implementation!!.addInstructions(i149, listOf(BuilderInstruction21c(Opcode.CHECK_CAST, 16, ImmutableTypeReference("Ljava/lang/Long;")), BuilderInstruction21c(Opcode.CHECK_CAST, 17, ImmutableTypeReference("Ljava/lang/Long;")), BuilderInstruction21c(Opcode.CHECK_CAST, 18, ImmutableTypeReference("Ljava/lang/Integer;")))) }.onFailure { e("C0", it) }
             runCatching { java.io.File(tmpDir + "/site.log").appendText("CAND " + n2.indices.filter { n2[it].opcode.name == "throw" && n2[it - 1].opcode.name == "move-result-object" }.map { it.toString() + ":" + ((n2[it - 2] as? Instruction35c)?.registerC?.toString() ?: "-") + "/" + ((n2[it - 2] as? Instruction35c)?.registerD?.toString() ?: "-") }.take(30).joinToString(",") + "\n") }
-            for ((tOld, t) in tis.zip(if (i149 != null) tis.map { if (it >= i149) it + 3 else it } else tis).asReversed()) {
+            for ((tOld, t) in tis.zip(if (i149 != null) tis.map { it } else tis).asReversed()) {
                 runCatching { java.io.File(tmpDir + "/site.log").appendText("TK t=" + t + " c2=" + n2[t - 2].opcode.name + " c8=" + (if (t > 8) n2[t - 8].opcode.name else "-") + " regA8=" + (if (t > 8) ((n2[t - 8] as? OneRegisterInstruction)?.registerA?.toString() ?: "-") else "-") + "\n") }
                 // Same-size replacements keep the code size, so the switch payload
                 // offsets (which dexlib does not re-point) stay valid. In the loop the
@@ -325,28 +325,14 @@ val enablePremiumPatch = bytecodePatch(
                 val i16 = n2.indices.firstOrNull { runCatching { n2[it].location?.codeAddress }.getOrNull() == 0x1f }
                 if (false) runCatching { fm!!.replaceInstruction(i16!!, "const-wide/32 v16, 0") }.onFailure { e("W0", it) }
                 if (inLoop) {
-                    // Hop to the shared tail (0x120 -> 0x89 -> 0x13): the tail re-enters
-                    // the loop head, which re-igets the adapters, and v7/v8 stay untouched.
-                    // Numeric operands are not supported by the inline compiler, so the
-                    // target has to be a Label.
-                    val loopIdx = n2.indices.firstOrNull { runCatching { n2[it].location?.codeAddress }.getOrNull() == 0x120 } ?: -1
-                    val lbl = runCatching { (n2.getOrNull(loopIdx) as? BuilderInstruction)?.location?.labels?.firstOrNull() }.getOrNull() ?: (if (loopIdx >= 0) fm!!.implementation!!.newLabelForIndex(loopIdx) else null)
-                    if (lbl != null) {
-                        runCatching { fm!!.implementation!!.replaceInstruction(t - 8, nop) }.onFailure { e("L0b", it) }
-                        runCatching { fm!!.implementation!!.replaceInstruction(t - 2, nop) }.onFailure { e("L0c", it) }
-                        runCatching { fm!!.implementation!!.replaceInstruction(t - 1, nop) }.onFailure { e("L0", it) }
-                        runCatching { fm!!.implementation!!.replaceInstruction(t, BuilderInstruction20t(Opcode.GOTO_16, lbl)) }.onFailure { e("L1", it) }
-                    }
+                    runCatching { java.io.File(tmpDir + "/site.log").appendText("LOOP skip\n") }
                 } else {
-                    // Validation block: its throw becomes a fall-through. The title block
-                    // must hand the next (id) block its own name constants, otherwise the
-                    // merge sees the adapter types and reports a Conflict.
-                    val isTitle = n2[tOld - 2].let { (it as? Instruction35c)?.let { i2 -> i2.registerC == 15 && i2.registerD == 13 } == true }
-                    if (isTitle) {
-                        runCatching { fm!!.implementation!!.replaceInstructions(t - 2, listOf(BuilderInstruction21c(Opcode.CONST_STRING, 8, ImmutableStringReference("id")), BuilderInstruction21c(Opcode.CONST_STRING, 7, ImmutableStringReference("news_ID")), nop, nop)) }.onFailure { e("E1", it) }
-                    } else {
-                        // Last block: three nops keep the six-unit block size.
-                        runCatching { fm!!.implementation!!.replaceInstructions(t - 2, listOf(nop, nop, nop, nop, nop, nop)) }.onFailure { e("E4", it) }
+                    val nmV7 = n2.firstOrNull { it.opcode.name == "const-string" && (it as? OneRegisterInstruction)?.registerA == 7 }?.let { (it as? ReferenceInstruction)?.reference as? StringReference }?.string
+                    val nmV8 = n2.firstOrNull { it.opcode.name == "const-string" && (it as? OneRegisterInstruction)?.registerA == 8 }?.let { (it as? ReferenceInstruction)?.reference as? StringReference }?.string
+                    if (nmV7 != null && nmV8 != null) {
+                        runCatching { fm!!.replaceInstruction(t - 2, "const-string/jumbo v8, \"$nmV8\"") }.onFailure { e("E1", it) }
+                        runCatching { fm!!.replaceInstruction(t - 1, "const-string v7, \"$nmV7\"") }.onFailure { e("E2", it) }
+                        runCatching { fm!!.replaceInstruction(t, "nop") }.onFailure { e("E3", it) }
                     }
                 }
             }
