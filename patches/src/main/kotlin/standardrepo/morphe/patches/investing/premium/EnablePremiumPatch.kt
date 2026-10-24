@@ -309,7 +309,11 @@ val enablePremiumPatch = bytecodePatch(
                 val vcd = mutableClassDefByOrNull(vn) ?: continue
                 val vm2 = vcd.methods.firstOrNull { it.name == "invoke" && it.parameterTypes.isEmpty() }
                 runCatching { java.io.File("/tmp/hdrk.txt").appendText("VM " + vn + " " + (vm2 != null) + "\n") }
-                if (vm2 != null) vm2.returnEarly(null)
+                if (vm2 != null) {
+                    val vi = vm2.implementation!!
+                    vi.replaceInstruction(0, BuilderInstruction11n(Opcode.CONST_4, 0, 0))
+                    vi.replaceInstruction(1, BuilderInstruction11x(Opcode.RETURN_OBJECT, 0))
+                }
             }
         }
         // DEBUG: dump the news fetch failure stack to logcat (System.out shows in logcat).
