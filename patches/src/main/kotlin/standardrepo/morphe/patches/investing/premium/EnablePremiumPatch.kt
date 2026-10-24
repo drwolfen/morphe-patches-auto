@@ -322,7 +322,7 @@ val enablePremiumPatch = bytecodePatch(
             runCatching {
                 val im = na?.methods?.firstOrNull { m -> m.name == "<init>" && m.implementation?.instructions?.any { (it as? ReferenceInstruction)?.reference?.toString() == "id" } == true }?.implementation
                 runCatching { java.io.File("/tmp/hdrk.txt").appendText("im=" + (im != null) + " nm=" + (na?.methods?.count { it.name == "<init>" }) + "\n") }
-                val ti2 = im?.instructions?.indexOfFirst { (it as? ReferenceInstruction)?.reference?.toString() == "id" } ?: -1
+                val ti2 = im?.instructions?.indices?.firstOrNull { a -> im.instructions[a].location.codeAddress == 0x0d } ?: -1
                 runCatching { java.io.File("/tmp/hdrk.txt").appendText("ti2=" + ti2 + "\n") }
                 if (ti2 > 0) {
                     val r = (im!!.instructions[ti2] as OneRegisterInstruction).registerA
