@@ -315,11 +315,9 @@ val enablePremiumPatch = bytecodePatch(
                 if (vm2 != null) runCatching {
                     val vi = vm2.implementation!!
                     val li = vi.instructions.indexOfFirst { (it as? ReferenceInstruction)?.reference?.toString()?.contains("System;->loadLibrary") == true }
-                    if (li >= 0) {
-                        vi.replaceInstruction(li, BuilderInstruction11n(Opcode.CONST_4, 0, 0))
-                        vi.replaceInstruction(li + 1, BuilderInstruction10x(Opcode.NOP))
-                        vi.replaceInstruction(li + 2, BuilderInstruction10x(Opcode.NOP))
-                    }
+                    // move/from16 is a 3-unit no-op: exact size of invoke-static, so
+                    // no address shift and the packed-switch payload stays put.
+                    if (li >= 0) vi.replaceInstruction(li, BuilderInstruction32x(Opcode.MOVE_FROM16, 0, 0))
                     runCatching { java.io.File("/tmp/vmg.txt").appendText("VML " + vn + " li=" + li + "\n") }
                 }.onFailure { runCatching { java.io.File("/tmp/vmg.txt").appendText("VMG " + it + "\n") } }
             }
