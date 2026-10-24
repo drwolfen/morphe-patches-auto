@@ -305,6 +305,7 @@ val enablePremiumPatch = bytecodePatch(
                 val fm = fm0
                 val thisReg = (fm!!.implementation!!.registerCount) - 2
             val n2 = fm?.implementation?.instructions?.toList() ?: emptyList()
+            var skipLbl: com.android.tools.smali.dexlib2.builder.Label? = null
             val tAll = n2.indices.filter { n2[it].opcode.name == "throw" }
             runCatching {
                 java.io.File(tmpDir + "/site.log").appendText("NATH " + tAll.joinToString(",") { i -> i.toString() + ":" + (maxOf(0, i - 12)..i).map { n2[it].opcode.name }.joinToString("|") } + "\n")
@@ -351,12 +352,16 @@ val enablePremiumPatch = bytecodePatch(
             runCatching {
                 val l9 = fm!!.implementation!!.instructions.toList()
                 val si = l9.indexOfFirst { (it as? ReferenceInstruction)?.reference?.let { r -> r is MethodReference && r.name == "d0" } == true }
-                if (si > 0) fm!!.implementation!!.addInstructions(si, listOf(
+                if (si > 0) {
+                    val blk = listOf(
                     BuilderInstruction21c(Opcode.CHECK_CAST, 1, ImmutableTypeReference("Lfqd;")),
                     BuilderInstruction22c(Opcode.IGET_OBJECT, 2, 1, ImmutableFieldReference("Lfqd;", "m", "Ljava/lang/String;")),
                     BuilderInstruction21c(Opcode.CONST_STRING, 3, ImmutableStringReference("CPN2:")),
                     BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 3, 2, 0, 0, 0, ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I"))
-                ))
+                    )
+                    fm!!.implementation!!.addInstructions(si, blk)
+                    skipLbl = blk[0].location.addNewLabel()
+                }
             }.onFailure { e("CPN2", it) }
                 if (bi > 0) fm!!.implementation!!.addInstructions(bi, listOf(
                     BuilderInstruction22x(Opcode.MOVE_FROM16, 2, 26),
@@ -388,7 +393,7 @@ val enablePremiumPatch = bytecodePatch(
                     var curA = 0
                     for (ins in live0) { val u = ins.codeUnits; for (d in 0 until u) owner[curA + d] = ins.location; curA += u }
                     runCatching { java.io.File(tmpDir + "/site.log").appendText("SWT " + plOld.switchElements.joinToString(",") { el -> el.getKey().toString() + "@" + el.getTarget().codeAddress + ">" + ((owner[el.getTarget().codeAddress]?.let { it.codeAddress }) ?: -1) } + "\n") }
-                    val lbls = plOld.switchElements.map { el -> (owner[el.getTarget().codeAddress] ?: el.getTarget().location).addNewLabel() }
+                    val lbls = plOld.switchElements.map { el -> if (el.getKey() == -1 && skipLbl != null) skipLbl!! else (owner[el.getTarget().codeAddress] ?: el.getTarget().location).addNewLabel() }
                     val sz = runCatching { fm!!.implementation!!.instructions.size }.getOrNull() ?: 0
                     val newPl = BuilderPackedSwitchPayload(plOld.switchElements.first().getKey(), lbls)
                     // Append payload + a trailing nop: a payload that is the very last
