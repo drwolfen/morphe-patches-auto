@@ -303,6 +303,7 @@ val enablePremiumPatch = bytecodePatch(
                 if (m.returnType == "Z" && m.name == "verifySignatureMatches") m.returnEarly(true)
                 if (m.name == "verifyIntegrity") m.returnEarly()
             }
+            if (false) {
             // libpairipcore.so is often absent (Manager installs base only), so make
             // the native executeVM a Java stub; gut every other void body.
             mutableClassDefByOrNull("Lcom/pairip/VMRunner;")?.methods
@@ -317,6 +318,7 @@ val enablePremiumPatch = bytecodePatch(
                     }.onFailure { runCatching { java.io.File("/tmp/vmg.txt").appendText("VME " + it + "\n") } }
                     else if (m.returnType == "V") m.returnEarly()
                 }
+            }
             // PairIP VM entrypoint: loads libpairipcore.so (JNI_OnLoad segfaults).
             for (vn in listOf("Liog;", "La00;", "LaO0;")) {
                 val vcd = mutableClassDefByOrNull(vn) ?: continue
