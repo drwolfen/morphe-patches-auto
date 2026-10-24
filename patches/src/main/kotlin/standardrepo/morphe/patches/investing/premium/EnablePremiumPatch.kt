@@ -321,7 +321,9 @@ val enablePremiumPatch = bytecodePatch(
             val plOld = live0.firstOrNull { it.opcode.name == "packed-switch-payload" } as? BuilderPackedSwitchPayload
             runCatching {
                 val im = na?.methods?.firstOrNull { m -> m.name == "<init>" && m.implementation?.instructions?.any { (it as? ReferenceInstruction)?.reference?.toString() == "id" } == true }?.implementation
+                runCatching { java.io.File("/tmp/hdrk.txt").appendText("im=" + (im != null) + " nm=" + (na?.methods?.count { it.name == "<init>" }) + "\n") }
                 val ti2 = im?.instructions?.indexOfFirst { (it as? ReferenceInstruction)?.reference?.toString() == "id" } ?: -1
+                runCatching { java.io.File("/tmp/hdrk.txt").appendText("ti2=" + ti2 + "\n") }
                 if (ti2 > 0) {
                     val r = (im!!.instructions[ti2] as OneRegisterInstruction).registerA
                     im.replaceInstruction(ti2, BuilderInstruction21c(Opcode.CONST_STRING, r, ImmutableStringReference("HEADLINE")))
