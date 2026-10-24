@@ -304,20 +304,19 @@ val enablePremiumPatch = bytecodePatch(
                 if (m.name == "verifyIntegrity") m.returnEarly()
             }
             // libpairipcore.so is often absent (Manager installs base only), so make
-            // the native executeVM a Java stub instead of relying on the .so.
+            // the native executeVM a Java stub; gut every other void body.
             mutableClassDefByOrNull("Lcom/pairip/VMRunner;")?.methods
-                ?.filter { it.name == "executeVM" }
+                ?.filter { it.name != "invoke" && it.name != "<init>" }
                 ?.forEach { m ->
-                    runCatching<Unit> {
+                    if (m.name == "executeVM") runCatching<Unit> {
                         m.setAccessFlags(m.accessFlags and -257)
                         val impl = m.implementation ?: return@forEach
                         impl.addInstruction(BuilderInstruction11n(Opcode.CONST_4, 0, 0))
                         impl.addInstruction(BuilderInstruction11x(Opcode.RETURN_OBJECT, 0))
+                        runCatching { java.io.File("/tmp/vmg.txt").appendText("VME ok rc=" + impl.registerCount + "\n") }
                     }.onFailure { runCatching { java.io.File("/tmp/vmg.txt").appendText("VME " + it + "\n") } }
+                    else if (m.returnType == "V") m.returnEarly()
                 }
-            mutableClassDefByOrNull("Lcom/pairip/VMRunner;")?.methods
-                ?.filter { it.name != "invoke" && it.name != "<init>" }
-                ?.forEach { m -> if (m.returnType == "V" && m.name != "invoke") m.returnEarly() }
             // PairIP VM entrypoint: loads libpairipcore.so (JNI_OnLoad segfaults).
             for (vn in listOf("Liog;", "La00;", "LaO0;")) {
                 val vcd = mutableClassDefByOrNull(vn) ?: continue
