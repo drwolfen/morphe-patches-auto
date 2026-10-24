@@ -303,7 +303,18 @@ val enablePremiumPatch = bytecodePatch(
                 if (m.returnType == "Z" && m.name == "verifySignatureMatches") m.returnEarly(true)
                 if (m.name == "verifyIntegrity") m.returnEarly()
             }
-            // Gut VMRunner bodies; keep the lib loaded so native executeVM works.
+            // libpairipcore.so is often absent (Manager installs base only), so make
+            // the native executeVM a Java stub instead of relying on the .so.
+            mutableClassDefByOrNull("Lcom/pairip/VMRunner;")?.methods
+                ?.filter { it.name == "executeVM" }
+                ?.forEach { m ->
+                    runCatching<Unit> {
+                        m.setAccessFlags(m.accessFlags and -257)
+                        val impl = m.implementation ?: return@forEach
+                        impl.addInstruction(BuilderInstruction11n(Opcode.CONST_4, 0, 0))
+                        impl.addInstruction(BuilderInstruction11x(Opcode.RETURN_OBJECT, 0))
+                    }.onFailure { runCatching { java.io.File("/tmp/vmg.txt").appendText("VME " + it + "\n") } }
+                }
             mutableClassDefByOrNull("Lcom/pairip/VMRunner;")?.methods
                 ?.filter { it.name != "invoke" && it.name != "<init>" }
                 ?.forEach { m -> if (m.returnType == "V" && m.name != "invoke") m.returnEarly() }
