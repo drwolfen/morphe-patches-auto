@@ -615,6 +615,7 @@ val enablePremiumPatch = bytecodePatch(
                         val rf = (ins.getOrNull(q) as? ReferenceInstruction)?.reference?.toString() ?: ""
                         if (rf.contains("Ls35;->a:")) pattern = true
                     }
+                    runCatching { java.io.File("/tmp/pat.txt").appendText(cd.type + " " + m.name + " idx=" + idx + " pat=" + pattern + "\n") }
                     val value = when {
                         pattern -> "yyyy-MM-dd'T'HH:mm:ss"
                         reflectName.isNotEmpty() -> reflectName
