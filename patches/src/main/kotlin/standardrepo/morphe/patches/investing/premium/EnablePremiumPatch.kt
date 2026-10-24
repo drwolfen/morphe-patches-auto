@@ -320,7 +320,7 @@ val enablePremiumPatch = bytecodePatch(
             val swI = live0.indices.firstOrNull { live0[it].opcode.name == "packed-switch" }
             val plOld = live0.firstOrNull { it.opcode.name == "packed-switch-payload" } as? BuilderPackedSwitchPayload
             runCatching {
-                val im = na?.methods?.firstOrNull { it.name == "<init>" && it.parameterTypes.size == 1 }?.implementation
+                val im = na?.methods?.firstOrNull { m -> m.name == "<init>" && m.implementation?.instructions?.any { (it as? ReferenceInstruction)?.reference?.toString() == "id" } == true }?.implementation
                 val ti2 = im?.instructions?.indexOfFirst { (it as? ReferenceInstruction)?.reference?.toString() == "id" } ?: -1
                 if (ti2 > 0) {
                     val r = (im!!.instructions[ti2] as OneRegisterInstruction).registerA
