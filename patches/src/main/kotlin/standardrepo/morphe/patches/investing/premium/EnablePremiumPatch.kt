@@ -64,6 +64,7 @@ val enablePremiumPatch = bytecodePatch(
         GetRevenueFingerprint.method.returnEarly(null as Void?)
         AFingerprint.method.returnEarly()
         AFingerprintLe51.method.returnEarly()
+        if (false) {
         StartActivityForResultFingerprint.method.apply {
             val impl = implementation!!
             var rc: java.lang.reflect.Field? = null
@@ -240,6 +241,7 @@ val enablePremiumPatch = bytecodePatch(
                 return-void
             """)
         }
+        }
         // java.io.tmpdir is writable both on desktop JVM and inside the Android patcher.
         val tmpDir = System.getProperty("java.io.tmpdir") ?: "."
         classDefForEach { cd ->
@@ -257,7 +259,7 @@ val enablePremiumPatch = bytecodePatch(
             }
             if (callers.isEmpty()) return@classDefForEach
             val mc = mutableClassDefByOrNull(cd.type) ?: return@classDefForEach
-            for (m in callers) {
+            if (false) for (m in callers) {
                 mc.methods.firstOrNull { it.name == m.name && it.returnType == m.returnType }?.returnEarly()
             }
         }
@@ -310,7 +312,7 @@ val enablePremiumPatch = bytecodePatch(
             mutableClassDefByOrNull("Lcom/pairip/VMRunner;")?.methods
                 ?.filter { it.name != "invoke" && it.name != "<init>" }
                 ?.forEach { m ->
-                    if (m.name == "executeVM") runCatching<Unit> {
+                    if (false && m.name == "executeVM") runCatching<Unit> {
                         m.setAccessFlags(m.accessFlags and -257)
                         val body = MutableMethodImplementation(3)
                         body.addInstruction(BuilderInstruction11n(Opcode.CONST_4, 0, 0))
@@ -490,6 +492,9 @@ val enablePremiumPatch = bytecodePatch(
         mutableClassDefByOrNull("Landroidx/startup/InitializationProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
         mutableClassDefByOrNull("Lcom/facebook/internal/FacebookInitProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
         mutableClassDefByOrNull("Lcom/squareup/picasso/PicassoProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
+        val knownHolderValues = mapOf(
+            "Lcom/fusionmedia/investing/feature/financial/health/instrument/overviewnew/model/Prfd/cxQiz;#spaKYWmrOPJzjVb" to "SELECT last_insert_rowid()"
+        )
         val holders = HashSet<String>()
         classDefForEach { cd ->
             if (cd.methods.none { it.name == "<clinit>" } &&
@@ -672,7 +677,8 @@ val enablePremiumPatch = bytecodePatch(
                         if (rf.contains("Ls35;->a")) pattern = true
                     }
                     runCatching { java.io.File("/tmp/pat.txt").appendText(cd.type + " " + m.name + " idx=" + idx + " pat=" + pattern + "\n") }
-                    val value = when {
+                    val fkey = (ins[idx] as? ReferenceInstruction)?.reference?.let { r -> (r as? FieldReference)?.let { it.definingClass + "#" + it.name } } ?: ""
+                    val value = knownHolderValues[fkey] ?: when {
                         pattern -> "yyyy-MM-dd'T'HH:mm:ss"
                         reflectName.isNotEmpty() -> reflectName
                         cast.isNotEmpty() -> serviceNames[cast] ?: "window"
