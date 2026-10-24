@@ -312,7 +312,7 @@ val enablePremiumPatch = bytecodePatch(
                 ?.forEach { m ->
                     if (m.name == "executeVM") runCatching<Unit> {
                         m.setAccessFlags(m.accessFlags and -257)
-                        val body = MutableMethodImplementation(1)
+                        val body = MutableMethodImplementation(3)
                         body.addInstruction(BuilderInstruction11n(Opcode.CONST_4, 0, 0))
                         body.addInstruction(BuilderInstruction11x(Opcode.RETURN_OBJECT, 0))
                         // MutableMethod exposes no implementation setter for native
