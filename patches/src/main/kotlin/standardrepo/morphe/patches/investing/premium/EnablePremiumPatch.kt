@@ -303,7 +303,8 @@ val enablePremiumPatch = bytecodePatch(
             }
             // libpairipcore's JNI_OnLoad derefs a stale pointer: never load it.
             mutableClassDefByOrNull("Lcom/pairip/VMRunner;")?.methods
-                ?.forEach { m -> if (m.returnType == "V") m.returnEarly() }
+                ?.filter { it.name != "invoke" }
+                ?.forEach { m -> if (m.returnType == "V" && m.name != "invoke") m.returnEarly() }
             // PairIP VM entrypoint: loads libpairipcore.so (JNI_OnLoad segfaults).
             for (vn in listOf("Liog;", "La00;", "LaO0;")) {
                 val vcd = mutableClassDefByOrNull(vn) ?: continue
