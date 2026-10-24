@@ -310,10 +310,17 @@ val enablePremiumPatch = bytecodePatch(
                 val vcd = mutableClassDefByOrNull(vn) ?: continue
                 val vm2 = vcd.methods.firstOrNull { it.name == "invoke" && it.parameterTypes.isEmpty() }
                 runCatching { java.io.File("/tmp/hdrk.txt").appendText("VM " + vn + " " + (vm2 != null) + "\n") }
+                // Keep the VM alive but skip System.loadLibrary so libpairipcore's
+                // broken JNI_OnLoad never runs. Keep the 3-unit size.
                 if (vm2 != null) runCatching {
                     val vi = vm2.implementation!!
-                    vi.replaceInstruction(0, BuilderInstruction11n(Opcode.CONST_4, 0, 0))
-                    vi.replaceInstruction(1, BuilderInstruction11x(Opcode.RETURN_OBJECT, 0))
+                    val li = vi.instructions.indexOfFirst { (it as? ReferenceInstruction)?.reference?.toString()?.contains("System;->loadLibrary") == true }
+                    if (li >= 0) {
+                        vi.replaceInstruction(li, BuilderInstruction11n(Opcode.CONST_4, 0, 0))
+                        vi.replaceInstruction(li + 1, BuilderInstruction10x(Opcode.NOP))
+                        vi.replaceInstruction(li + 2, BuilderInstruction10x(Opcode.NOP))
+                    }
+                    runCatching { java.io.File("/tmp/vmg.txt").appendText("VML " + vn + " li=" + li + "\n") }
                 }.onFailure { runCatching { java.io.File("/tmp/vmg.txt").appendText("VMG " + it + "\n") } }
             }
         }
