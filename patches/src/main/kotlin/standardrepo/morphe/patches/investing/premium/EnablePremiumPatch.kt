@@ -614,7 +614,7 @@ val enablePremiumPatch = bytecodePatch(
                     for (q in idx + 1..idx + 4) {
                         val rf = (ins.getOrNull(q) as? ReferenceInstruction)?.reference?.toString() ?: ""
                         if (idx == 15 && cd.type == "Lue1;") runCatching { java.io.File("/tmp/pat.txt").appendText("NEXT " + q + " " + rf + "\n") }
-                        if (rf.contains("Ls35;->a:")) pattern = true
+                        if (rf.contains("Ls35;->a")) pattern = true
                     }
                     runCatching { java.io.File("/tmp/pat.txt").appendText(cd.type + " " + m.name + " idx=" + idx + " pat=" + pattern + "\n") }
                     val value = when {
