@@ -610,7 +610,13 @@ val enablePremiumPatch = bytecodePatch(
                     val reflectName = (ins[idx] as? ReferenceInstruction)?.let {
                         (it.reference as? FieldReference)?.let { f -> reflect[f.definingClass + "#" + f.name] }
                     } ?: ""
+                    var pattern = false
+                    for (q in idx + 1..idx + 4) {
+                        val rf = (ins.getOrNull(q) as? ReferenceInstruction)?.reference?.toString() ?: ""
+                        if (rf.contains("Ls35;->a:")) pattern = true
+                    }
                     val value = when {
+                        pattern -> "yyyy-MM-dd'T'HH:mm:ss"
                         reflectName.isNotEmpty() -> reflectName
                         cast.isNotEmpty() -> serviceNames[cast] ?: "window"
                         column -> "id"
