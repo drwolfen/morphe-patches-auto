@@ -40,6 +40,7 @@ import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction21c
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction31i
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction31t
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderPackedSwitchPayload
+import com.android.tools.smali.dexlib2.builder.MutableMethodImplementation
 import com.android.tools.smali.dexlib2.Opcode
 import com.android.tools.smali.dexlib2.immutable.reference.ImmutableFieldReference
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
@@ -302,7 +303,7 @@ val enablePremiumPatch = bytecodePatch(
                 if (m.returnType == "Z" && m.name == "verifySignatureMatches") m.returnEarly(true)
                 if (m.name == "verifyIntegrity") m.returnEarly()
             }
-            // libpairipcore's JNI_OnLoad derefs a stale pointer: never load it.
+            // Gut VMRunner bodies; keep the lib loaded so native executeVM works.
             mutableClassDefByOrNull("Lcom/pairip/VMRunner;")?.methods
                 ?.filter { it.name != "invoke" && it.name != "<init>" }
                 ?.forEach { m -> if (m.returnType == "V" && m.name != "invoke") m.returnEarly() }
@@ -318,7 +319,7 @@ val enablePremiumPatch = bytecodePatch(
                     val li = vi.instructions.indexOfFirst { (it as? ReferenceInstruction)?.reference?.toString()?.contains("System;->loadLibrary") == true }
                     // move/from16 is a 3-unit no-op: exact size of invoke-static, so
                     // no address shift and the packed-switch payload stays put.
-                    if (li >= 0) vi.replaceInstruction(li, BuilderInstruction31i(Opcode.CONST_WIDE_32, 0, 0))
+                    if (false && li >= 0) vi.replaceInstruction(li, BuilderInstruction31i(Opcode.CONST_WIDE_32, 0, 0))
                     runCatching { java.io.File("/tmp/vmg.txt").appendText("VML " + vn + " li=" + li + "\n") }
                 }.onFailure { runCatching { java.io.File("/tmp/vmg.txt").appendText("VMG " + it + "\n") } }
             }
