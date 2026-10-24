@@ -37,6 +37,7 @@ import com.android.tools.smali.dexlib2.immutable.reference.ImmutableMethodRefere
 import com.android.tools.smali.dexlib2.iface.instruction.formats.Instruction21t
 import com.android.tools.smali.dexlib2.immutable.reference.ImmutableTypeReference
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction21c
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction31i
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction31t
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderPackedSwitchPayload
 import com.android.tools.smali.dexlib2.Opcode
@@ -317,7 +318,7 @@ val enablePremiumPatch = bytecodePatch(
                     val li = vi.instructions.indexOfFirst { (it as? ReferenceInstruction)?.reference?.toString()?.contains("System;->loadLibrary") == true }
                     // move/from16 is a 3-unit no-op: exact size of invoke-static, so
                     // no address shift and the packed-switch payload stays put.
-                    if (li >= 0) vi.replaceInstruction(li, BuilderInstruction32x(Opcode.MOVE_FROM16, 0, 0))
+                    if (li >= 0) vi.replaceInstruction(li, BuilderInstruction31i(Opcode.CONST_WIDE_32, 0, 0))
                     runCatching { java.io.File("/tmp/vmg.txt").appendText("VML " + vn + " li=" + li + "\n") }
                 }.onFailure { runCatching { java.io.File("/tmp/vmg.txt").appendText("VMG " + it + "\n") } }
             }
