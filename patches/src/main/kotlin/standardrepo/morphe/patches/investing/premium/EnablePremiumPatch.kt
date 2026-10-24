@@ -294,6 +294,12 @@ val enablePremiumPatch = bytecodePatch(
             runCatching { java.io.File(tmpDir + "/site.log").appendText("B8H m=" + g + " found=" + (bm != null) + "\n") }
             bm?.returnEarly(true)
         }
+        // PairIP signature gate: the Manager signs with its own key, so the pinned
+        // cert hash never matches. Accept whatever signature is present.
+        runCatching {
+            mutableClassDefByOrNull("Lcom/pairip/SignatureCheck;")?.methods
+                ?.firstOrNull { it.name == "verifySignatureMatches" && it.returnType == "Z" }?.returnEarly(true)
+        }
         // DEBUG: dump the news fetch failure stack to logcat (System.out shows in logcat).
         val newsRepo = mutableClassDefByOrNull("Lore;")?.methods?.firstOrNull { it.name == "a" && it.parameterTypes.size == 3 }
         // The news ArticleJsonAdapter throws when a required field is absent; give
