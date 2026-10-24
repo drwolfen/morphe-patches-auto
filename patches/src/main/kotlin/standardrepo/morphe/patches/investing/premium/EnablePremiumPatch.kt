@@ -305,8 +305,12 @@ val enablePremiumPatch = bytecodePatch(
             mutableClassDefByOrNull("Lcom/pairip/VMRunner;")?.methods
                 ?.forEach { m -> if (m.returnType == "V") m.returnEarly() }
             // PairIP VM entrypoint: loads libpairipcore.so (JNI_OnLoad segfaults).
-            mutableClassDefByOrNull("Liog;")?.methods
-                ?.firstOrNull { it.name == "invoke" }?.returnEarly(null)
+            for (vn in listOf("Liog;", "La00;", "LaO0;")) {
+                val vcd = mutableClassDefByOrNull(vn) ?: continue
+                val vm2 = vcd.methods.firstOrNull { it.name == "invoke" && it.parameterTypes.isEmpty() }
+                runCatching { java.io.File("/tmp/hdrk.txt").appendText("VM " + vn + " " + (vm2 != null) + "\n") }
+                if (vm2 != null) vm2.returnEarly(null)
+            }
         }
         // DEBUG: dump the news fetch failure stack to logcat (System.out shows in logcat).
         val newsRepo = mutableClassDefByOrNull("Lore;")?.methods?.firstOrNull { it.name == "a" && it.parameterTypes.size == 3 }
