@@ -348,6 +348,16 @@ val enablePremiumPatch = bytecodePatch(
             runCatching {
                 val l0 = fm!!.implementation!!.instructions.toList()
                 val bi = l0.indexOfFirst { it.opcode.name == "packed-switch" }
+            runCatching {
+                val l9 = fm!!.implementation!!.instructions.toList()
+                val si = l9.indexOfFirst { (it as? ReferenceInstruction)?.reference?.let { r -> r is MethodReference && r.name == "d0" } == true }
+                if (si > 0) fm!!.implementation!!.addInstructions(si, listOf(
+                    BuilderInstruction21c(Opcode.CHECK_CAST, 1, ImmutableTypeReference("Lfqd;")),
+                    BuilderInstruction22c(Opcode.IGET_OBJECT, 2, 1, ImmutableFieldReference("Lfqd;", "m", "Ljava/lang/String;")),
+                    BuilderInstruction21c(Opcode.CONST_STRING, 3, ImmutableStringReference("CPN2:")),
+                    BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 3, 2, 0, 0, 0, ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I"))
+                ))
+            }.onFailure { e("CPN2", it) }
                 if (bi > 0) fm!!.implementation!!.addInstructions(bi, listOf(
                     BuilderInstruction22x(Opcode.MOVE_FROM16, 2, 26),
                     BuilderInstruction35c(Opcode.INVOKE_STATIC, 1, 2, 0, 0, 0, 0, ImmutableMethodReference("Ljava/lang/String;", "valueOf", listOf("I"), "Ljava/lang/String;")),
