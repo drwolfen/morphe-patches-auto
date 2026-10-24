@@ -377,6 +377,7 @@ val enablePremiumPatch = bytecodePatch(
                     val owner = HashMap<Int, com.android.tools.smali.dexlib2.builder.MethodLocation>()
                     var curA = 0
                     for (ins in live0) { val u = ins.codeUnits; for (d in 0 until u) owner[curA + d] = ins.location; curA += u }
+                    runCatching { java.io.File(tmpDir + "/site.log").appendText("SWT " + plOld.switchElements.joinToString(",") { el -> el.getKey().toString() + "@" + el.getTarget().codeAddress + ">" + ((owner[el.getTarget().codeAddress]?.let { it.codeAddress }) ?: -1) } + "\n") }
                     val lbls = plOld.switchElements.map { el -> (owner[el.getTarget().codeAddress] ?: el.getTarget().location).addNewLabel() }
                     val sz = runCatching { fm!!.implementation!!.instructions.size }.getOrNull() ?: 0
                     val newPl = BuilderPackedSwitchPayload(plOld.switchElements.first().getKey(), lbls)
