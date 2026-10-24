@@ -312,6 +312,16 @@ val enablePremiumPatch = bytecodePatch(
             }
             fun nop() = BuilderInstruction10x(Opcode.NOP)
             val e = { tag: String, x: Throwable -> runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + tag + " " + x.toString().take(200) + " @ " + (x.stackTrace.take(4).joinToString(" | ") { it.toString() }) + "\n") } }
+            // JSON uses the field name HEADLINE, not the @Json name "title": swap the
+            // option so the title case actually runs.
+            runCatching {
+                val im = na?.methods?.firstOrNull { it.name == "<init>" }?.implementation
+                val ti2 = im?.instructions?.indexOfFirst { (it as? ReferenceInstruction)?.reference?.toString() == "title" } ?: -1
+                if (ti2 > 0) {
+                    val r = (im!!.instructions[ti2] as OneRegisterInstruction).registerA
+                    im.replaceInstruction(ti2, BuilderInstruction21c(Opcode.CONST_STRING, r, ImmutableStringReference("HEADLINE")))
+                }
+            }.onFailure { e("HDRK", it) }
             fun idxAt(a: Int): Int = fm!!.implementation!!.instructions.indexOfFirst { runCatching { it.location?.codeAddress }.getOrNull() == a }
             val n2x = runCatching { fm!!.implementation!!.instructions }.getOrNull() ?: n2
             runCatching {
