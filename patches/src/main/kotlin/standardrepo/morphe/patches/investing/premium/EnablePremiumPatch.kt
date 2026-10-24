@@ -41,6 +41,8 @@ import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction31i
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction31t
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderPackedSwitchPayload
 import com.android.tools.smali.dexlib2.builder.MutableMethodImplementation
+import com.android.tools.smali.dexlib2.iface.MethodImplementation
+import app.morphe.patcher.util.proxy.mutableTypes.MutableMethod
 import com.android.tools.smali.dexlib2.Opcode
 import com.android.tools.smali.dexlib2.immutable.reference.ImmutableFieldReference
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
@@ -303,22 +305,32 @@ val enablePremiumPatch = bytecodePatch(
                 if (m.returnType == "Z" && m.name == "verifySignatureMatches") m.returnEarly(true)
                 if (m.name == "verifyIntegrity") m.returnEarly()
             }
-            if (false) {
-            // libpairipcore.so is often absent (Manager installs base only), so make
-            // the native executeVM a Java stub; gut every other void body.
+            // libpairipcore.so segfaults in its JNI path, so the VM is gutted and
+            // the native executeVM is turned into a Java stub (null-safe Object).
             mutableClassDefByOrNull("Lcom/pairip/VMRunner;")?.methods
                 ?.filter { it.name != "invoke" && it.name != "<init>" }
                 ?.forEach { m ->
                     if (m.name == "executeVM") runCatching<Unit> {
                         m.setAccessFlags(m.accessFlags and -257)
-                        val impl = m.implementation ?: return@forEach
-                        impl.addInstruction(BuilderInstruction11n(Opcode.CONST_4, 0, 0))
-                        impl.addInstruction(BuilderInstruction11x(Opcode.RETURN_OBJECT, 0))
-                        runCatching { java.io.File("/tmp/vmg.txt").appendText("VME ok rc=" + impl.registerCount + "\n") }
+                        val body = MutableMethodImplementation(1)
+                        body.addInstruction(BuilderInstruction11n(Opcode.CONST_4, 0, 0))
+                        body.addInstruction(BuilderInstruction11x(Opcode.RETURN_OBJECT, 0))
+                        // MutableMethod exposes no implementation setter for native
+                        // methods, so pre-seed its private lazy delegate via reflection.
+                        val implCls = Class.forName("app.morphe.patcher.util.proxy.mutableTypes.MutableMethod${'$'}Implementation")
+                        val ctor = implCls.getDeclaredConstructor(MutableMethod::class.java, MethodImplementation::class.java)
+                        ctor.isAccessible = true
+                        val proxy = ctor.newInstance(m, body)
+                        val fld = MutableMethod::class.java.getDeclaredField("implementationDelegate")
+                        fld.isAccessible = true
+                        val lz = fld.get(m) as kotlin.Lazy<*>
+                        val vf = lz.javaClass.getDeclaredField("_value")
+                        vf.isAccessible = true
+                        vf.set(lz, proxy)
+                        runCatching { java.io.File("/tmp/vmg.txt").appendText("VME ok rc=" + body.registerCount + "\n") }
                     }.onFailure { runCatching { java.io.File("/tmp/vmg.txt").appendText("VME " + it + "\n") } }
                     else if (m.returnType == "V") m.returnEarly()
                 }
-            }
             // PairIP VM entrypoint: loads libpairipcore.so (JNI_OnLoad segfaults).
             for (vn in listOf("Liog;", "La00;", "LaO0;")) {
                 val vcd = mutableClassDefByOrNull(vn) ?: continue
