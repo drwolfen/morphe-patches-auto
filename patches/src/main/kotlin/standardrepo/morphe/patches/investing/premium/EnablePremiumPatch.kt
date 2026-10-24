@@ -297,8 +297,14 @@ val enablePremiumPatch = bytecodePatch(
         // PairIP signature gate: the Manager signs with its own key, so the pinned
         // cert hash never matches. Accept whatever signature is present.
         runCatching {
-            mutableClassDefByOrNull("Lcom/pairip/SignatureCheck;")?.methods
-                ?.firstOrNull { it.name == "verifySignatureMatches" && it.returnType == "Z" }?.returnEarly(true)
+            mutableClassDefByOrNull("Lcom/pairip/SignatureCheck;")?.methods?.forEach { m ->
+                if (m.returnType == "Z" && m.name == "verifySignatureMatches") m.returnEarly(true)
+                if (m.name == "verifyIntegrity") m.returnEarly()
+            }
+            // libpairipcore's JNI_OnLoad derefs a stale pointer: never load it.
+            mutableClassDefByOrNull("Lcom/pairip/VMRunner;")?.methods
+                ?.filter { it.name == "setContext" || it.name == "getContext" || it.name == "<clinit>" }
+                ?.forEach { m -> if (m.returnType == "V") m.returnEarly() }
         }
         // DEBUG: dump the news fetch failure stack to logcat (System.out shows in logcat).
         val newsRepo = mutableClassDefByOrNull("Lore;")?.methods?.firstOrNull { it.name == "a" && it.parameterTypes.size == 3 }
