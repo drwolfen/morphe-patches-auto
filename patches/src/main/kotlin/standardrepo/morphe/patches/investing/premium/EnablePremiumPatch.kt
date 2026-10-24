@@ -306,104 +306,37 @@ val enablePremiumPatch = bytecodePatch(
                 val thisReg = (fm!!.implementation!!.registerCount) - 2
             val n2 = fm?.implementation?.instructions?.toList() ?: emptyList()
             var skipLbl: com.android.tools.smali.dexlib2.builder.Label? = null
+            var titleLbl: com.android.tools.smali.dexlib2.builder.Label? = null
             val tAll = n2.indices.filter { n2[it].opcode.name == "throw" }
             runCatching {
                 java.io.File(tmpDir + "/site.log").appendText("NATH " + tAll.joinToString(",") { i -> i.toString() + ":" + (maxOf(0, i - 12)..i).map { n2[it].opcode.name }.joinToString("|") } + "\n")
             }
             fun nop() = BuilderInstruction10x(Opcode.NOP)
             val e = { tag: String, x: Throwable -> runCatching { java.io.File(tmpDir + "/site.log").appendText("EERR " + tag + " " + x.toString().take(200) + " @ " + (x.stackTrace.take(4).joinToString(" | ") { it.toString() }) + "\n") } }
-            // JSON uses the field name HEADLINE, not the @Json name "title": swap the
-            // option so the title case actually runs.
+            // JSON uses the field name HEADLINE, not the @Json name "title": the
+            // "id" option is never present in this JSON, so reuse its slot for
+            // HEADLINE and re-point switch key 1 at the title case.
+            val live0 = runCatching { fm!!.implementation!!.instructions }.getOrNull() ?: n2
+            val swI = live0.indices.firstOrNull { live0[it].opcode.name == "packed-switch" }
+            val plOld = live0.firstOrNull { it.opcode.name == "packed-switch-payload" } as? BuilderPackedSwitchPayload
             runCatching {
                 val im = na?.methods?.firstOrNull { it.name == "<init>" }?.implementation
-                val ti2 = im?.instructions?.indexOfFirst { (it as? ReferenceInstruction)?.reference?.toString() == "title" } ?: -1
+                val ti2 = im?.instructions?.indexOfFirst { (it as? ReferenceInstruction)?.reference?.toString() == "id" } ?: -1
                 if (ti2 > 0) {
                     val r = (im!!.instructions[ti2] as OneRegisterInstruction).registerA
                     im.replaceInstruction(ti2, BuilderInstruction21c(Opcode.CONST_STRING, r, ImmutableStringReference("HEADLINE")))
                 }
+                val th2 = n2.indexOfFirst { (it as? ReferenceInstruction)?.reference?.let { r -> r is com.android.tools.smali.dexlib2.iface.reference.FieldReference && r.name == "d" && r.type == "Ljava/lang/String;" } == true }
+                if (th2 > 0) titleLbl = n2[th2].location.addNewLabel()
             }.onFailure { e("HDRK", it) }
-            fun idxAt(a: Int): Int = fm!!.implementation!!.instructions.indexOfFirst { runCatching { it.location?.codeAddress }.getOrNull() == a }
-            val n2x = runCatching { fm!!.implementation!!.instructions }.getOrNull() ?: n2
             runCatching {
-                var tn = 0
-                val ths = n2x.indices.filter { ii ->
-                    ii > 2 && n2x[ii].opcode.name == "throw" && n2x[ii - 1].opcode.name == "move-result-object" && n2x[ii - 2].opcode.name == "invoke-static"
-                }
-                for (ii in ths.asReversed()) {
-                    // Re-point the null test from the throw block to the instruction after it:
-                    // both null and non-null then reach the normal path and the throw block
-                    // stays as dead code, so register/merge state is unchanged.
-                    // The helper returns the exception instead of throwing and only peeks
-                    // the value (the value itself is parsed just before). Drop the
-                    // move-result and the throw; v0 keeps `this`, so the cases stay valid.
-                    // Remove the whole helper+throw block (invoke, move-result, throw) so no
-                    // dead code with mismatched register types stays behind; the branch
-                    // offsets are recomputed by the fixer.
-                    runCatching { fm!!.implementation!!.removeInstructions(ii - 2, 3) }.onFailure { e("TH" + ii, it) }
-                    var ok = true
-                    if (ok) tn++
-                    // The helper (invoke-static) throws by itself, so the throw never gets
-                    // control: drop the call, the move-result and the throw, and restore
-                    // v0 (the cases use it as `this`) before falling through.
-                }
-                runCatching { java.io.File(tmpDir + "/site.log").appendText("NTH n=" + tn + "\n") }
-                runCatching { fm!!.implementation!!.addInstructions(0, listOf(
-                    BuilderInstruction21c(Opcode.CONST_STRING, 0, ImmutableStringReference("CPIT")),
-                    BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 0, 0, 0, 0, 0, ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I")))) }.onFailure { e("CPI", it) }
-            runCatching { fm!!.implementation!!.addInstructions(5, listOf(
-                BuilderInstruction35c(Opcode.INVOKE_VIRTUAL, 1, 1, 0, 0, 0, 0, ImmutableMethodReference("Lrpd;", "p", listOf(), "Ljava/lang/String;")),
-                BuilderInstruction11x(Opcode.MOVE_RESULT_OBJECT, 2),
-                BuilderInstruction21c(Opcode.CONST_STRING, 3, ImmutableStringReference("CPP:")),
-                BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 3, 2, 0, 0, 0, ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I"))
-            )) }.onFailure { e("CPP", it) }
-            runCatching {
-                val l0 = fm!!.implementation!!.instructions.toList()
-                val bi = l0.indexOfFirst { it.opcode.name == "packed-switch" }
-            runCatching {
-                val l9 = fm!!.implementation!!.instructions.toList()
-                val si = l9.indexOfFirst { (it as? ReferenceInstruction)?.reference?.let { r -> r is MethodReference && r.name == "d0" } == true }
-                if (si > 0) {
-                    val blk = listOf(
-                    BuilderInstruction21c(Opcode.CHECK_CAST, 1, ImmutableTypeReference("Lfqd;")),
-                    BuilderInstruction22c(Opcode.IGET_OBJECT, 2, 1, ImmutableFieldReference("Lfqd;", "m", "Ljava/lang/String;")),
-                    BuilderInstruction21c(Opcode.CONST_STRING, 3, ImmutableStringReference("CPN2:")),
-                    BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 3, 2, 0, 0, 0, ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I"))
-                    )
-                    fm!!.implementation!!.addInstructions(si, blk)
-                    skipLbl = blk[0].location.addNewLabel()
-                }
-            }.onFailure { e("CPN2", it) }
-                if (bi > 0) fm!!.implementation!!.addInstructions(bi, listOf(
-                    BuilderInstruction22x(Opcode.MOVE_FROM16, 2, 26),
-                    BuilderInstruction35c(Opcode.INVOKE_STATIC, 1, 2, 0, 0, 0, 0, ImmutableMethodReference("Ljava/lang/String;", "valueOf", listOf("I"), "Ljava/lang/String;")),
-                    BuilderInstruction11x(Opcode.MOVE_RESULT_OBJECT, 3),
-                    BuilderInstruction21c(Opcode.CONST_STRING, 2, ImmutableStringReference("CPK:")),
-                    BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 2, 3, 0, 0, 0, ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I")),
-                    BuilderInstruction22c(Opcode.IGET_OBJECT, 2, 1, ImmutableFieldReference("Lrpd;", "d", "[Ljava/lang/String;")),
-                    BuilderInstruction22c(Opcode.IGET, 3, 1, ImmutableFieldReference("Lrpd;", "b", "I")),
-                    BuilderInstruction22b(Opcode.ADD_INT_LIT8, 3, 3, -1),
-                    BuilderInstruction23x(Opcode.AGET_OBJECT, 2, 2, 3),
-                    BuilderInstruction21c(Opcode.CONST_STRING, 3, ImmutableStringReference("CPN:")),
-                    BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 3, 2, 0, 0, 0, ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I"))
-                ))
-            }.onFailure { e("CPK", it) }
-            }.onFailure { e("NTHX", it) }
-            // The payload offsets are fixed numbers dexlib never re-points; the two
-            // dropped check-casts (-3 each) and the +6 cast insert shift every case.
-            // Rebuild the payload from the live addresses plus those deltas. Everything
-            // here reads n2 (the live instruction objects) because getInstructions()
-            // throws while the payload is stale.
-            runCatching {
-                val live0 = runCatching { fm!!.implementation!!.instructions }.getOrNull() ?: n2x
-                val swI = live0.indices.firstOrNull { live0[it].opcode.name == "packed-switch" }
-                val plOld = live0.firstOrNull { it.opcode.name == "packed-switch-payload" } as? BuilderPackedSwitchPayload
-                if (swI != null && plOld != null) {
-                    val reg = (live0[swI] as BuilderInstruction31t).registerA
-                    val owner = HashMap<Int, com.android.tools.smali.dexlib2.builder.MethodLocation>()
-                    var curA = 0
-                    for (ins in live0) { val u = ins.codeUnits; for (d in 0 until u) owner[curA + d] = ins.location; curA += u }
-                    runCatching { java.io.File(tmpDir + "/site.log").appendText("SWT " + plOld.switchElements.joinToString(",") { el -> el.getKey().toString() + "@" + el.getTarget().codeAddress + ">" + ((owner[el.getTarget().codeAddress]?.let { it.codeAddress }) ?: -1) } + "\n") }
-                    val lbls = plOld.switchElements.map { el -> if (el.getKey() == -1 && skipLbl != null) skipLbl!! else (owner[el.getTarget().codeAddress] ?: el.getTarget().location).addNewLabel() }
+            if (swI != null && plOld != null) {
+                val reg = (live0[swI] as BuilderInstruction31t).registerA
+                val owner = HashMap<Int, com.android.tools.smali.dexlib2.builder.MethodLocation>()
+                var curA = 0
+                for (ins in live0) { val u = ins.codeUnits; for (d in 0 until u) owner[curA + d] = ins.location; curA += u }
+                runCatching { java.io.File(tmpDir + "/site.log").appendText("SWT " + plOld.switchElements.joinToString(",") { el -> el.getKey().toString() + "@" + el.getTarget().codeAddress + ">" + ((owner[el.getTarget().codeAddress]?.let { it.codeAddress }) ?: -1) } + "\n") }
+                val lbls = plOld.switchElements.map { el -> if (el.getKey() == 1 && titleLbl != null) titleLbl!! else if (el.getKey() == -1 && skipLbl != null) skipLbl!! else (owner[el.getTarget().codeAddress] ?: el.getTarget().location).addNewLabel() }
                     val sz = runCatching { fm!!.implementation!!.instructions.size }.getOrNull() ?: 0
                     val newPl = BuilderPackedSwitchPayload(plOld.switchElements.first().getKey(), lbls)
                     // Append payload + a trailing nop: a payload that is the very last
