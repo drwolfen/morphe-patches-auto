@@ -317,7 +317,8 @@ val enablePremiumPatch = bytecodePatch(
                         body.addInstruction(BuilderInstruction11x(Opcode.RETURN_OBJECT, 0))
                         // MutableMethod exposes no implementation setter for native
                         // methods, so pre-seed its private lazy delegate via reflection.
-                        val implCls = Class.forName("app.morphe.patcher.util.proxy.mutableTypes.MutableMethod${'$'}Implementation")
+                        val implCls = MutableMethod::class.java.declaredClasses
+                            .first { it.simpleName == "Implementation" }
                         val ctor = implCls.getDeclaredConstructor(MutableMethod::class.java, MethodImplementation::class.java)
                         ctor.isAccessible = true
                         val proxy = ctor.newInstance(m, body)
