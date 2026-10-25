@@ -13,6 +13,9 @@ import standardrepo.morphe.compatibility.Compat
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstructions
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction12x
+import com.android.tools.smali.dexlib2.AccessFlags
+import com.android.tools.smali.dexlib2.immutable.ImmutableMethod
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.formats.Instruction35c
 import com.android.tools.smali.dexlib2.iface.instruction.OffsetInstruction
@@ -62,8 +65,8 @@ val enablePremiumPatch = bytecodePatch(
         VerifyIntegrityFingerprint.method.returnEarly()
         GetCurrencyIso4217CodeFingerprint.method.returnEarly(true)
         GetRevenueFingerprint.method.returnEarly(null as Void?)
-        AFingerprint.method.returnEarly()
-        AFingerprintLe51.method.returnEarly()
+        if (false) AFingerprint.method.returnEarly()
+        if (false) AFingerprintLe51.method.returnEarly()
         if (false) {
         StartActivityForResultFingerprint.method.apply {
             val impl = implementation!!
@@ -694,5 +697,160 @@ val enablePremiumPatch = bytecodePatch(
                 }
             }
         }
+
+        runCatching {
+            val holderType = "Lcom/fusionmedia/investing/feature/financial/health/instrument/overviewnew/model/Prfd/cxQiz;"
+            val holderCls = mutableClassDefByOrNull(holderType)
+            val vmr = mutableClassDefByOrNull("Lcom/pairip/VMRunner;")
+            java.io.File(tmpDir + "/site.log").appendText("DUMPDBG h=" + (holderCls != null) + " v=" + (vmr != null) + "\n")
+            if (holderCls != null && vmr != null) {
+                val insns = ArrayList<BuilderInstruction>()
+                insns.add(BuilderInstruction21c(Opcode.CONST_STRING, 3, ImmutableStringReference("1KFJpfMm0XWbtCdj")))
+                insns.add(BuilderInstruction35c(Opcode.INVOKE_STATIC, 1, 3, 0, 0, 0, 0,
+                    ImmutableMethodReference("Lcom/pairip/VMRunner;", "readByteCode", listOf("Ljava/lang/String;"), "[B")))
+                insns.add(BuilderInstruction11x(Opcode.MOVE_RESULT_OBJECT, 3))
+                insns.add(BuilderInstruction21c(Opcode.NEW_INSTANCE, 2, ImmutableTypeReference("Lcom/pairip/VmDecryptor;")))
+                insns.add(BuilderInstruction35c(Opcode.INVOKE_DIRECT, 1, 2, 0, 0, 0, 0,
+                    ImmutableMethodReference("Lcom/pairip/VmDecryptor;", "<init>", emptyList(), "V")))
+                insns.add(BuilderInstruction31i(Opcode.CONST, 4, 1660))
+                insns.add(BuilderInstruction11n(Opcode.CONST_4, 5, 0))
+                for (cand in listOf("yptnk")) {
+                    insns.add(BuilderInstruction35c(Opcode.INVOKE_VIRTUAL, 4, 2, 3, 4, 5, 0,
+                        ImmutableMethodReference("Lcom/pairip/VmDecryptor;", cand, listOf("[B", "I", "Z"), "[B")))
+                    insns.add(BuilderInstruction11x(Opcode.MOVE_RESULT_OBJECT, 6))
+                    insns.add(BuilderInstruction12x(Opcode.ARRAY_LENGTH, 7, 6))
+                    insns.add(BuilderInstruction11n(Opcode.CONST_4, 8, 0))
+                    insns.add(BuilderInstruction23x(Opcode.AGET_BYTE, 8, 6, 8))
+                    insns.add(BuilderInstruction35c(Opcode.INVOKE_STATIC, 1, 7, 0, 0, 0, 0,
+                        ImmutableMethodReference("Ljava/lang/String;", "valueOf", listOf("I"), "Ljava/lang/String;"))
+                    )
+                    insns.add(BuilderInstruction11x(Opcode.MOVE_RESULT_OBJECT, 7))
+                    insns.add(BuilderInstruction21c(Opcode.CONST_STRING, 9, ImmutableStringReference("CANDLEN " + cand)))
+                    insns.add(BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 9, 7, 0, 0, 0,
+                        ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I")))
+                    insns.add(BuilderInstruction35c(Opcode.INVOKE_STATIC, 1, 8, 0, 0, 0, 0,
+                        ImmutableMethodReference("Ljava/lang/String;", "valueOf", listOf("I"), "Ljava/lang/String;")))
+                    insns.add(BuilderInstruction11x(Opcode.MOVE_RESULT_OBJECT, 8))
+                    insns.add(BuilderInstruction21c(Opcode.CONST_STRING, 9, ImmutableStringReference("CAND0 " + cand)))
+                    insns.add(BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 9, 8, 0, 0, 0,
+                        ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I")))
+                }
+                for (fn in holderCls.fields.filter { it.type == "Ljava/lang/String;" }.map { it.name }) {
+                    insns.add(BuilderInstruction21c(Opcode.SGET_OBJECT, 0,
+                        ImmutableFieldReference(holderCls.type, fn, "Ljava/lang/String;")))
+                    insns.add(BuilderInstruction35c(Opcode.INVOKE_STATIC, 1, 0, 0, 0, 0, 0,
+                        ImmutableMethodReference("Ljava/lang/String;", "valueOf", listOf("Ljava/lang/Object;"), "Ljava/lang/String;")))
+                    insns.add(BuilderInstruction11x(Opcode.MOVE_RESULT_OBJECT, 0))
+                    insns.add(BuilderInstruction21c(Opcode.CONST_STRING, 1, ImmutableStringReference("HOLDER " + fn)))
+                    insns.add(BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 1, 0, 0, 0, 0,
+                        ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I")))
+                }
+                val holder2 = mutableClassDefByOrNull("Lcom/fusionmedia/investing/feature/watchlistlistedit/data/request/qY/tTMTf;")
+                if (holder2 != null) for (fn in holder2.fields.filter { it.type == "Ljava/lang/String;" }.map { it.name }) {
+                    insns.add(BuilderInstruction21c(Opcode.SGET_OBJECT, 0,
+                        ImmutableFieldReference(holder2.type, fn, "Ljava/lang/String;")))
+                    insns.add(BuilderInstruction35c(Opcode.INVOKE_STATIC, 1, 0, 0, 0, 0, 0,
+                        ImmutableMethodReference("Ljava/lang/String;", "valueOf", listOf("Ljava/lang/Object;"), "Ljava/lang/String;")))
+                    insns.add(BuilderInstruction11x(Opcode.MOVE_RESULT_OBJECT, 0))
+                    insns.add(BuilderInstruction21c(Opcode.CONST_STRING, 1, ImmutableStringReference("H2 " + fn)))
+                    insns.add(BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 1, 0, 0, 0, 0,
+                        ImmutableMethodReference("Landroid/util/Log;", "d", listOf("Ljava/lang/String;", "Ljava/lang/String;"), "I")))
+                }
+                insns.add(BuilderInstruction10x(Opcode.RETURN_VOID))
+                val immImpl = com.android.tools.smali.dexlib2.immutable.ImmutableMethodImplementation(11, insns, null, null)
+                val immM = ImmutableMethod(
+                    "Lcom/pairip/VMRunner;", "dumpHoldersX",
+                    emptyList<com.android.tools.smali.dexlib2.immutable.ImmutableMethodParameter>(), "V",
+                    AccessFlags.PUBLIC.value or AccessFlags.STATIC.value,
+                    emptySet<com.android.tools.smali.dexlib2.immutable.ImmutableAnnotation>(),
+                    emptySet<com.android.tools.smali.dexlib2.HiddenApiRestriction>(), immImpl
+                )
+                vmr.methods.add(app.morphe.patcher.util.proxy.mutableTypes.MutableMethod(immM))
+                val impl = vmr.methods.firstOrNull { it.name == "invoke" }?.implementation
+                if (impl != null) {
+                    impl.addInstructions(0, listOf(
+                        BuilderInstruction21c(Opcode.CONST_STRING, 0, ImmutableStringReference("pairipcore")),
+                        BuilderInstruction35c(Opcode.INVOKE_STATIC, 1, 0, 0, 0, 0, 0,
+                            ImmutableMethodReference("Ljava/lang/System;", "loadLibrary", listOf("Ljava/lang/String;"), "V"))
+                    ))
+                    val at = impl.instructions.toList().indexOfFirst { i ->
+                        ((i as? ReferenceInstruction)?.reference as? MethodReference)?.name == "executeVM"
+                    }
+                    java.io.File(tmpDir + "/site.log").appendText("DUMPAT " + at + "\n")
+                    if (at >= 0) {
+                        impl.addInstruction(at, BuilderInstruction35c(Opcode.INVOKE_STATIC, 0, 0, 0, 0, 0, 0,
+                            ImmutableMethodReference("Lcom/pairip/VMRunner;", "dumpHoldersX", emptyList(), "V")))
+                        impl.addInstruction(at + 2, BuilderInstruction35c(Opcode.INVOKE_STATIC, 0, 0, 0, 0, 0, 0,
+                            ImmutableMethodReference("Lcom/pairip/VMRunner;", "dumpHoldersX", emptyList(), "V")))
+                    }
+                }
+            }
+        }.onFailure { java.io.File(tmpDir + "/site.log").appendText("DUMPERR " + it + "\n") }
+        // Probe: bind every candidate obfuscated native name on VmDecryptor and
+        // call them on the asset payload to identify the real decrypt.
+        runCatching {
+            val cands = listOf("yptnk")
+            val vd = mutableClassDefByOrNull("Lcom/pairip/VmDecryptor;")
+            if (vd != null) for (cand in cands) {
+                val nm = ImmutableMethod("Lcom/pairip/VmDecryptor;", cand,
+                    listOf(
+                        com.android.tools.smali.dexlib2.immutable.ImmutableMethodParameter("[B", emptySet<com.android.tools.smali.dexlib2.immutable.ImmutableAnnotation>(), null),
+                        com.android.tools.smali.dexlib2.immutable.ImmutableMethodParameter("I", emptySet<com.android.tools.smali.dexlib2.immutable.ImmutableAnnotation>(), null),
+                        com.android.tools.smali.dexlib2.immutable.ImmutableMethodParameter("Z", emptySet<com.android.tools.smali.dexlib2.immutable.ImmutableAnnotation>(), null)
+                    ), "[B",
+                    AccessFlags.PUBLIC.value or AccessFlags.NATIVE.value,
+                    emptySet<com.android.tools.smali.dexlib2.immutable.ImmutableAnnotation>(),
+                    emptySet<com.android.tools.smali.dexlib2.HiddenApiRestriction>(), null)
+                vd.methods.add(app.morphe.patcher.util.proxy.mutableTypes.MutableMethod(nm))
+            }
+        }.onFailure { java.io.File(tmpDir + "/site.log").appendText("DECERR " + it + "\n") }
+        // Give StartupLauncher its program name (its <clinit> is empty in this base).
+        runCatching {
+            val sl = mutableClassDefByOrNull("Lcom/pairip/StartupLauncher;")
+            val sf = sl?.fields?.firstOrNull { it.name == "startupProgramName" }
+            if (sf != null) sf.setAccessFlags((sf.accessFlags and -3) or 0x1)
+            val cl = sl?.methods?.firstOrNull { it.name == "<clinit>" }
+            if (cl != null) {
+                val ci = cl.implementation
+                if (ci != null) {
+                    var rc: java.lang.reflect.Field? = null
+                    var kc: Class<*>? = ci.javaClass
+                    while (kc != null && rc == null) {
+                        try { rc = kc.getDeclaredField("registerCount") } catch (_: NoSuchFieldException) {}
+                        kc = kc.superclass
+                    }
+                    if (rc != null) { rc.isAccessible = true; rc.setInt(ci, 1) }
+                    ci.addInstructions(0, listOf(
+                        BuilderInstruction21c(Opcode.CONST_STRING, 0, ImmutableStringReference("1KFJpfMm0XWbtCdj")),
+                        BuilderInstruction21c(Opcode.SPUT_OBJECT, 0, ImmutableFieldReference("Lcom/pairip/StartupLauncher;", "startupProgramName", "Ljava/lang/String;"))
+                    ))
+                }
+                java.io.File(tmpDir + "/site.log").appendText("SLCLINIT\n")
+            }
+        }.onFailure { java.io.File(tmpDir + "/site.log").appendText("SLERR " + it + "\n") }
+        // Force the VM to run at ContentActivity.onCreate and dump holder values.
+        runCatching {
+            val ca = mutableClassDefByOrNull("Lcom/fusionmedia/investing/feature/main/tabs/ui/ContentActivity;")
+            val m = ca?.methods?.firstOrNull { it.name == "onCreate" }
+            val impl = m?.implementation
+            if (impl != null) {
+                val idx = impl.instructions.toList().indexOfLast { it.opcode.name == "return-void" }
+                java.io.File(tmpDir + "/site.log").appendText("CAIDX " + idx + "\n")
+                if (idx >= 0) {
+                    val vmInv = ImmutableMethodReference("Lcom/pairip/VMRunner;", "invoke", listOf("Ljava/lang/String;", "[Ljava/lang/Object;"), "Ljava/lang/Object;")
+                    impl.addInstructions(idx, listOf(
+                        BuilderInstruction21c(Opcode.CONST_STRING, 0, ImmutableStringReference("pairipcore")),
+                        BuilderInstruction35c(Opcode.INVOKE_STATIC, 1, 0, 0, 0, 0, 0, ImmutableMethodReference("Ljava/lang/System;", "loadLibrary", listOf("Ljava/lang/String;"), "V")),
+                        BuilderInstruction21c(Opcode.CONST_STRING, 3, ImmutableStringReference("1KFJpfMm0XWbtCdj")),
+                        BuilderInstruction21c(Opcode.SPUT_OBJECT, 3, ImmutableFieldReference("Lcom/pairip/StartupLauncher;", "startupProgramName", "Ljava/lang/String;")),
+                        BuilderInstruction35c(Opcode.INVOKE_STATIC, 0, 0, 0, 0, 0, 0, ImmutableMethodReference("Lcom/pairip/VMRunner;", "dumpHoldersX", emptyList(), "V")),
+                        BuilderInstruction11n(Opcode.CONST_4, 1, 0),
+                        BuilderInstruction21c(Opcode.CONST_STRING, 2, ImmutableStringReference("1KFJpfMm0XWbtCdj")),
+                        BuilderInstruction35c(Opcode.INVOKE_STATIC, 2, 2, 1, 0, 0, 0, vmInv),
+                        BuilderInstruction11x(Opcode.MOVE_RESULT_OBJECT, 0)
+                    ))
+                }
+            }
+        }.onFailure { java.io.File(tmpDir + "/site.log").appendText("CAERR " + it + "\n") }
     }
 }
