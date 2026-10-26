@@ -15,7 +15,9 @@ val pairipManifestBypassPatch = resourcePatch(
     execute {
         document("AndroidManifest.xml").use { doc ->
             val app = doc.getElementsByTagName("application").item(0) as org.w3c.dom.Element
-            app.setAttribute("android:name", "com.fusionmedia.investing.InvestingApplication")
+            app.setAttribute("android:name", "com.pairip.application.Application")
+            // Debuggable so `run-as` can read the app's SQLite schema on a re-signed build.
+            app.setAttributeNS("http://schemas.android.com/apk/res/android", "android:debuggable", "true")
             val acts = doc.getElementsByTagName("activity")
             for (i in acts.length - 1 downTo 0) {
                 val el = acts.item(i) as? org.w3c.dom.Element ?: continue
