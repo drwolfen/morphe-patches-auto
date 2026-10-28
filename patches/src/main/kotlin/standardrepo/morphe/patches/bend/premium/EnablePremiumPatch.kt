@@ -14,7 +14,7 @@ import standardrepo.morphe.compatibility.Compat
 
 val enablePremiumPatch = bytecodePatch(
     name = "Enable Premium",
-    description = "Auto-generated: unlocks Bend Premium"
+    description = "Auto-generated: unlocks Bend Premium."
 ) {
     compatibleWith(Compat.BEND)
 

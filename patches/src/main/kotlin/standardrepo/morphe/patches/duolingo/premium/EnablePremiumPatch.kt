@@ -14,7 +14,7 @@ import standardrepo.morphe.compatibility.Compat
 
 val enablePremiumPatch = bytecodePatch(
     name = "Enable Super",
-    description = "Auto-generated: unlocks Duolingo Super"
+    description = "Auto-generated: unlocks Duolingo Super."
 ) {
     compatibleWith(Compat.DUOLINGO)
 
