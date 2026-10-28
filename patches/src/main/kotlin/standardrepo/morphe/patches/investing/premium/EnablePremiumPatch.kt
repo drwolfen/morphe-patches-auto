@@ -511,7 +511,10 @@ val enablePremiumPatch = bytecodePatch(
             // dr9's UNKNOWN_FH_LABEL constant is named from this holder read. Moshi's enum
             // adapter (edn) resolves every constant via Class.getField(<enum name>), so the
             // baked value must equal the FIELD name, not a SQL-ish guess.
-            "Lorg/apache/commons/lang3/text/translate/ckbN/qKsibC;#EMw" to "UNKNOWN_FH_LABEL"
+            "Lorg/apache/commons/lang3/text/translate/ckbN/qKsibC;#EMw" to "UNKNOWN_FH_LABEL",
+            // Room column-index helper (w9h.y) resolves this holder field as the 3rd column of
+            // every closed-instrument-insight query; the column is "timestamp".
+            "Lcom/fusionmedia/investing/feature/watchlistlistedit/data/request/qY/tTMTf;#WwHZRDCfDHLh" to "timestamp"
         )
         val holders = HashSet<String>()
         classDefForEach { cd ->
