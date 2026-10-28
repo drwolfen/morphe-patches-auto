@@ -1,10 +1,10 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.398.0",
+  "version": "0.399.0",
   "patches": [
     {
       "name": "Enable Premium",
-      "description": "Auto-generated: unlocks Bend Premium",
+      "description": "Auto-generated: unlocks Bend Premium.",
       "default": true,
       "category": null,
       "compatiblePackages": [
@@ -61,7 +61,7 @@
     },
     {
       "name": "Enable Premium",
-      "description": "Auto-generated: unlocks Sleep Premium",
+      "description": "Auto-generated: unlocks Sleep Premium.",
       "default": true,
       "category": null,
       "compatiblePackages": [
@@ -92,7 +92,7 @@
     },
     {
       "name": "Enable Pro",
-      "description": "Auto-generated: unlocks Blurwallpaper Pro",
+      "description": "Auto-generated: unlocks Blurwallpaper Pro.",
       "default": true,
       "category": null,
       "compatiblePackages": [
@@ -123,7 +123,7 @@
     },
     {
       "name": "Enable Pro",
-      "description": "Auto-generated: unlocks Investing Pro",
+      "description": "Auto-generated: unlocks Investing Pro.",
       "default": true,
       "category": null,
       "compatiblePackages": [
@@ -154,7 +154,7 @@
     },
     {
       "name": "Enable Super",
-      "description": "Auto-generated: unlocks Duolingo Super",
+      "description": "Auto-generated: unlocks Duolingo Super.",
       "default": true,
       "category": null,
       "compatiblePackages": [
