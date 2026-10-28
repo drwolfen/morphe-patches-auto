@@ -1,10 +1,10 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.397.0",
+  "version": "0.398.0",
   "patches": [
     {
       "name": "Enable Premium",
-      "description": "Auto-generated: unlocks Bend Premium — the app's own paywall/tier gates are forced open.",
+      "description": "Auto-generated: unlocks Bend Premium",
       "default": true,
       "category": null,
       "compatiblePackages": [
@@ -61,7 +61,7 @@
     },
     {
       "name": "Enable Premium",
-      "description": "Auto-generated: unlocks Sleep Premium — the app's own paywall/tier gates are forced open.",
+      "description": "Auto-generated: unlocks Sleep Premium",
       "default": true,
       "category": null,
       "compatiblePackages": [
@@ -92,7 +92,7 @@
     },
     {
       "name": "Enable Pro",
-      "description": "Auto-generated: unlocks Blurwallpaper Pro — the app's own paywall/tier gates are forced open.",
+      "description": "Auto-generated: unlocks Blurwallpaper Pro",
       "default": true,
       "category": null,
       "compatiblePackages": [
@@ -123,7 +123,7 @@
     },
     {
       "name": "Enable Pro",
-      "description": "Auto-generated: unlocks Investing Pro — the app's own paywall/tier gates are forced open.",
+      "description": "Auto-generated: unlocks Investing Pro",
       "default": true,
       "category": null,
       "compatiblePackages": [
@@ -154,7 +154,7 @@
     },
     {
       "name": "Enable Super",
-      "description": "Auto-generated: unlocks Duolingo Super — the app's own paywall/tier gates are forced open.",
+      "description": "Auto-generated: unlocks Duolingo Super",
       "default": true,
       "category": null,
       "compatiblePackages": [
@@ -195,7 +195,30 @@
       "description": "Replaces the PairIP Application class with com.fusionmedia.investing.InvestingApplication, drops LicenseActivity and CHECK_LICENSE.",
       "default": false,
       "category": null,
-      "compatiblePackages": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.fusionmedia.investing",
+          "name": "Investing",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#20282E",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "6.52",
+              "versionCodes": {
+                "ARM64_V8A": 1660,
+                "ARMEABI_V7A": 1660,
+                "X86_64": 1660,
+                "X86": 1660
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
       "options": []
     }
   ]
