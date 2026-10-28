@@ -175,14 +175,14 @@ fun main(args: Array<String>) {
         exitProcess(5)
     }
 
-    // A patch may carry ONE app-agnostic companion (a resource patch: manifest bypass, asset
-    // swap) that `dependsOn`s — `dependsOn` applies it even though it declares no Compat. So
-    // allow 1..2 applicable patches, but require exactly one that is NOT default-disabled, i.e.
-    // the patch the Manager actually offers.
+    // A patch may carry ONE companion patch (a resource patch: manifest bypass, asset swap) that
+    // the main patch `dependsOn`s — `dependsOn` applies it regardless of its `default` flag. The
+    // companion is scoped to the same app but MUST stay default=false, so exactly ONE patch is
+    // what the Manager offers. Allow 1..2 applicable patches under that rule.
     println("GATE applicable patches=${applicable.map { p -> "${p.name}${if (p.default) "" else " (default=false)"}" }}")
     val offered = applicable.filter { it.default }
     if (offered.size != 1 || applicable.size > 2) {
-        println("GATE FAIL ${applicable.size} applicable patches — want 1 main (+1 universal helper)")
+        println("GATE FAIL ${applicable.size} applicable patches — want 1 main (+1 companion, default=false)")
         exitProcess(11)
     }
     if (applicable.size == 2 && applicable.count { !it.default } != 1) {

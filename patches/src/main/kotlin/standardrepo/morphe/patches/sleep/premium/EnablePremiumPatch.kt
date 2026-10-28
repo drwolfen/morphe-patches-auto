@@ -13,7 +13,7 @@ import standardrepo.morphe.compatibility.Compat
 
 val enablePremiumPatch = bytecodePatch(
     name = "Enable Premium",
-    description = "Auto-generated: unlocks Sleep Premium — the app's own paywall/tier gates are forced open."
+    description = "Auto-generated: unlocks Sleep Premium"
 ) {
     compatibleWith(Compat.SLEEP)
 

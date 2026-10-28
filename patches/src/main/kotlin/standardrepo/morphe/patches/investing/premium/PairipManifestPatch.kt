@@ -6,18 +6,21 @@
 package standardrepo.morphe.patches.investing.premium
 
 import app.morphe.patcher.patch.resourcePatch
+import standardrepo.morphe.compatibility.Compat
 
 val pairipManifestBypassPatch = resourcePatch(
     name = "PairIP manifest bypass",
     description = "Replaces the PairIP Application class with com.fusionmedia.investing.InvestingApplication, drops LicenseActivity and CHECK_LICENSE.",
     default = false
 ) {
+    compatibleWith(Compat.INVESTING)
+
     execute {
         document("AndroidManifest.xml").use { doc ->
             val app = doc.getElementsByTagName("application").item(0) as org.w3c.dom.Element
             app.setAttribute("android:name", "com.pairip.application.Application")
             // Debuggable so `run-as` can read the app's SQLite schema on a re-signed build.
-            app.setAttributeNS("http://schemas.android.com/apk/res/android", "android:debuggable", "true")
+            app.setAttributeNS("http://schemas.android.com/apk/res/android", "android:debuggable", "false")
             val acts = doc.getElementsByTagName("activity")
             for (i in acts.length - 1 downTo 0) {
                 val el = acts.item(i) as? org.w3c.dom.Element ?: continue

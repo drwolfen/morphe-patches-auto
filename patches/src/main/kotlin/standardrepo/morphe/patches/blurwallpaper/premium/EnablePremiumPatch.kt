@@ -14,7 +14,7 @@ import standardrepo.morphe.compatibility.Compat
 
 val enablePremiumPatch = bytecodePatch(
     name = "Enable Pro",
-    description = "Auto-generated: unlocks Blurwallpaper Pro — the app's own paywall/tier gates are forced open."
+    description = "Auto-generated: unlocks Blurwallpaper Pro"
 ) {
     compatibleWith(Compat.BLURWALLPAPER)
 

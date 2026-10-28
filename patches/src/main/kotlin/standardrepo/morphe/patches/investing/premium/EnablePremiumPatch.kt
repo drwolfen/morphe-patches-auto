@@ -57,7 +57,7 @@ import com.android.tools.smali.dexlib2.iface.reference.MethodReference
 
 val enablePremiumPatch = bytecodePatch(
     name = "Enable Pro",
-    description = "Auto-generated: unlocks Investing Pro — the app's own paywall/tier gates are forced open."
+    description = "Auto-generated: unlocks Investing Pro"
 ) {
     compatibleWith(Compat.INVESTING)
     dependsOn(pairipManifestBypassPatch)
