@@ -507,7 +507,11 @@ val enablePremiumPatch = bytecodePatch(
         mutableClassDefByOrNull("Lcom/facebook/internal/FacebookInitProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
         mutableClassDefByOrNull("Lcom/squareup/picasso/PicassoProvider;")?.methods?.firstOrNull { it.name == "onCreate" && it.returnType == "Z" }?.returnEarly(true)
         val knownHolderValues = mapOf(
-            "Lcom/fusionmedia/investing/feature/financial/health/instrument/overviewnew/model/Prfd/cxQiz;#spaKYWmrOPJzjVb" to "SELECT last_insert_rowid()"
+            "Lcom/fusionmedia/investing/feature/financial/health/instrument/overviewnew/model/Prfd/cxQiz;#spaKYWmrOPJzjVb" to "SELECT last_insert_rowid()",
+            // dr9's UNKNOWN_FH_LABEL constant is named from this holder read. Moshi's enum
+            // adapter (edn) resolves every constant via Class.getField(<enum name>), so the
+            // baked value must equal the FIELD name, not a SQL-ish guess.
+            "Lorg/apache/commons/lang3/text/translate/ckbN/qKsibC;#EMw" to "UNKNOWN_FH_LABEL"
         )
         val holders = HashSet<String>()
         classDefForEach { cd ->
@@ -671,6 +675,7 @@ val enablePremiumPatch = bytecodePatch(
                         // SQL is also passed through app wrappers whose ctor takes (db, sql).
                         if (mr.name == "<init>" && !mr.definingClass.contains("SQLite") &&
                             mr.definingClass != "Ljava/net/URL;" && mr.definingClass != "Landroid/net/Uri;" &&
+                            mr.definingClass != "Ljava/lang/Enum;" &&
                             mr.parameterTypes.size > 1 && mr.parameterTypes.contains("Ljava/lang/String;")
                         ) sql = true
                         if (mr.name == "getSystemService") {
