@@ -175,18 +175,11 @@ fun main(args: Array<String>) {
         exitProcess(5)
     }
 
-    // A patch may carry ONE companion patch (a resource patch: manifest bypass, asset swap) that
-    // the main patch `dependsOn`s — `dependsOn` applies it regardless of its `default` flag. The
-    // companion is scoped to the same app but MUST stay default=false, so exactly ONE patch is
-    // what the Manager offers. Allow 1..2 applicable patches under that rule.
+    // Any number of applicable patches may be default=true (the Manager preselects each one and
+    // the user can toggle it); at least one must be, so the Manager always offers a default.
     println("GATE applicable patches=${applicable.map { p -> "${p.name}${if (p.default) "" else " (default=false)"}" }}")
-    val offered = applicable.filter { it.default }
-    if (offered.size != 1 || applicable.size > 2) {
-        println("GATE FAIL ${applicable.size} applicable patches — want 1 main (+1 companion, default=false)")
-        exitProcess(11)
-    }
-    if (applicable.size == 2 && applicable.count { !it.default } != 1) {
-        println("GATE FAIL companion patch not declared default=false")
+    if (applicable.none { it.default }) {
+        println("GATE FAIL no applicable patch is default=true")
         exitProcess(11)
     }
 

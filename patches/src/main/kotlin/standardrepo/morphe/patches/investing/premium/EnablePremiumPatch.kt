@@ -515,6 +515,13 @@ val enablePremiumPatch = bytecodePatch(
             // Room column-index helper (w9h.y) resolves this holder field as the 3rd column of
             // every closed-instrument-insight query; the column is "timestamp".
             "Lcom/fusionmedia/investing/feature/watchlistlistedit/data/request/qY/tTMTf;#WwHZRDCfDHLh" to "timestamp"
+            // q4a font cache (chart NPE) and the ns2 enum name are baked by the two Fix: sub-patches.
+        )
+        // Holder fields the Fix: sub-patches bake themselves; leaving them to the default guess
+        // here would replace the `sget-object` before those patches ever see it.
+        val fixOwned = setOf(
+            "Lq4a;#b", "Lq4a;#c",
+            "Lio/appmetrica/analytics/billingv8/internal/NO/HqNexJL;#vJb"
         )
         val holders = HashSet<String>()
         classDefForEach { cd ->
@@ -625,6 +632,7 @@ val enablePremiumPatch = bytecodePatch(
                     if (i.opcode.name != "sget-object") continue
                     val ref = (i as? ReferenceInstruction)?.reference as? FieldReference ?: continue
                     if (ref.definingClass !in holders || ref.type != "Ljava/lang/String;") continue
+                    if (ref.definingClass + "#" + ref.name in fixOwned) continue
                     val k = kind[ref.definingClass + "#" + ref.name] ?: continue
                     hits.add(idx to when {
                         k[0] > 0 -> "svc"
