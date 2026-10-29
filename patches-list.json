@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.401.0",
+  "version": "0.402.0",
   "patches": [
     {
       "name": "Enable Premium",
@@ -181,6 +181,68 @@
             {
               "version": "6.101.1",
               "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Fix: cash-flow rating enum crash",
+      "description": "Bakes the cash-flow rating enum's FAIR constant name, so Moshi's reflective enum adapter no longer throws Missing field when View More in Most Undervalued opens.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.fusionmedia.investing",
+          "name": "Investing",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#20282E",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "6.52",
+              "versionCodes": {
+                "ARM64_V8A": 1660,
+                "ARMEABI_V7A": 1660,
+                "X86_64": 1660,
+                "X86": 1660
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Fix: chart font-cache crash",
+      "description": "Bakes the chart Typeface cache's locale fields so the cache is built instead of NPE-ing on a null list when a chart scrolls into view or Financial Data opens.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.fusionmedia.investing",
+          "name": "Investing",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#20282E",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "6.52",
+              "versionCodes": {
+                "ARM64_V8A": 1660,
+                "ARMEABI_V7A": 1660,
+                "X86_64": 1660,
+                "X86": 1660
+              },
               "isExperimental": true,
               "minSdk": null,
               "description": null
