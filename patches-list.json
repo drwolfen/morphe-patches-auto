@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.402.0",
+  "version": "0.403.0",
   "patches": [
     {
       "name": "Enable Premium",
@@ -191,6 +191,37 @@
       "options": []
     },
     {
+      "name": "Fix: Financial Health parse",
+      "description": "Pre-seeds the scorecard's numeric fields with a boxed 0.0 so a response missing `minScore`/`score`/`maxScore` parses instead of throwing `Missing field in Scorecard` and blanking Financial Health and the Health tab.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.fusionmedia.investing",
+          "name": "Investing",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#20282E",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "6.52",
+              "versionCodes": {
+                "ARM64_V8A": 1660,
+                "ARMEABI_V7A": 1660,
+                "X86_64": 1660,
+                "X86": 1660
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
       "name": "Fix: cash-flow rating enum crash",
       "description": "Bakes the cash-flow rating enum's FAIR constant name, so Moshi's reflective enum adapter no longer throws Missing field when View More in Most Undervalued opens.",
       "default": true,
@@ -256,6 +287,99 @@
       "name": "PairIP manifest bypass",
       "description": "Replaces the PairIP Application class with com.fusionmedia.investing.InvestingApplication, drops LicenseActivity and CHECK_LICENSE.",
       "default": false,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.fusionmedia.investing",
+          "name": "Investing",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#20282E",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "6.52",
+              "versionCodes": {
+                "ARM64_V8A": 1660,
+                "ARMEABI_V7A": 1660,
+                "X86_64": 1660,
+                "X86": 1660
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Unlock: Fair Value",
+      "description": "Forces the server `locked` flag off on every Fair Value datum (overview cell, Fair Value page, Popular/Ideas columns, analyst target and consensus) so the values render.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.fusionmedia.investing",
+          "name": "Investing",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#20282E",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "6.52",
+              "versionCodes": {
+                "ARM64_V8A": 1660,
+                "ARMEABI_V7A": 1660,
+                "X86_64": 1660,
+                "X86": 1660
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Unlock: Ideas data",
+      "description": "Forces the server `locked` flag off on Idea rows and their Growth/Profit/Cash-Flow ratings, so the Most Undervalued list and idea details show data instead of locks.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.fusionmedia.investing",
+          "name": "Investing",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#20282E",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "6.52",
+              "versionCodes": {
+                "ARM64_V8A": 1660,
+                "ARMEABI_V7A": 1660,
+                "X86_64": 1660,
+                "X86": 1660
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Unlock: Pro Tips",
+      "description": "Forces the server `locked` flag off on Pro Tips, so the tip text renders instead of the lock.",
+      "default": true,
       "category": null,
       "compatiblePackages": [
         {
