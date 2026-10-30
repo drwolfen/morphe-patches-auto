@@ -514,7 +514,11 @@ val enablePremiumPatch = bytecodePatch(
             "Lorg/apache/commons/lang3/text/translate/ckbN/qKsibC;#EMw" to "UNKNOWN_FH_LABEL",
             // Room column-index helper (w9h.y) resolves this holder field as the 3rd column of
             // every closed-instrument-insight query; the column is "timestamp".
-            "Lcom/fusionmedia/investing/feature/watchlistlistedit/data/request/qY/tTMTf;#WwHZRDCfDHLh" to "timestamp"
+            "Lcom/fusionmedia/investing/feature/watchlistlistedit/data/request/qY/tTMTf;#WwHZRDCfDHLh" to "timestamp",
+            // t47's SemiAnnual enum name is the only one read from a holder; the heuristic baked
+            // it with "SELECT 1" (a neighbouring SQL string), so Moshi's getField died on the
+            // Dividends tab.
+            "Lcom/fusionmedia/investing/feature/financial/health/instrument/overviewnew/model/Prfd/cxQiz;#cBqggDJRNYxiBbg" to "SemiAnnual"
             // q4a font cache (chart NPE) and the ns2 enum name are baked by the two Fix: sub-patches.
         )
         // Holder fields the Fix: sub-patches bake themselves; leaving them to the default guess
