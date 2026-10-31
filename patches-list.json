@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.404.0",
+  "version": "0.405.0",
   "patches": [
     {
       "name": "Enable Premium",
@@ -284,6 +284,37 @@
       "options": []
     },
     {
+      "name": "Fix: guest watchlist add",
+      "description": "Gives an anonymous session a watchlist portfolio, so adding a ticker stops failing with \"Update failed, try again later\".",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.fusionmedia.investing",
+          "name": "Investing",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#20282E",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "6.52",
+              "versionCodes": {
+                "ARM64_V8A": 1660,
+                "ARMEABI_V7A": 1660,
+                "X86_64": 1660,
+                "X86": 1660
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
       "name": "PairIP manifest bypass",
       "description": "Replaces the PairIP Application class with com.fusionmedia.investing.InvestingApplication, drops LicenseActivity and CHECK_LICENSE.",
       "default": false,
@@ -377,8 +408,101 @@
       "options": []
     },
     {
+      "name": "Unlock: Key Statistics",
+      "description": "Forces the server `isLocked` flag off on every Key Statistics metric (`KeyStatisticsResponse$Metric.d`), so the orange `Unlock` pill next to the Pro rows (Fair Value, analyst targets) is not drawn.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.fusionmedia.investing",
+          "name": "Investing",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#20282E",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "6.52",
+              "versionCodes": {
+                "ARM64_V8A": 1660,
+                "ARMEABI_V7A": 1660,
+                "X86_64": 1660,
+                "X86": 1660
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
       "name": "Unlock: Pro Tips",
       "description": "Forces the server `locked` flag off on Pro Tips, so the tip text renders instead of the lock.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.fusionmedia.investing",
+          "name": "Investing",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#20282E",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "6.52",
+              "versionCodes": {
+                "ARM64_V8A": 1660,
+                "ARMEABI_V7A": 1660,
+                "X86_64": 1660,
+                "X86": 1660
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Unlock: Pro Tips CTA",
+      "description": "Blanks the `Unlock All N Tips` CTA label the Pro Tips section builds from the `unlock_all_tips` localized string, so the orange upgrade button no longer sits under the tips.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.fusionmedia.investing",
+          "name": "Investing",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#20282E",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "6.52",
+              "versionCodes": {
+                "ARM64_V8A": 1660,
+                "ARMEABI_V7A": 1660,
+                "X86_64": 1660,
+                "X86": 1660
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Unlock: ProPicks values",
+      "description": "Shows the real tickers and values on the AI ProPicks cards instead of the masked layout, and removes the \"Get The Full List\" CTA.",
       "default": true,
       "category": null,
       "compatiblePackages": [

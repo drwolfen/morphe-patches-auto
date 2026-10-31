@@ -19,6 +19,9 @@ val unlockFairValuePatch = bytecodePatch(
         // Overview cell + Popular/Ideas column models.
         listOf("FairValue", "FairValueLabel", "FairValueUpside", "AnalystPriceTarget", "AnalystPriceTargetUpside")
             .forEach { forceFalseField("Lcom/fusionmedia/investing/feature/popular/screen/details/data/response/$it;", "a") }
+        // `FairValueOverviewModel` is the card behind the Overview/Health "Fair Value" cell (obfuscated
+        // `Lic9;`, fields average/upside/uncertainty/ranges/viewModelAvailable/viewModelsActionLabel/locked).
+        forceFalseField("Lic9;", "h")
         // Fair Value page.
         forceFalseField("Lcom/fusionmedia/investing/feature/fairvalue/data/response/FairValueResponse;", "k")
         forceFalseField("Lcom/fusionmedia/investing/feature/fair/value/details/data/response/FairValueResponse;", "i")

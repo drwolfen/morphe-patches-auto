@@ -6,8 +6,8 @@
 package standardrepo.morphe.patches.investing.premium
 
 import app.morphe.patcher.patch.bytecodePatch
-import standardrepo.morphe.patches.investing.features.unlockProPicksIdeas
-import standardrepo.morphe.patches.investing.fixes.fixGuestWatchlistAdd
+import standardrepo.morphe.patches.investing.features.unlockProPicksValuesPatch
+import standardrepo.morphe.patches.investing.fixes.fixGuestWatchlistAddPatch
 import app.morphe.patcher.util.proxy.mutableTypes.encodedValue.MutableStringEncodedValue
 import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.extensions.InstructionExtensions.removeInstructions
@@ -62,7 +62,7 @@ val enablePremiumPatch = bytecodePatch(
     description = "Auto-generated: unlocks Investing Pro."
 ) {
     compatibleWith(Compat.INVESTING)
-    dependsOn(pairipManifestBypassPatch)
+    dependsOn(pairipManifestBypassPatch, fixGuestWatchlistAddPatch, unlockProPicksValuesPatch)
 
     execute {
         VerifySignatureMatchesFingerprint.method.returnEarly(true)
@@ -1039,12 +1039,5 @@ val enablePremiumPatch = bytecodePatch(
                 }
             }
         }.onFailure { java.io.File(tmpDir + "/site.log").appendText("PLERR " + it + "\n") }
-
-        // Companion cracks folded into the main patch (the gate allows only one applicable patch
-        // plus one default=false manifest companion per app).
-        runCatching { fixGuestWatchlistAdd() }
-            .onFailure { java.io.File(tmpDir + "/site.log").appendText("WLERR " + it.toString().take(200) + "\n") }
-        runCatching { unlockProPicksIdeas() }
-            .onFailure { java.io.File(tmpDir + "/site.log").appendText("PPERR " + it.toString().take(200) + "\n") }
     }
 }
