@@ -5,6 +5,7 @@ package standardrepo.morphe.patches.investing.fixes
 
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.patch.bytecodePatch
+import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 import standardrepo.morphe.compatibility.Compat
 
 /**
@@ -21,21 +22,26 @@ val fixFairValuePatch = bytecodePatch(
     compatibleWith(Compat.INVESTING)
 
     execute {
-        val m = mutableClassDefByOrNull("Lc2f;")?.methods?.firstOrNull { it.name == "a" } ?: return@execute
+        val m = mutableClassDefByOrNull("Lc2f;")?.methods?.firstOrNull { m ->
+            m.implementation?.instructions?.any { it.refersTo("Lngc;.c:I") } == true
+        } ?: return@execute
         val insns = m.implementation!!.instructions
         val idx = insns.indexOfFirst {
-            it.opcode.name == "iget" && it.toString().contains("Lngc;.c:I")
+            it.opcode.name == "iget" && it.toString().contains("c:I")
         }
         if (idx < 0) return@execute
-        // `11111` is the placeholder; `j` is the real value. Scale to cents for the int field.
         m.replaceInstruction(
             idx,
             """
             iget-wide v9, v11, Lngc;.j:D
             double-to-int v9, v9
-            const/16 v10, #int 100
-            mul-int/2addr v9, v10
+            const/16 v8, #int 100
+            mul-int/2addr v9, v8
             """.trimIndent(),
         )
     }
 }
+
+/** True when this instruction's field reference is `descriptor` (e.g. `Lngc;.c:I`). */
+private fun com.android.tools.smali.dexlib2.iface.instruction.Instruction.refersTo(desc: String): Boolean =
+    (this as? ReferenceInstruction)?.reference?.toString()?.contains(desc.substringBefore(':')) == true
