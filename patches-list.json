@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.406.0",
+  "version": "0.408.0",
   "patches": [
     {
       "name": "Enable Premium",
@@ -191,6 +191,37 @@
       "options": []
     },
     {
+      "name": "Fix: Fair Value",
+      "description": "Replaces the constant `111.11` fair value with the real `fairValue` from the instrument-insights response so the Fair Value tile and the Key Statistics row are accurate.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.fusionmedia.investing",
+          "name": "Investing",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#20282E",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "6.52",
+              "versionCodes": {
+                "ARM64_V8A": 1660,
+                "ARMEABI_V7A": 1660,
+                "X86_64": 1660,
+                "X86": 1660
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
       "name": "Fix: Financial Health parse",
       "description": "Pre-seeds the scorecard's numeric fields with a boxed 0.0 so a response missing `minScore`/`score`/`maxScore` parses instead of throwing `Missing field in Scorecard` and blanking Financial Health and the Health tab.",
       "default": true,
@@ -286,37 +317,6 @@
     {
       "name": "Fix: chart font-cache crash",
       "description": "Bakes the chart Typeface cache's locale fields so the cache is built instead of NPE-ing on a null list when a chart scrolls into view or Financial Data opens.",
-      "default": true,
-      "category": null,
-      "compatiblePackages": [
-        {
-          "packageName": "com.fusionmedia.investing",
-          "name": "Investing",
-          "description": null,
-          "apkFileType": null,
-          "appIconColor": "#20282E",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "6.52",
-              "versionCodes": {
-                "ARM64_V8A": 1660,
-                "ARMEABI_V7A": 1660,
-                "X86_64": 1660,
-                "X86": 1660
-              },
-              "isExperimental": true,
-              "minSdk": null,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
-    },
-    {
-      "name": "Fix: guest watchlist add",
-      "description": "Gives an anonymous session a watchlist portfolio, so adding a ticker stops failing with \"Update failed, try again later\".",
       "default": true,
       "category": null,
       "compatiblePackages": [
@@ -503,37 +503,6 @@
     {
       "name": "Unlock: Pro Tips CTA",
       "description": "Blanks the `Unlock All N Tips` CTA label the Pro Tips section builds from the `unlock_all_tips` localized string, so the orange upgrade button no longer sits under the tips.",
-      "default": true,
-      "category": null,
-      "compatiblePackages": [
-        {
-          "packageName": "com.fusionmedia.investing",
-          "name": "Investing",
-          "description": null,
-          "apkFileType": null,
-          "appIconColor": "#20282E",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "6.52",
-              "versionCodes": {
-                "ARM64_V8A": 1660,
-                "ARMEABI_V7A": 1660,
-                "X86_64": 1660,
-                "X86": 1660
-              },
-              "isExperimental": true,
-              "minSdk": null,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
-    },
-    {
-      "name": "Unlock: ProPicks values",
-      "description": "Shows the real tickers and values on the AI ProPicks cards instead of the masked layout, and removes the \"Get The Full List\" CTA.",
       "default": true,
       "category": null,
       "compatiblePackages": [
