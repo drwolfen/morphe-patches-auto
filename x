@@ -1,0 +1,1 @@
+{"created_at": "2026-11-01T06:09:15", "description": "# 0.410.0\n\nEnable Pro for com.fusionmedia.investing v6.52 (auto-generated).", "download_url": "https://codeberg.org/StandardRepo/morphe-patches-auto/releases/download/v0.410.0/patches-0.410.0.mpp", "signature_download_url": "", "version": "0.410.0"}
