@@ -16,7 +16,7 @@ import standardrepo.morphe.compatibility.Compat
 
 /**
  * Investing.com masks Fair Value with a placeholder (111.11) for non-Pro accounts.
- * FeaturedStockResponse.e is the live price, Predictions.c is the upside fraction.
+ * FeaturedStockResponse.e is the live price and Predictions.c is the upside fraction.
  * fair value = price * (1 + upside).
  */
 val fixFairValuePatch = bytecodePatch(
@@ -29,26 +29,27 @@ val fixFairValuePatch = bytecodePatch(
         val m = mutableClassDefByOrNull("Lkze;")?.methods
             ?.firstOrNull { it.name == "a" && it.implementation != null }
             ?: error("FV: no Lkze.a mapper")
-        val insns = m.implementation!!.instructions.toList()
-        val sites = insns.indices.filter { i ->
-            val ins = insns[i]
-            val ref = (ins as? ReferenceInstruction)?.reference as? FieldReference
-                ?: return@filter false
-            ins.opcode == Opcode.IGET_WIDE && ref.name == "b" && ref.type == "D" &&
-                ref.definingClass.endsWith("/Predictions;")
-        }
-        require(sites.size == 2) { "FV expected 2 sites, got ${sites.size}" }
+
+        fun siteIn(list: List<com.android.tools.smali.dexlib2.builder.BuilderInstruction>): Int? =
+            list.indices.firstOrNull { idx ->
+                val ins = list[idx]
+                val ref = (ins as? ReferenceInstruction)?.reference as? FieldReference
+                if (ins.opcode == Opcode.IGET_WIDE && ref?.name == "b" && ref.type == "D" &&
+                    ref.definingClass.endsWith("/Predictions;")) true else false
+            }
 
         val resp = "Lcom/fusionmedia/investing/feature/featured/stock/data/response/FeaturedStockResponse;"
         val price = "Lcom/fusionmedia/investing/feature/featured/stock/data/response/Price;"
         val priceRef = ImmutableFieldReference(resp, "e", price)
         val valueRef = ImmutableFieldReference(price, "a", "D")
+        val predRef = ImmutableFieldReference(resp, "f", "Lcom/fusionmedia/investing/feature/featured/stock/data/response/Predictions;")
 
-        sites.sortedDescending().forEach { i ->
-            m.replaceInstructions(i, listOf(BuilderInstruction22c(Opcode.IGET_OBJECT, 11, 2, priceRef)))
-            m.addInstruction(i + 1, BuilderInstruction22c(Opcode.IGET_WIDE, 12, 11, valueRef))
-            m.addInstruction(i + 2, BuilderInstruction23x(Opcode.MUL_DOUBLE, 14, 12, 5))
-            m.addInstruction(i + 3, BuilderInstruction23x(Opcode.ADD_DOUBLE, 9, 14, 12))
+        repeat(2) {
+            val cur = m.implementation!!.instructions.toList()
+            val i = siteIn(cur) ?: error("FV: site vanished")
+                        m.replaceInstructions(i, listOf(BuilderInstruction22c(Opcode.IGET_OBJECT, 4, 2, priceRef),))
+            m.addInstruction(i + 1, BuilderInstruction22c(Opcode.IGET_WIDE, 9, 4, valueRef),)
+            m.addInstruction(i + 2, BuilderInstruction22c(Opcode.IGET_OBJECT, 4, 2, predRef),)
         }
     }
 }
