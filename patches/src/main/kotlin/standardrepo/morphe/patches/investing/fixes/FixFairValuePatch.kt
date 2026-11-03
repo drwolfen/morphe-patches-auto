@@ -3,36 +3,32 @@
  */
 package standardrepo.morphe.patches.investing.fixes
 
+import app.morphe.patcher.extensions.InstructionExtensions.addInstruction
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstructions
 import app.morphe.patcher.patch.bytecodePatch
 import com.android.tools.smali.dexlib2.Opcode
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction22c
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction23x
+import com.android.tools.smali.dexlib2.immutable.reference.ImmutableFieldReference
 import com.android.tools.smali.dexlib2.iface.reference.FieldReference
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 import standardrepo.morphe.compatibility.Compat
 
 /**
- * Investing.com ships a *masked* fair value for non-Pro accounts: the digits are all `1`
- * (`11111` -> `111.11`, `1111` -> `11.11`) and the percentage is always `+-111`.
- *
- * The real numbers are already in the response: `FeaturedStockResponse.e` carries the live
- * price and `Predictions.c` carries the upside as a fraction. The server derives the fair
- * value as `price * (1 + upside)`, so we recompute it locally and feed the computed value
- * into the analyst/valuation card model (`faj`) instead of the placeholder.
- *
- * The two `Predictions.b` reads in `Lkze.a` (the FeaturedStock -> overview mapper) are the
- * only places the masked fair value enters the model.
+ * Investing.com masks Fair Value with a placeholder (111.11) for non-Pro accounts.
+ * FeaturedStockResponse.e is the live price, Predictions.c is the upside fraction.
+ * fair value = price * (1 + upside).
  */
-@Suppress("unused")
 val fixFairValuePatch = bytecodePatch(
     name = "Fix: Fair Value",
-    description = "Replaces the masked Fair Value placeholder (111.11 / 11111) with a value computed from the live price and the response upside so the Fair Value card is accurate.",
+    description = "Recomputes the masked Fair Value from price and upside.",
 ) {
     compatibleWith(Compat.INVESTING)
 
     execute {
         val m = mutableClassDefByOrNull("Lkze;")?.methods
             ?.firstOrNull { it.name == "a" && it.implementation != null }
-            ?: error("FV: no Lkze.a(Lr54;)Ljava/lang/Object; mapper")
+            ?: error("FV: no Lkze.a mapper")
         val insns = m.implementation!!.instructions.toList()
         val sites = insns.indices.filter { i ->
             val ins = insns[i]
@@ -41,17 +37,18 @@ val fixFairValuePatch = bytecodePatch(
             ins.opcode == Opcode.IGET_WIDE && ref.name == "b" && ref.type == "D" &&
                 ref.definingClass.endsWith("/Predictions;")
         }
-        require(sites.size == 2) { "FV: expected 2 Predictions.b:D reads in Lkze.a, got ${sites.size}" }
+        require(sites.size == 2) { "FV expected 2 sites, got ${sites.size}" }
 
-        // fair = price + price * upside   (v2 = FeaturedStockResponse, v5 = Predictions.c)
-        val block = """
-            iget-object v34, v2, Lcom/fusionmedia/investing/feature/featured/stock/data/response/FeaturedStockResponse;->e:Lcom/fusionmedia/investing/feature/featured/stock/data/response/Price;
-            iget-wide v24, v34, Lcom/fusionmedia/investing/feature/featured/stock/data/response/Price;->a:D
-            mul-double v15, v24, v5
-            add-double v9, v15, v24
-        """.trimIndent()
+        val resp = "Lcom/fusionmedia/investing/feature/featured/stock/data/response/FeaturedStockResponse;"
+        val price = "Lcom/fusionmedia/investing/feature/featured/stock/data/response/Price;"
+        val priceRef = ImmutableFieldReference(resp, "e", price)
+        val valueRef = ImmutableFieldReference(price, "a", "D")
 
-        sites.forEach { i -> println("FVSITE $i ${insns[i]}") }
-        sites.sortedDescending().forEach { m.replaceInstructions(it, block) }
+        sites.sortedDescending().forEach { i ->
+            m.replaceInstructions(i, listOf(BuilderInstruction22c(Opcode.IGET_OBJECT, 11, 2, priceRef)))
+            m.addInstruction(i + 1, BuilderInstruction22c(Opcode.IGET_WIDE, 12, 11, valueRef))
+            m.addInstruction(i + 2, BuilderInstruction23x(Opcode.MUL_DOUBLE, 14, 12, 5))
+            m.addInstruction(i + 3, BuilderInstruction23x(Opcode.ADD_DOUBLE, 9, 14, 12))
+        }
     }
 }
