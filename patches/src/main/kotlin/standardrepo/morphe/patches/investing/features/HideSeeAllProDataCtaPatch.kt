@@ -174,7 +174,27 @@ val hideSeeAllProDataCtaPatch = bytecodePatch(
                 }
             }
         }
+        // The real render sites sit one level deeper: `Lwg9;->b` builds the
+        // Ideas bottom bar by calling `Ldd4;->g`, and `Ldg2;->n` builds the
+        // ticker-overview bar by calling `Ldd4;->h`. `Ldb9` only wraps them.
+        // Nop those dispatch references too, otherwise the bar still draws.
+        var nHost = 0
+        for ((hostCls, hostMethod) in listOf("Lwg9;" to "b", "Ldg2;" to "n")) {
+            val host = mutableClassDefByOrNull(hostCls)?.methods?.firstOrNull { it.name == hostMethod }
+            val hostImpl = host?.implementation ?: continue
+            val hostTarget = if (hostCls == "Lwg9;") "Ldd4;->g" else "Ldd4;->h"
+            val hostList = hostImpl.instructions.toList()
+            for (i in hostList.indices.reversed()) {
+                val r = (hostList[i] as? ReferenceInstruction)?.reference?.toString() ?: continue
+                if (r.contains(hostTarget)) {
+                    host.replaceInstruction(i, "nop")
+                    n++
+                    nHost++
+                }
+            }
+        }
         if (n < 62) error("CTA: expected >=62 nops, got $n")
+        if (nHost < 2) error("CTA: bar render sites not patched (nHost=$nHost)")
         if (nBar < 2) error("CTA: bottom-bar lambda not patched (nBar=$nBar)")
     }
 }
