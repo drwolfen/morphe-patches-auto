@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.419.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.418.0...v0.419.0) (2026-11-06)
+
+### Features
+
+* **Untappdllc:** Enable Premium for 5.0.3 ([cf20bec](https://codeberg.org/StandardRepo/morphe-patches-auto/commit/cf20bec))
+* **Bend:** Enable Premium for 7.8.0
+* **Example App:** Enable Premium for 1.0.0
+* **Sleep:** Enable Premium for 20261006
+* **Blurwallpaper:** Enable Pro for 3.0.0
+* **Investing:** Enable Pro for 6.52
+* **Duolingo:** Enable Super for 6.101.2
+
 ## [0.418.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.417.0...v0.418.0) (2026-11-06)
 
 ### Features
