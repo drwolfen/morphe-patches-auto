@@ -56,7 +56,7 @@ object Compat {
     )
 
     val UNTAPPD = Compatibility(
-        name = "Untappd",
+        name = "Untappdllc",
         packageName = "com.untappdllc.app",
         appIconColor = 0xDFA200,
         targets = listOf(AppTarget("5.0.3", 2147102969, isExperimental = true))
