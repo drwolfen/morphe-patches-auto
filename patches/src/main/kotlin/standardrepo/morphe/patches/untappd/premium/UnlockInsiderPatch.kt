@@ -38,22 +38,18 @@ fun app.morphe.patcher.patch.ResourcePatchContext.unlockInsiderBundle() {
         }
     }
     for (site in INSIDER_SITES) {
-        if (site + 3 < bytes.size) {
-            val dst = bytes[site + 1]
-            if (bytes[site] == 0x36.toByte()) {
-                bytes[site] = 0x78.toByte()
-                bytes[site + 2] = 0x08.toByte()
-                bytes[site + 3] = dst
-                bytes[site + 4] = dst
-            } else {
-                bytes[site] = 0x78.toByte()
-                bytes[site + 2] = 0x78.toByte()
-                bytes[/**/site + 3] = dst
-            }
-        }
+    if (site + 5 < bytes.size) {
+        val dst = bytes[site + 1]
+        val op = bytes[site].toInt()
+        bytes[site] = 0x78.toByte()
+        bytes[site + 2] = if (op == 55) 0x78.toByte() else dst
+        bytes[site + 3] = dst
+        n++
+        if (op == 54) { bytes[site + 2] = 8.toByte(); bytes[site + 4] = dst }
+        if (op == 55) { bytes[site + 4] = 0x78.toByte(); bytes[site + 5] = dst }
     }
-    f.writeBytes(bytes)
-    println("INSIDER bundle patched=" + n)
+}
+println("INSIDER bundle patched=" + n)
 }
 
 val unlockInsiderBundlePatch = app.morphe.patcher.patch.resourcePatch(
