@@ -1,7 +1,69 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.417.0",
+  "version": "0.418.0",
   "patches": [
+    {
+      "name": "Bypass Play install check",
+      "description": "Reports the installer as com.android.vending so the sideload block on onboarding never trips.",
+      "default": false,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.untappdllc.app",
+          "name": "Untappdllc",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#DFA200",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "5.0.3",
+              "versionCodes": {
+                "ARM64_V8A": 2147102969,
+                "ARMEABI_V7A": 2147102969,
+                "X86_64": 2147102969,
+                "X86": 2147102969
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Disable ads",
+      "description": "Stops the Google Mobile Ads banner and interstitial loads so no ad requests fill.",
+      "default": false,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.untappdllc.app",
+          "name": "Untappdllc",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#DFA200",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "5.0.3",
+              "versionCodes": {
+                "ARM64_V8A": 2147102969,
+                "ARMEABI_V7A": 2147102969,
+                "X86_64": 2147102969,
+                "X86": 2147102969
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
     {
       "name": "Enable Premium",
       "description": "Auto-generated: unlocks Bend Premium.",
@@ -408,6 +470,68 @@
       "options": []
     },
     {
+      "name": "Unlock Insider (bundle)",
+      "description": "Forces the JS user.is_supporter flag to true inside the Hermes bundle.",
+      "default": false,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.untappdllc.app",
+          "name": "Untappdllc",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#DFA200",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "5.0.3",
+              "versionCodes": {
+                "ARM64_V8A": 2147102969,
+                "ARMEABI_V7A": 2147102969,
+                "X86_64": 2147102969,
+                "X86": 2147102969
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Unlock Insider Entitlements",
+      "description": "Makes Insider active: RevenueCat entitlements are reported active and the JS supporter flag is forced true.",
+      "default": false,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.untappdllc.app",
+          "name": "Untappdllc",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#DFA200",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "5.0.3",
+              "versionCodes": {
+                "ARM64_V8A": 2147102969,
+                "ARMEABI_V7A": 2147102969,
+                "X86_64": 2147102969,
+                "X86": 2147102969
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
       "name": "Unlock: Fair Value",
       "description": "Forces the server `locked` flag off on every Fair Value datum (overview cell, Fair Value page, Popular/Ideas columns, analyst target and consensus) so the values render.",
       "default": true,
@@ -561,6 +685,65 @@
         }
       ],
       "options": []
+    },
+    {
+      "name": "Untappd",
+      "description": "...",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.untappdllc.app",
+          "name": "Untappdllc",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#DFA200",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "5.0.3",
+              "versionCodes": {
+                "ARM64_V8A": 2147102969,
+                "ARMEABI_V7A": 2147102969,
+                "X86_64": 2147102969,
+                "X86": 2147102969
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": [
+        {
+          "key": "unlockInsider",
+          "title": "Unlock Insider",
+          "description": "Fake a live RevenueCat insider entitlement so Insider gates and paywalls open.",
+          "required": false,
+          "type": "kotlin.Boolean",
+          "default": true,
+          "values": {}
+        },
+        {
+          "key": "bypassPlayCheck",
+          "title": "Bypass Play install check",
+          "description": "Report the installer as com.android.vending so the sideload block never trips.",
+          "required": false,
+          "type": "kotlin.Boolean",
+          "default": true,
+          "values": {}
+        },
+        {
+          "key": "disableAds",
+          "title": "Disable ads",
+          "description": "No-op the banner and interstitial load calls so no ads fill.",
+          "required": false,
+          "type": "kotlin.Boolean",
+          "default": true,
+          "values": {}
+        }
+      ]
     }
   ]
 }
