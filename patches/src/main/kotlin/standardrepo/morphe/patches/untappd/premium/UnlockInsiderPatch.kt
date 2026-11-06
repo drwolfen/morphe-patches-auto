@@ -17,39 +17,21 @@ fun app.morphe.patcher.patch.ResourcePatchContext.unlockInsiderBundle() {
     val bytes = f.readBytes()
     println("INSIDER read=" + bytes.size + " magic=" + (bytes[0].toInt() and 255))
     var n = 0
-    var i = 1
-    while (i + 9 < bytes.size) {
-        if (bytes[i] == 0x37.toByte() && bytes[i + 6] == 0x0F.toByte() &&
-            bytes[i + 8] == 0x01.toByte() &&
-            ((bytes[i + 4] == 0x88.toByte() && bytes[i + 5] == 0xED.toByte()) ||
-             (bytes[i + 1] == 0x01.toByte() && bytes[i + 2] == 0x04.toByte() &&
-              bytes[i + 9] == 0x06.toByte() &&
-              (bytes[i + 7] == 0x08.toByte() ||
-               bytes[i + 7] == 0x0C.toByte())))) {
-            val dst = bytes[i + 7]
-            bytes[i + 6] = 0x78.toByte()
-            bytes[i + 7] = dst
-            bytes[i + 8] = 0x78.toByte()
-            bytes[i + 9] = dst
-            n++
-            i += 10
-        } else {
-            i++
-        }
-    }
     for (site in INSIDER_SITES) {
-    if (site + 5 < bytes.size) {
+        if (site + 6 >= bytes.size) continue
+        val op = bytes[site].toInt() and 0xFF
+        val len = when (op) { 15 -> 4; 73 -> 4; 54 -> 5; 55 -> 6; else -> continue }
         val dst = bytes[site + 1]
-        val op = bytes[site].toInt()
-        bytes[site] = 0x78.toByte()
-        bytes[site + 2] = if (op == 55) 0x78.toByte() else dst
-        bytes[site + 3] = dst
+        bytes[site] = 120.toByte()
+        bytes[site + 1] = dst
+        for (k in site + 2 until site + len) bytes[k] = 98.toByte()
         n++
-        if (op == 54) { bytes[site + 2] = 8.toByte(); bytes[site + 4] = dst }
-        if (op == 55) { bytes[site + 4] = 0x78.toByte(); bytes[site + 5] = dst }
     }
-}
-println("INSIDER bundle patched=" + n)
+    val md = java.security.MessageDigest.getInstance("SHA-1")
+    md.update(bytes, 0, bytes.size -20)
+    System.arraycopy(md.digest(),0,bytes,bytes.size-20,20)
+    f.writeBytes(bytes)
+    println("INSIDER bundle patched="+n)
 }
 
 val unlockInsiderBundlePatch = app.morphe.patcher.patch.resourcePatch(

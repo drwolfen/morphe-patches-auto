@@ -203,8 +203,24 @@ fun main(args: Array<String>) {
     val workspace = libsDir.parentFile.resolve("gate-tmp").apply { mkdirs() }
     val failures = mutableListOf<String>()
     val patched = LinkedHashMap<String, ByteArray>()
+    var patchedResourcesApk: File? = null
+    var patchedOtherResources: File? = null
 
-    Patcher(PatcherConfig(apkFile = apk, temporaryFilesPath = workspace)).use { patcher ->
+    // Resource patches only run when the config opts into resource decoding; the default is NONE,
+    // which silently skips every resourcePatch (their execute() never fires). The setter is
+    // `internal` (mangled), so reach it reflectively.
+    val config = PatcherConfig(apkFile = apk, temporaryFilesPath = workspace)
+    runCatching {
+        val m = PatcherConfig::class.java.getDeclaredMethod(
+            "setResourceMode\$morphe_patcher",
+            app.morphe.patcher.resource.ResourceMode::class.java,
+        )
+        m.isAccessible = true
+        m.invoke(config, app.morphe.patcher.resource.ResourceMode.FULL)
+    }.onFailure { println("GATE resource mode unavailable: ${it::class.simpleName}: ${it.message}") }
+    println("resourceMode=FULL requested")
+
+    Patcher(config).use { patcher ->
         patcher += applicable.toSet()
         val results = runBlocking { patcher().toList() }
         for (r in results) {
@@ -217,13 +233,50 @@ fun main(args: Array<String>) {
                 println("GATE patch ok: $label")
             }
         }
-        for (d in patcher.get().dexFiles) patched[d.name] = d.stream.readBytes()
+        val result = patcher.get()
+        for (d in result.dexFiles) patched[d.name] = d.stream.readBytes()
+        result.resources?.let { res ->
+            patchedResourcesApk = res.resourcesApk
+            patchedOtherResources = res.otherResources
+        }
     }
 
     if (failures.isNotEmpty()) {
         println("GATE FAIL ${failures.size} applicable patch(es) raised (fingerprint miss or mutation error):")
         failures.forEach { println("  - $it") }
         exitProcess(2)
+    }
+
+    // Resource parity: a resource patch that executes but writes nothing is a silent no-op in the
+    // shipped APK (bundle bytes identical). Assert the patcher emitted a patched resources APK and
+    // that the RN bundle inside it actually differs from the input.
+    if (applicable.any { it is app.morphe.patcher.patch.ResourcePatch }) {
+        val resApk = patchedResourcesApk
+        println("GATE resourcesApk=" + (resApk?.absolutePath ?: "null") + " isFile=" + (resApk?.isFile ?: false))
+        if (resApk == null || !resApk.isFile) {
+            println("GATE FAIL resource patch ran but produced no resources.apk")
+            exitProcess(12)
+        }
+        val outDir = workspace.resolve("patched").apply { mkdirs() }
+        val outRes = outDir.resolve("resources.apk")
+        if (resApk.canonicalPath != outRes.canonicalPath) resApk.copyTo(outRes, overwrite = true)
+        patchedOtherResources?.takeIf { it.isDirectory }?.let { src ->
+            val dst = outDir.resolve("other")
+            if (src.canonicalPath != dst.canonicalPath) src.copyRecursively(dst, overwrite = true)
+        }
+        val before = ZipFile(apk).use { z -> z.getInputStream(z.getEntry("assets/index.android.bundle")).readBytes() }
+        val after = ZipFile(outRes).use { z ->
+            z.getEntry("assets/index.android.bundle")?.let { z.getInputStream(it).readBytes() }
+        } ?: patchedOtherResources?.resolve("assets/index.android.bundle")?.takeIf { it.isFile }?.readBytes()
+        if (after == null) {
+            println("GATE FAIL patched bundle absent from resources.apk and the patcher's other tree")
+            exitProcess(14)
+        }
+        println("GATE resource bundle bytes before=${before.size} after=${after.size} changed=${!before.contentEquals(after)}")
+        if (before.contentEquals(after)) {
+            println("GATE FAIL resource patch produced an unchanged bundle")
+            exitProcess(13)
+        }
     }
 
     val changed = patched.count { (name, bytes) -> original[name]?.contentEquals(bytes) != true }

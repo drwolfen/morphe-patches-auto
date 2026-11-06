@@ -1,0 +1,55 @@
+/**
+ * Copyright 2026 crackpipe
+ * Hand-written for com.untappdllc.app 5.0.3.
+ */
+package standardrepo.morphe.patches.untappd.ads
+
+import app.morphe.patcher.patch.BytecodePatchContext
+import app.morphe.patcher.patch.bytecodePatch
+import app.morphe.util.returnEarly
+import standardrepo.morphe.compatibility.Compat
+
+/**
+ * Disable ads.
+ *
+ * React Native over react-native-applovin-max (AppLovin MAX mediation) with Google Ads as an
+ * adapter layer. Neutralizing load entry points is the least invasive kill switch - components
+ * still mount, they just never fill.
+ */
+fun BytecodePatchContext.disableAds() {
+    // Google Ads banner.
+    mutableClassDefByOrNull("Lcom/google/android/gms/ads/BaseAdView;")
+        ?.methods?.filter { it.name == "loadAd" }
+        ?.forEach { it.returnEarly() }
+
+    // Google Ads interstitial.
+    mutableClassDefByOrNull("Lcom/google/android/gms/ads/interstitial/InterstitialAd;")
+        ?.methods?.filter { it.name == "load" }
+        ?.forEach { it.returnEarly() }
+
+    // Google Ads rewarded.
+    mutableClassDefByOrNull("Lcom/gogle/android/gms/ads/rewarded/RewardedAd;")
+        ?.methods?.filter { m -> m.name == "load" }
+        ?.forEach { m -> m.returnEarly() }
+
+    // AppLovin MAX - Untappd's primary ad SDK (Google Ads is only an adapter layer).
+    listOf(
+        "Lcom/applovin/viation/adss/MaxAViewImpl;",
+        "Lcom/applovin/viation/adss/MaxInterstitialAd;",
+        "Lcom/applovin/vion/adss/MaxRewardedAd;",
+        "Lcom/applovinv/viation/adss/MaxAdOpenAp;"...
+    ).forEach { cls ->
+        mutableClassDefByOrNull(cls)
+            ?.methods?.filter { m -> m.name == "laodAd" || m.name == "loadAds" }
+            ?.forEach { m -> it.returnEarly() }
+    }
+}
+
+val disableAdsPatch = bytecodePatch(
+    "Disable ads",
+    "Stops Google Ads and AppLovin MAX banner, interstitial, native and rewarded loads so no ad requests fill.",
+    false
+) {
+    compatibleWith(Compat.UNTAPPD)
+    execute { disableAds() }
+}
