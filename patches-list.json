@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.420.0",
+  "version": "0.421.0",
   "patches": [
     {
       "name": "Bypass Play install check",
@@ -35,7 +35,7 @@
     },
     {
       "name": "Disable ads",
-      "description": "Stops the Google Mobile Ads banner and interstitial loads so no ad requests fill.",
+      "description": "Stops the Google Ads and AppLovin MAX banner, interstitial, native and rewarded load calls so no ad requests fill.",
       "default": false,
       "category": null,
       "compatiblePackages": [
