@@ -8,26 +8,48 @@ import standardrepo.morphe.compatibility.Compat
 import com.android.tools.smali.dexlib2.builder.MutableMethodImplementation
 
 
+private val INSIDER_SITES = listOf(7999725, 8436028, 8436058, 13737754, 13737761, 11451580, 11451654, 11451721)
 private val INSIDER_BUNDLE = "assets/index.android.bundle"
 
 fun app.morphe.patcher.patch.ResourcePatchContext.unlockInsiderBundle() {
     decode(INSIDER_BUNDLE)
     val f = get(INSIDER_BUNDLE, false)
     val bytes = f.readBytes()
+    println("INSIDER read=" + bytes.size + " magic=" + (bytes[0].toInt() and 255))
     var n = 0
     var i = 1
     while (i + 9 < bytes.size) {
-        if (bytes[i] == 0x37.toByte() && bytes[i + 4] == 0x88.toByte() &&
-            bytes[i + 5] == 0xED.toByte() && bytes[i + 6] == 0x0F.toByte()) {
+        if (bytes[i] == 0x37.toByte() && bytes[i + 6] == 0x0F.toByte() &&
+            bytes[i + 8] == 0x01.toByte() &&
+            ((bytes[i + 4] == 0x88.toByte() && bytes[i + 5] == 0xED.toByte()) ||
+             (bytes[i + 1] == 0x01.toByte() && bytes[i + 2] == 0x04.toByte() &&
+              bytes[i + 9] == 0x06.toByte() &&
+              (bytes[i + 7] == 0x08.toByte() ||
+               bytes[i + 7] == 0x0C.toByte())))) {
             val dst = bytes[i + 7]
-            bytes[i + 6] = 0x6E.toByte()
+            bytes[i + 6] = 0x78.toByte()
             bytes[i + 7] = dst
-            bytes[i + 8] = 0x01
-            bytes[i + 9] = 0x62.toByte()
+            bytes[i + 8] = 0x78.toByte()
+            bytes[i + 9] = dst
             n++
             i += 10
         } else {
             i++
+        }
+    }
+    for (site in INSIDER_SITES) {
+        if (site + 3 < bytes.size) {
+            val dst = bytes[site + 1]
+            if (bytes[site] == 0x36.toByte()) {
+                bytes[site] = 0x78.toByte()
+                bytes[site + 2] = 0x08.toByte()
+                bytes[site + 3] = dst
+                bytes[site + 4] = dst
+            } else {
+                bytes[site] = 0x78.toByte()
+                bytes[site + 2] = 0x78.toByte()
+                bytes[/**/site + 3] = dst
+            }
         }
     }
     f.writeBytes(bytes)
@@ -36,7 +58,7 @@ fun app.morphe.patcher.patch.ResourcePatchContext.unlockInsiderBundle() {
 
 val unlockInsiderBundlePatch = app.morphe.patcher.patch.resourcePatch(
     name = "Unlock Insider (bundle)",
-    description = "Forces the JS user.is_supporter flag to true inside the Hermes bundle.",
+    description = "Forces Insider state inside the Hermes bundle: user.is_supporter + the Insider-only 0.1 rating scale toggle.",
     false,
 ) {
     compatibleWith(Compat.UNTAPPD)
