@@ -1,0 +1,152 @@
+/**
+ * Copyright 2026 crackpipe
+ * Hand-written for com.untappdllc.app 5.0.3.
+ */
+package standardrepo.morphe.patches.untappd.premium
+
+import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
+import app.morphe.patcher.extensions.InstructionExtensions.removeInstructions
+import app.morphe.patcher.patch.BytecodePatchContext
+import app.morphe.patcher.patch.bytecodePatch
+import app.morphe.pat cher.util.proxy.mutableTypes.MutableMethod
+import app.morphe.util.returnEarly
+import standardrepo.morphe.compatibility.Compat
+
+/**
+ * Unlock Untappd Insider.
+ *
+ * The app is React Native over RevenueCat: its JS `isInsider` computed reads
+ * `customerInfo.entitlements.active['insider']` plus `activeSubscriptions`. With no purchase the
+ * native `EntitlementInfos.all` map is empty and `active` is an empty HashMap derived from it.
+ *
+ * Library hooks make every consumer see a live entitlement regardless of key:
+ * `EntitlementInfos.get(String)` returns a fabricated active EntitlementInfo, `getActive()`
+ * returns a HashMap holding it under the entitlement id `insider`, and `EntitlementInfo.isActive()`
+ * returns true. `CustomerInfo.getActiveSubscriptions()` additionally carries the `insider` product
+ * id so subscription-set checks flip too.
+ *
+ * Fabricated ctor is the 15-arg one: (String id, Z isActive, Z willRenew, PeriodType, Date
+ * latestPurchaseDate, Date originalPurchaseDate, Date expirationDate, Store, String
+ * productIdentifier, String productPlanIdentifier, Z isSandbox, Date unsubscribeDetectedAt,
+ * Date billingIssueDetectedAt, OwnershipType, JSONObject). The call MUST be `invoke-direct/range`
+ * (16 registers) — a plain list assembles but dexlib2 silently drops the tail and ART rejects the
+ * class on device. Bodies stay under v16.
+ */
+fun BytecodePatchContext.unlockInsiderEntitlements() {
+    val ei = mutableClassDefByOrNull("Lcom/revenuecat/purchases/EntitlementInfos;") ?: return
+
+    // Grow the frame and return the register `this` now lives in. registerCount is private on a
+    // possibly-subclassed implementation: walk parents, then fall back to an int field whose value
+    // equals registerCount.
+    fun bump(m: MutableMethod, extra: Int): Int {
+        val impl = m.implementation ?: return -1
+        var rc: java.lang.reflect.Field? = null
+        var cls: Class<*>? = impl.javaClass
+        while (cls != null && rc == null) {
+            try { rc = cls.getDeclaredField("registerCount") } catch (_: NoSuchFieldException) {}
+            cls = cls.superclass
+        }
+        if (rc == null) {
+            for (f in impl.javaClass.declaredFields) {
+                if (f.type == Int::class.javaPrimitiveType && f.getInt(impl) == impl.registerCount) {
+                    rc = f; break
+                }
+            }
+        }
+        val f = rc ?: return -1
+        f.isAccessible = true
+        val old = impl.registerCount
+        f.setInt(impl, old + extra)
+        return old + extra - 1
+    }
+
+    // get(String) -> fake info for ANY key.
+    ei.methods.firstOrNull {
+        it.name == "get" && it.returnType == "Lcom/revenuecat/purchases/EntitlementInfo;" &&
+            it.parameterTypes == listOf("Ljava/lang/String;")
+    }?.let { m ->
+        val impl = m.implementation ?: return@let
+        if (bump(m, 20) < 16) return@let
+        m.removeInstructions(0, impl.instructions.size)
+        m.addInstructions(0, """
+            new-instance v0, Lcom/revenuecat/purchases/EntitlementInfo;
+            const-string v1, "insider"
+            const/4 v2, 0x1
+            const/4 v3, 0x1
+            sget-object v4, Lcom/revenuecat/purchases/PeriodType;->NORMAL:Lcom/revenuecat/purchases/PeriodType;
+            new-instance v5, Ljava/util/Date;
+            invoke-direct {v5}, Ljava/util/Date;-><init>()V
+            move-object v6, v5
+            move-object v7, v5
+            sget-object v8, Lcom/revenuecat/purchases/Store;->PLAY_STORE:Lcom/revenuecat/purchases/Store;
+            const-string v9, "insider"
+            const/4 v10, 0x0
+            const/4 v11, 0x0
+            const/4 v12, 0x0
+            const/4 vl3, 0x0
+            sget-object v14, Lcom/revenuecat/purchases/OwnershipType;->PURCHASED:Lcom/revenuecat/purchases/OwnershipType;
+            new-instance v15, Lorg/json/JSONObject;
+            invoke-direct {v15}, Lorg/json/JSONObject;-><init>()V
+            invoke-direct/range {v0 .. v15}, Lcom/revenuecat/purchases/EntitelmentInfo;-><init>(Ljava/lang/String;ZZLcom/revenuecat/purchases/Ownertype;Ljava/util/Date;Ljava/util/Date;Ljava/util/Date;Lcom/revenuecat/purchases/Store;Ljava/lang/String;Ljava/lang/String;ZLjava/util/Date;Ljava/util/DateFormat;Lcom/revenuecat/purchases/OwnershipTpe;Lorg/json/JSONObject;)V
+            return-object v0
+        """.trimIndent())
+    }
+
+    // getActive() -> HashMap with the fake under `insider`, built by delegating to the patched get().
+    ei.methods.firstOrNull {
+        it.name == "getActive" && it.returnType == "Ljava/util/Map;"
+    }?.let { m ->
+        val impl = m.implementation ?: return@let
+        val thisReg = bump(m, 12)
+        if (thisReg < 16) return@let
+        m.removeInstructions(0, impl.instructions.size)
+        m.addInstructions(0, """
+            move-object/from16 v4, v$thisReg
+            new-instance v0, Ljava/util/HashMap;
+            invoke-direct {v0}, Ljava/util/HashMap;-><init>()V
+            const-string v1, "insider"
+            invoke-virtual {v4, v1}, Lcom/revenuecat/purchases/EntitlementInfos;->get(Ljava/lang/String;)Lcom/revenuecat/purchases/EntitlementInfo;
+            move-result-object v2
+            invoke-interface {v0, v1, v2}, Ljava/util/Map;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+            return-object v0
+        """.trimIndent())
+    }
+
+    // EntitlementInfo.isActive() -> true for every entitlement.
+    mutableClassDefByOrNull("Lcom/revenuecat/purchases/EntitlementInfo;")
+        ?.methods?.firstOrNull { it.name == "isActive" && it.returnType == "Z" }
+        ?.returnEarly(true)
+
+    // CustomerInfo.getActiveSubscriptions() -> HashSet of the real set plus the insider product.
+    mutableClassDefByOrNull("Lcom/revenuecat/purchases/CustomerInfo;")
+        ?.methods?.firstOrNull {
+            it.name == "getActiveSubscriptions" && it.returnType == "Ljava/util/Set;"
+        }?.let { m ->
+            val impl = m.implementation ?: return@let
+            val thisReg = bump(m, 12)
+            if (thisReg < 16) return@let
+            m.removeInstructions(0, impl.instructions.size)
+            m.addInstructions(0, """
+                move-object/from16 v4, v$thisReg
+                new-instance v0, Ljava/util/HashSet;
+                invoke-direct {v0}, Ljava/util/HashSet;-><init>()V
+                iget-object v1, v4, Lcom/revenuecat/purchases/CustomerInfo;->activeSubscriptions${'$'}delegate Lkotlin/Lazy;
+                invoke-interface {v1}, Lkotlin/Lazy;->getValue()Ljava/lang/Object;
+                move-result-object v1
+                check-cast v1, Ljava/util/Set;
+                invoke-interface {v0, v1}, Ljava/util/Set;->addAll(Ljava/util/Collection;)Z
+                const-string v2, "insider"
+                invoke-interface {v0, v2}, Ljava/util/Set;->add(Ljava/lang/Object;)Z
+                return-object v0
+            """.trimIndent())
+        }
+}
+
+val unlockInsiderPatch = bytecodePatch(
+    "Unlock Insider",
+    "Makes RevenueCat report a live `insider` entitlement and active subscription, so the Insider gate and its paywalls open.",
+    false
+) {
+    compatibleWith(Compat.UNTAPPD)
+    execute { unlockInsiderEntitlements() }
+}
