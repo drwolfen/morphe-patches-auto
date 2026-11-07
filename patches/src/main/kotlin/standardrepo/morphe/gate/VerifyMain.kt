@@ -264,18 +264,24 @@ fun main(args: Array<String>) {
             val dst = outDir.resolve("other")
             if (src.canonicalPath != dst.canonicalPath) src.copyRecursively(dst, overwrite = true)
         }
-        val before = ZipFile(apk).use { z -> z.getInputStream(z.getEntry("assets/index.android.bundle")).readBytes() }
+        val before = ZipFile(apk).use { z ->
+            z.getEntry("assets/index.android.bundle")?.let { z.getInputStream(it).readBytes() }
+        }
         val after = ZipFile(outRes).use { z ->
             z.getEntry("assets/index.android.bundle")?.let { z.getInputStream(it).readBytes() }
         } ?: patchedOtherResources?.resolve("assets/index.android.bundle")?.takeIf { it.isFile }?.readBytes()
-        if (after == null) {
-            println("GATE FAIL patched bundle absent from resources.apk and the patcher's other tree")
-            exitProcess(14)
-        }
-        println("GATE resource bundle bytes before=${before.size} after=${after.size} changed=${!before.contentEquals(after)}")
-        if (before.contentEquals(after)) {
-            println("GATE FAIL resource patch produced an unchanged bundle")
-            exitProcess(13)
+        if (before == null && after == null ) {
+            println("GATE resource bundle absent in target and in patched output (non-bundle app)")
+        } else {
+            if (after == null ) {
+                println("GATE FAIL patched bundle absent from resources.apk and in patcher other tree")
+                exitProcess(14)
+            }
+            println("GATE resource bundle bytes before=${before?.size} after=${after.size} changed=${before != null && !before.contentEquals(after)}")
+            if (before != null && before.contentEquals(after)) {
+                println("GATE FAIL resource patch produced an unchanged bundle")
+                exitProcess(13)
+            }
         }
     }
 
