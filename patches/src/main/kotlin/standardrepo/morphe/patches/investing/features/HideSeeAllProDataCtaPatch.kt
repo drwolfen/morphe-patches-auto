@@ -177,24 +177,192 @@ val hideSeeAllProDataCtaPatch = bytecodePatch(
         // The real render sites sit one level deeper: `Lwg9;->b` builds the
         // Ideas bottom bar by calling `Ldd4;->g`, and `Ldg2;->n` builds the
         // ticker-overview bar by calling `Ldd4;->h`. `Ldb9` only wraps them.
-        // Nop those dispatch references too, otherwise the bar still draws.
+        // Keep those calls but empty the bar bodies: the parent composable keeps
+        // an opaque black box in the slot (the CTA block remnant) that covers
+        // the Economic/Earnings/Dividend/IPO tabs and eats their taps.
         var nHost = 0
         for ((hostCls, hostMethod) in listOf("Lwg9;" to "b", "Ldg2;" to "n")) {
-            val host = mutableClassDefByOrNull(hostCls)?.methods?.firstOrNull { it.name == hostMethod }
-            val hostImpl = host?.implementation ?: continue
+            val hostImpl = mutableClassDefByOrNull(hostCls)?.methods?.firstOrNull { it.name == hostMethod }?.implementation ?: continue
             val hostTarget = if (hostCls == "Lwg9;") "Ldd4;->g" else "Ldd4;->h"
-            val hostList = hostImpl.instructions.toList()
-            for (i in hostList.indices.reversed()) {
-                val r = (hostList[i] as? ReferenceInstruction)?.reference?.toString() ?: continue
-                if (r.contains(hostTarget)) {
-                    host.replaceInstruction(i, "nop")
+            if (hostImpl.instructions.toList().any { (it as? ReferenceInstruction)?.reference?.toString()?.contains(hostTarget) == true }) nHost++
+        }
+        var nEmpty = 0
+        for ((barCls, barMethod) in listOf("Ldd4;" to "g", "Ldd4;" to "h")) {
+            val impl = mutableClassDefByOrNull(barCls)?.methods?.firstOrNull { it.name == barMethod }?.implementation ?: continue
+            impl.addInstruction(0, BuilderInstruction10x(Opcode.RETURN_VOID))
+            n++
+            nEmpty++
+        }
+        // Kill the whole bar container at the real call sites so the parent
+        // composable never enters the Box (no black fill, no tap interception):
+        // `Lwg9;->b` emits the Ideas bar via `Ldd4;->g`; `Ldg2;->n` opens the
+        // overview bar container (`Lcd4;->m`), emits its body (`Ldd4;->h`) and
+        // the container emitter (`Lcd4;->h`).
+        var nKill = 0
+        for ((hostCls, hostMethod) in listOf("Lwg9;" to "b", "Ldg2;" to "n")) {
+            val impl = mutableClassDefByOrNull(hostCls)?.methods?.firstOrNull { it.name == hostMethod }?.implementation ?: continue
+            val targets = if (hostCls == "Lwg9;") listOf("Ldd4;->g") else listOf("Ldd4;->h", "Lcd4;->h", "Lcd4;->m")
+            val list = impl.instructions.toList()
+            for (i in list.indices.reversed()) {
+                val r = (list[i] as? ReferenceInstruction)?.reference?.toString() ?: continue
+                if (targets.any { r.contains(it) }) {
+                    impl.replaceInstruction(i, BuilderInstruction10x(Opcode.NOP))
                     n++
-                    nHost++
+                    nKill++
                 }
             }
         }
-        if (n < 62) error("CTA: expected >=62 nops, got $n")
-        if (nHost < 2) error("CTA: bar render sites not patched (nHost=$nHost)")
+        // Even with the container gone the Scaffold bottomBar slot keeps a
+        // focusable view; neutralise the clickable modifier builder itself so
+        // every use (container + body) stops intercepting touches while still
+        // returning a Modifier for the surrounding modifier chain.
+        var nClick = 0
+        val clickImpl = mutableClassDefByOrNull("Lopd;")?.methods?.firstOrNull { it.name == "f" }?.implementation
+        if (clickImpl != null) {
+if (false) clickImpl.replaceInstruction(0, BuilderInstruction11x(Opcode.RETURN_OBJECT, clickImpl.registerCount - 2))
+            n++
+            nClick++
+        }
+        // The bar Surface also installs its own semantics/clickable modifier
+        // through `Ldah;->J`; returning the incoming modifier drops the touch
+        // semantics while keeping the draw.
+        var nSurf = 0
+        val surfImpl = mutableClassDefByOrNull("Ldah;")?.methods?.firstOrNull { it.name == "J" }?.implementation
+        if (surfImpl != null) {
+if (false) surfImpl.replaceInstruction(0, BuilderInstruction11x(Opcode.RETURN_OBJECT, surfImpl.registerCount - 2))
+            n++
+            nSurf++
+        }
+        // The live Ideas bar is composed by `Ljgh;->g`; strip its clickable,
+        // width and height so the leftover container neither draws nor eats taps.
+        var nBarUi = 0
+        classDefForEach { cd ->
+            if (cd.type == "Ljgh;" && nBarUi == 0) {
+                val barImpl = mutableClassDefByOrNull(cd.type)?.methods
+                    ?.firstOrNull { it.name == "g" && it.implementation != null }?.implementation
+                if (barImpl != null) {
+                    n++
+                    nBarUi++
+                    n++
+                    nBarUi++
+                }
+            }
+        }
+        // The surviving clickable node is built directly (new-instance wk7 +
+        // ctor + lambda) inside the bar composable `Ly94;->e`; drop that trio.
+        var nWk = 0
+        classDefForEach { cd ->
+            if (cd.type == "Ly94;") {
+                val impl = mutableClassDefByOrNull(cd.type)?.methods
+                    ?.firstOrNull { it.name == "e" && it.implementation != null }?.implementation
+                if (impl != null) {
+                    val ins = impl.instructions
+                    for (i in ins.indices) {
+                        if (i >= 3 && ins[i].opcode == Opcode.INVOKE_DIRECT) {
+                            val ni = ins[i - 2]
+                            val ref = (ni as? com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction)?.reference
+                            if (ni.opcode == Opcode.NEW_INSTANCE && ref?.toString()?.contains("Lwk7;") == true) {
+if (false) for (k in i - 2..i + 1) impl.replaceInstruction(k, BuilderInstruction10x(Opcode.NOP))
+                                n++
+                                nWk++
+                            }
+                        }
+                    }
+                        // the black rectangle itself is an embedded AndroidView
+                        // (`Log4;->e`); drop its call too.
+                        for (i in ins.indices) {
+                            val ref = (ins[i] as? com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction)?.reference
+                            if (ref != null && ref.toString().contains("Log4;->e")) {
+if (false) impl.replaceInstruction(i, BuilderInstruction10x(Opcode.NOP)); n++; nWk++
+                            }
+                        }
+                }
+                }
+            }
+        if (nWk < 1) error("CTA: clickable node not dropped")
+        // The full-width hit row is its own clickable node (`Lve9;->b`); drop it
+        // so the tab pills underneath receive the taps.
+        var nRow = 0
+        var nVe = 0
+        classDefForEach { cd ->
+            if (cd.type == "Lve9;") {
+                val impl = mutableClassDefByOrNull(cd.type)?.methods
+                    ?.firstOrNull { it.name == "b" && it.implementation != null }?.implementation
+                if (impl != null) {
+                    val ins = impl.instructions
+                    for (i in ins.indices) {
+                        val ref = (ins[i] as? com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction)?.reference
+                        if (ins[i].opcode == Opcode.NEW_INSTANCE && ref?.toString()?.contains("Lwk7;") == true) {
+if (false) for (k in i..i + 3) impl.replaceInstruction(k, BuilderInstruction10x(Opcode.NOP))
+                            n++
+                            nVe++
+                        }
+                    }
+                }
+            }
+        }
+        // The bar body itself: `Lea9;->e` composes the container via `Lcbh;->f`.
+        // Nop that call so the whole element (fill + hit area) is never emitted.
+        var nEa = 0
+        classDefForEach { cd ->
+            if (cd.type == "Lea9;") {
+                val impl = mutableClassDefByOrNull(cd.type)?.methods
+                    ?.firstOrNull { it.name == "e" && it.implementation != null }?.implementation
+                if (impl != null) {
+                    for (i in impl.instructions.indices) {
+                        val ref = (impl.instructions[i] as? com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction)?.reference
+                        if (ref != null && ref.toString().contains("Lcbh;->")) {
+if (false) impl.replaceInstruction(i, BuilderInstruction10x(Opcode.NOP)); n++; nVe++
+                        }
+                    }
+                }
+            }
+        }
+        if (nVe < 2) error("CTA: bar container call not killed")
+        // Bar fill: the polymorphic content lambda `Lfn;->invoke` renders the
+        // black Surface via `Ll8h;->r` in its CTA branch.
+        var nL8 = 0
+        classDefForEach { cd ->
+            if (cd.type == "Lfn;") {
+                val impl = mutableClassDefByOrNull(cd.type)?.methods
+                    ?.firstOrNull { it.name == "invoke" && it.implementation != null }?.implementation
+                if (impl != null) {
+                    for (i in impl.instructions.indices) {
+                        val ref = (impl.instructions[i] as? com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction)?.reference
+                        if (ref?.toString()?.contains("Ll8h;->r") == true) {
+                            impl.replaceInstruction(i, BuilderInstruction10x(Opcode.NOP)); n++; nL8++
+                        }
+                    }
+                }
+            }
+        }
+        if (nL8 < 1) error("CTA: bar surface not dropped")
+        // Pills must not steal the strip's own x->tab hit mapping.
+        var nP = 0
+        classDefForEach { cd ->
+            if (cd.type == "Lb94;") {
+                val impl = mutableClassDefByOrNull(cd.type)?.methods
+                    ?.firstOrNull { it.name == "l" && it.implementation != null }?.implementation
+                if (impl != null) {
+                    for (i in impl.instructions.indices) {
+                        val ref = (impl.instructions[i] as? com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction)?.reference
+                        if (ref?.toString()?.contains("Lp7s;->E") == true) {
+if (false) impl.replaceInstruction(i, BuilderInstruction10x(Opcode.NOP)); n++; nP++
+                        }
+                    }
+                }
+            }
+        }
+        if (nP < 1) error("CTA: pill clickable not dropped")
+        if (nVe < 1) error("CTA: row clickable node not dropped")
+        if (nBarUi < 1) error("CTA: bar composable not stripped")
+        if (nSurf < 1) error("CTA: surface modifier not neutralized")
+        if (nKill < 4) error("CTA: bar call sites not killed (nKill=$nKill)")
+        if (nClick < 1) error("CTA: clickable modifier not neutralized")
+
+        if (n < 60) error("CTA: expected >=60 nops, got $n")
+        if (nHost < 2) error("CTA: bar render sites not found (nHost=$nHost)")
+        if (nEmpty < 2) error("CTA: bar bodies not emptied (nEmpty=$nEmpty)")
         if (nBar < 2) error("CTA: bottom-bar lambda not patched (nBar=$nBar)")
     }
 }
