@@ -36,7 +36,7 @@ fun BytecodePatchContext.fixSkipSubscriptionScreen() {
         for (i in 0 until n) {
             val ins = impl.instructions[i]
             if (ins.opcode == Opcode.SGET_OBJECT &&
-                (ins as? ReferenceInstruction)?.reference?.toString() == "Lvd8;.a:Lvd8;") {
+                (ins as? ReferenceInstruction)?.reference?.toString() == "Lvd8;->a:Lvd8;") {
                 val reg = (ins as? OneRegisterInstruction)?.registerA ?: continue
                 impl.replaceInstruction(i, BuilderInstruction21c(Opcode.SGET_OBJECT, reg, target)); nHit++
             }
