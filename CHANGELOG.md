@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.435.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.434.0...v0.435.0) (2026-11-09)
+
+### Features
+
+* **Investing:** Enable Pro for 6.52 ([e20b64a](https://codeberg.org/StandardRepo/morphe-patches-auto/commit/e20b64a))
+
 [0.434.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.433.0...v0.434.0) (2026-11-09)
 
 ### Features
