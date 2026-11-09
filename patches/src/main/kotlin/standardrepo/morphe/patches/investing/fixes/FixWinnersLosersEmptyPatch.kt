@@ -43,9 +43,9 @@ fun BytecodePatchContext.fixWinnersLosersEmpty() {
             move-object v5, v14
             move-object v6, v15
             new-instance v7, Ljava/util/ArrayList;
-            invoke-direct {v7}, Ljava/util/ArrayList;.<init>:()V
+            invoke-direct {v7}, Ljava/util/ArrayList;-><init>()V
             new-instance v8, ${name}
-            invoke-direct {v8, v7}, ${name}.<init>:(Ljava/util/List;)V
+            invoke-direct {v8, v7}, ${name}-><init>:(Ljava/util/List;)V
         """.trimIndent())
         val n = impl.instructions.size
         for (i in (n - 1) downTo 1) {
