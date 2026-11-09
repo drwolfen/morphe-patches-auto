@@ -40,8 +40,8 @@ fun BytecodePatchContext.fixWinnersLosersEmpty() {
         rc.isAccessible = true
         rc.setInt(impl, impl.registerCount + 9)
         m.addInstructions(0, """
-            move-object/from16 v5, v14
-            move-object/from16 v6, v15
+            move-object v5, v14
+            move-object v6, v15
             new-instance v7, Ljava/util/ArrayList;
             invoke-direct {v7}, Ljava/util/ArrayList;.<init>:()V
             new-instance v8, ${name}
