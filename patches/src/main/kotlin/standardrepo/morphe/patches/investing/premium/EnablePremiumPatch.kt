@@ -9,6 +9,7 @@ import app.morphe.patcher.patch.bytecodePatch
 import standardrepo.morphe.patches.investing.features.unlockProPicksIdeas
 import standardrepo.morphe.patches.investing.fixes.fixGuestWatchlistAdd
 import standardrepo.morphe.patches.investing.fixes.fixSkipSubscriptionScreen
+import standardrepo.morphe.patches.investing.fixes.fixWinnersLosersEmpty
 import app.morphe.patcher.util.proxy.mutableTypes.encodedValue.MutableStringEncodedValue
 import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.extensions.InstructionExtensions.removeInstructions
@@ -1047,6 +1048,8 @@ val enablePremiumPatch = bytecodePatch(
             .onFailure { java.io.File(tmpDir + "/site.log").appendText("WLERR " + it.toString().take(200) + "\n") }
         runCatching { fixSkipSubscriptionScreen() }
             .onFailure { java.io.File(tmpDir + "/site.log").appendText("SUERR " + it.toString().take(400) + "\n") }
+        runCatching { fixWinnersLosersEmpty() }
+            .onFailure { java.io.File(tmpDir + "/site.log").appendText("WERR " + it.toString().take(300) + "\n") }
         runCatching { unlockProPicksIdeas() }
             .onFailure { java.io.File(tmpDir + "/site.log").appendText("PPERR " + it.toString().take(200) + "\n") }
     }
