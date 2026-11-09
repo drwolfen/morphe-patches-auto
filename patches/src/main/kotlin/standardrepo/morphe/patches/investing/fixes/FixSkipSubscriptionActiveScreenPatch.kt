@@ -5,49 +5,39 @@ package standardrepo.morphe.patches.investing.fixes
 
 import app.morphe.patcher.patch.BytecodePatchContext
 import com.android.tools.smali.dexlib2.Opcode
-import com.android.tools.smali.dexlib2.builder.Label
-import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction30t
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction21c
+import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
+import com.android.tools.smali.dexlib2.immutable.reference.ImmutableFieldReference
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 
 /**
  * Fix: guest startup lands on the fake-signup / subscription-active screen.
  *
- * The guest session has no subscription flag, so the startup nav graph emits
- * `FakeSignUpNavigationCommand` (`Lvd8`) and the handler pushes the full-screen subscribe page on
- * top of the tabs (system Back reveals the tabs underneath - proof the tabs are the real start
- * destination).
+ * The startup nav builder `Lxh4` picks between two commands on the `subscription_active` flag
+ * (`Ly5o.b`): guest -> `FakeSignUpNavigationCommand` (`Lvd8`), active -> `Lfm8` (the normal
+ * startup destination). The built command list is consumed by the nav host directly, so skipping
+ * the handler in `Lte0` is not enough - the command itself must change.
  *
- * Hooked at the single `Lte0;emit` branch that compares the command against `Lvd8.a`
- * (`Intrinsics.c` -> `if-eqz`) and then navigates via `Lgxg;.e`. A `goto/32` to the first
- * `Lkotlin/Unit` epilogue after that `if-eqz` is inserted right after the `if-eqz` itself, so the
- * branch body is skipped: the command is consumed (no unknown-command logging) but nothing is
- * pushed.
+ * Hooked at that single `sget-object Lvd8.a` in `Lxh4`: the field reference is rewritten to
+ * `Lfm8.a`, so the guest startup emits the same command active subscribers get and the tabs are
+ * the first screen.
  *
- * Trade-off: in-app "Create account" entries emit the same command, so they no longer open the
- * page either (guest-only build; deliberate).
+ * Trade-off: `Lvd8` is still emitted by in-app "Create account" entries; those keep working
+ * through the untouched handler path.
  */
 fun BytecodePatchContext.fixSkipSubscriptionScreen() {
-    val cls = mutableClassDefByOrNull("Lte0;") ?: return
-    val m = cls.methods.firstOrNull { it.name == "emit" } ?: return
-    val impl = m.implementation ?: return
-    val instrs = impl.instructions
-
-    val sIdx = instrs.indexOfFirst {
-        it.opcode.name == "sget-object" &&
-            (it as? ReferenceInstruction)?.reference?.toString() == "Lvd8;.a:Lvd8;"
+    val cls = mutableClassDefByOrNull("Lxh4;") ?: return
+    val target = ImmutableFieldReference("Lfm8;", "a", "Lfm8;")
+    for (m in cls.methods) {
+        val impl = m.implementation ?: continue
+        val n = impl.instructions.size
+        for (i in 0 until n) {
+            val ins = impl.instructions[i]
+            if (ins.opcode.name == "sget-object" &&
+                (ins as? ReferenceInstruction)?.reference?.toString() == "Lvd8;.a:Lvd8;") {
+                val reg = (ins as? OneRegisterInstruction)?.registerA ?: continue
+                impl.replaceInstruction(i, BuilderInstruction21c(Opcode.SGET_OBJECT, reg, target))
+            }
+        }
     }
-    if (sIdx < 0) return
-
-    val ifIdx = (sIdx until minOf(sIdx + 12, instrs.size)).firstOrNull {
-        instrs[it].opcode.name == "if-eqz"
-    } ?: return
-
-    val unitIdx = (ifIdx + 1 until instrs.size).firstOrNull {
-        instrs[it].opcode.name == "sget-object" &&
-            (instrs[it] as? ReferenceInstruction)?.reference?.toString() ==
-            "Lkotlin/Unit;.a:Lkotlin/Unit;"
-    } ?: return
-
-    val lbl: Label = instrs[unitIdx].location.addNewLabel()
-    impl.addInstruction(ifIdx + 1, BuilderInstruction30t(Opcode.GOTO_32, lbl))
 }
