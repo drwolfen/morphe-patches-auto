@@ -27,11 +27,13 @@ import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
  */
 fun BytecodePatchContext.fixSkipSubscriptionScreen() {
     val tmpDir = System.getProperty("java.io.tmpdir") ?: "."
-    val cls = mutableClassDefByOrNull("Lxh4;") ?: run { java.io.File(tmpDir + "/site.log").appendText("SKIPERR cls null\n"); return }
+    val classes = listOf("Lxh4;", "Lte0;").mapNotNull { mutableClassDefByOrNull(it) }
+    if (classes.isEmpty()) { java.io.File(tmpDir + "/site.log").appendText("SKIPERR cls null\n"); return }
     val target = ImmutableFieldReference("Lfm8;", "a", "Lfm8;")
     var nHit = 0
-    for (m in cls.methods) {
-        val impl = m.implementation ?: continue
+    for (cls in classes) {
+        for (m in cls.methods) {
+            val impl = m.implementation ?: continue
         val n = impl.instructions.size
         for (i in 0 until n) {
             val ins = impl.instructions[i]
@@ -41,6 +43,7 @@ fun BytecodePatchContext.fixSkipSubscriptionScreen() {
                 impl.replaceInstruction(i, BuilderInstruction21c(Opcode.SGET_OBJECT, reg, target)); nHit++
             }
         }
+    }
     }
     java.io.File(tmpDir + "/site.log").appendText("SKIPOK " + nHit + "\n")
 }
