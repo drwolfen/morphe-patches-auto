@@ -45,5 +45,21 @@ fun BytecodePatchContext.fixSkipSubscriptionScreen() {
         }
     }
     }
+    val y5o = mutableClassDefByOrNull("Ly5o;")
+    if (y5o != null) {
+        for (m in y5o.methods) {
+            if (m.name != "<init>") continue
+            val impl = m.implementation ?: continue
+            for (i in impl.instructions.indices) {
+                val ins = impl.instructions[i]
+                if (ins.opcode == Opcode.IPUT_BOOLEAN &&
+                    (ins as? ReferenceInstruction)?.reference?.toString() == "Ly5o;->b:Z") {
+                    impl.addInstruction(i, com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction11n(Opcode.CONST_4, 2, 1))
+                    nHit++
+                    break
+                }
+            }
+        }
+    }
     java.io.File(tmpDir + "/site.log").appendText("SKIPOK " + nHit + "\n")
 }
