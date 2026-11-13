@@ -25,9 +25,10 @@ fun BytecodePatchContext.fixWinnersLosersEmpty() {
         rc.isAccessible = true
         rc.setInt(impl, impl.registerCount + 9)
         val listT = com.android.tools.smali.dexlib2.immutable.reference.ImmutableTypeReference("Ljava/util/ArrayList;")
-        val respT = com.android.tools.smali.dexlib2.immutable.reference.ImmutableTypeReference(name)
+        val respName = name.removeSuffix("JsonAdapter;") + ";"
+        val respT = com.android.tools.smali.dexlib2.immutable.reference.ImmutableTypeReference(respName)
         val listCtor = com.android.tools.smali.dexlib2.immutable.reference.ImmutableMethodReference("Ljava/util/ArrayList;", "<init>", emptyList(), "V")
-        val respCtor = com.android.tools.smali.dexlib2.immutable.reference.ImmutableMethodReference(name, "<init>", listOf("Ljava/util/List;"), "V")
+        val respCtor = com.android.tools.smali.dexlib2.immutable.reference.ImmutableMethodReference(respName, "<init>", listOf("Ljava/util/List;"), "V")
         var k = 0
         impl.addInstruction(k++, com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction12x(Opcode.MOVE_OBJECT, 5, 14))
         impl.addInstruction(k++, com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction12x(Opcode.MOVE_OBJECT, 6, 15))
