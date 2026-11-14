@@ -27,6 +27,7 @@ import standardrepo.morphe.compatibility.Compat
  */
 private val CTA_HOSTS = listOf(
     "La1q;",
+    "Lfn;",
     "La32;",
     "Lav3;",
     "Lb41;",
@@ -36,7 +37,8 @@ private val CTA_HOSTS = listOf(
     "Lc80;",
     "Lcd4;",
     "Ldf4;",
-    "Lap4;", "Li24;", "Ldg2;", "Lz92;", "Lsz;", "Lth2;", "Lwi4;", "Lzde;",
+    "Lap4;", "Li24;", "Ldg2;",
+    "Lz92;", "Lsz;", "Lth2;", "Lwi4;", "Lzde;",
     "Leal;",
     "Lef4;",
     "Lez2;",
@@ -49,6 +51,7 @@ private val CTA_HOSTS = listOf(
     "Ljb4;",
     "Ljy3;",
     "Ljy4;",
+    "Ljd4;",
     "Ll8h;",
     "Lw84;",
     "Lm6k;",
@@ -126,7 +129,7 @@ val hideSeeAllProDataCtaPatch = bytecodePatch(
                             r.contains("Lx31;->c") ||
                         r?.contains("Lid4;->i") == true || r?.contains("Lid4;->b") == true || r?.contains("Lid4;->c") == true || r?.contains("Lid4;->r")==true || r?.contains("Lid4;->d") == true ||
                         r?.contains("Ljd4;->G") == true ||
-                            r.contains("Lcsa;->h") ||
+                            r.contains("Lcsa;->h") || r.contains("Lcsa;->t") ||
                             r.contains("Lu54;->p") || r.contains("Lu54;->d")
                         )
                     ) {
@@ -149,6 +152,19 @@ val hideSeeAllProDataCtaPatch = bytecodePatch(
             impl.addInstruction(1, BuilderInstruction11x(Opcode.RETURN_OBJECT, 3))
             impl.addInstruction(0, BuilderInstruction21c(Opcode.SGET_OBJECT, 3, unitRef))
         }
+        val dbg = mutableClassDefByOrNull("Lfn;")
+        var dc = 0
+        val sample = ArrayList<String>()
+        if (dbg != null) {
+            for (mm in dbg.methods) {
+                val im = mm.implementation ?: continue
+                for (ins in im.instructions) {
+                    val rr = (ins as? ReferenceInstruction)?.reference?.toString() ?: continue
+                    if (rr.contains("Lcsa")) { dc++; if (sample.size < 5) sample.add(rr) }
+                }
+            }
+        }
+        error("LFNDBG found=" + (dbg != null) + " csaRefs=" + dc + " sample=" + sample.joinToString(" | "))
         if (n == 62) error("CTA: expected >62 nops")
 
     }
