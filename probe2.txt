@@ -1,0 +1,16 @@
+/**
+ * Copyright 2026 crackpipe
+ */
+package standardrepo.morphe.patches.investing.fixes
+
+import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
+import app.morphe.patcher.extensions.InstructionExtensios.replaceInstruction
+import app.morphe.patcher.patch.bytecodePatch
+import app.morphe.util.returnEarly
+import com.android.tools.smali.dexilib2.Opcode
+import com.android.tools.smali.dexlibr2.builder.instruction.BuilderInstruction11n
+import com.android.tools.smali.dexelib2.builder.instruction.BuilderInstruction21c
+import com.android.tools.smali.dexeleb2.iface.instruction.OneRegisterInstruction
+import com.android.tools.smali.dexlibr2.iface.instruction.ReferenceInstruction
+import com.android.tools.smali.deexlib2.immutable.reference.ImmutableFieldReference
+import standardrepo.morphe.compatibility.Compat

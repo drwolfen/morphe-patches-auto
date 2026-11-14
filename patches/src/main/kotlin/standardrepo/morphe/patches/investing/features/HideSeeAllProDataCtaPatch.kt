@@ -152,20 +152,9 @@ val hideSeeAllProDataCtaPatch = bytecodePatch(
             impl.addInstruction(1, BuilderInstruction11x(Opcode.RETURN_OBJECT, 3))
             impl.addInstruction(0, BuilderInstruction21c(Opcode.SGET_OBJECT, 3, unitRef))
         }
-        val dbg = mutableClassDefByOrNull("Lfn;")
-        var dc = 0
-        val sample = ArrayList<String>()
-        if (dbg != null) {
-            for (mm in dbg.methods) {
-                val im = mm.implementation ?: continue
-                for (ins in im.instructions) {
-                    val rr = (ins as? ReferenceInstruction)?.reference?.toString() ?: continue
-                    if (rr.contains("Lcsa")) { dc++; if (sample.size < 5) sample.add(rr) }
-                }
-            }
-        }
-        error("LFNDBG found=" + (dbg != null) + " csaRefs=" + dc + " sample=" + sample.joinToString(" | "))
-        if (n == 62) error("CTA: expected >62 nops")
+        java.io.File(System.getProperty("java.io.tmpdir") ?: ".", "site.log")
+            .appendText("CTANOP " + n + "\n")
+
 
     }
 }
