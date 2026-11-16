@@ -12,7 +12,10 @@ import com.android.tools.smali.dexlib2.base.reference.BaseFieldReference
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction11x
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction21c
 import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction10x
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction11n
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction21s
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
+import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.reference.MethodReference
 import standardrepo.morphe.compatibility.Compat
 
@@ -133,9 +136,66 @@ val hideSeeAllProDataCtaPatch = bytecodePatch(
                             r.contains("Lu54;->p") || r.contains("Lu54;->d")
                         )
                     ) {
-                        mm.replaceInstruction(i, "nop")
-                        n++
+                        val nxt = list.getOrNull(i + 1)
+                        val isRes = nxt != null && nxt.opcode.name.startsWith("move-result")
+                        if (isRes && nxt!!.opcode == Opcode.MOVE_RESULT_OBJECT) {
+                            // object result is consumed by the UI: keep the call
+                        } else {
+                            if (isRes) {
+                                val reg = (nxt!! as OneRegisterInstruction).registerA
+                                when (nxt.opcode.name) {
+                                    "move-result-wide" -> impl.replaceInstruction(i + 1, BuilderInstruction21s(Opcode.CONST_WIDE_16, reg, 0))
+                                    else -> impl.replaceInstruction(i + 1, BuilderInstruction21s(Opcode.CONST_16, reg, 0))
+                                }
+                            }
+                            mm.replaceInstruction(i, "nop")
+                            n++
+                        }
                     }
+                }
+            }
+        }
+        // The bar background is a SolidColor brush built from zmo's colour field; zero the
+        // colour long (v5/v6) at the Lzmo;.<init> call inside cno.a so the bar paints transparent
+        // while keeping its layout and slot table intact.
+        val cno = mutableClassDefByOrNull("Lcno;")
+        val cnoA = cno?.methods?.firstOrNull { it.name == "a" && it.implementation != null }
+        val implA = cnoA?.implementation
+        if (implA != null) {
+            val insA = implA.instructions.toList()
+            for (i in insA.indices) {
+                val r = (insA[i] as? ReferenceInstruction)?.reference?.toString()
+                if (r != null && r.startsWith("Lzmo;-><init>")) {
+                    implA.addInstruction(i, BuilderInstruction21s(Opcode.CONST_WIDE_16, 5, 0))
+                    break
+                }
+            }
+        }
+        // The bar background is painted from zmo's colour field d; zero it inside the ctor so
+        // every instance paints transparent regardless of which cno.a branch constructed it.
+        val zmo = mutableClassDefByOrNull("Lzmo;")
+        val zmoCtor = zmo?.methods?.firstOrNull { it.name == "<init>" && it.implementation != null }
+        val implZ = zmoCtor?.implementation
+        if (implZ != null) {
+            val insZ = implZ.instructions.toList()
+            for (i in insZ.indices) {
+                val r = (insZ[i] as? ReferenceInstruction)?.reference?.toString()
+                if (r != null && r.startsWith("Lzmo;->d")) {
+                    implZ.addInstruction(i, BuilderInstruction21s(Opcode.CONST_WIDE_16, 3, 0))
+                    break
+                }
+            }
+        }
+        // The sticky bar's background brush is built from the same colour arg; zero it at the
+        // Ly3s.c brush factory call so the bar paints transparent.
+        val implB = cnoA?.implementation
+        if (implB != null) {
+            val insB = implB.instructions.toList()
+            for (i in insB.indices) {
+                val r = (insB[i] as? ReferenceInstruction)?.reference?.toString()
+                if (r != null && r.startsWith("Ly3s;->c")) {
+                    implB.addInstruction(i, BuilderInstruction21s(Opcode.CONST_WIDE_16, 5, 0))
+                    break
                 }
             }
         }
