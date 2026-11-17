@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.455.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.454.0...v0.455.0) (2026-11-17)
+
+### Features
+
+* **Duolingo:** Enable Super for 6.101.2 ([b24ef4e](https://codeberg.org/StandardRepo/morphe-patches-auto/commit/b24ef4e))
+
 [0.454.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.453.0...v0.454.0) (2026-11-16)
 
 ### Features
