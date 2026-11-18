@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.458.0",
+  "version": "0.461.0",
   "patches": [
     {
       "name": "Bypass Play install check",
@@ -34,6 +34,56 @@
       "options": []
     },
     {
+      "name": "Disable Ads",
+      "description": "Disables Duolingo ads by forcing AdsConfig.b() to false.",
+      "default": false,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.duolingo",
+          "name": "Duolingo",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#57CB01",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "6.105.1",
+              "versionCodes": {
+                "ARM64_V8A": 2496,
+                "ARMEABI_V7A": 2496,
+                "X86_64": 2496,
+                "X86": 2496
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "6.101.2",
+              "versionCodes": {
+                "ARM64_V8A": 2476,
+                "ARMEABI_V7A": 2476,
+                "X86_64": 2476,
+                "X86": 2476
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "6.101.1",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
       "name": "Disable ads",
       "description": "Stops the Google Ads and AppLovin MAX banner, interstitial, native and rewarded load calls so no ad requests fill.",
       "default": false,
@@ -55,6 +105,56 @@
                 "X86_64": 2147102969,
                 "X86": 2147102969
               },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Enable Max",
+      "description": "Unlocks Duolingo Max: Max badge, subscription gates and immersive (Max) subscription.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.duolingo",
+          "name": "Duolingo",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#57CB01",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "6.105.1",
+              "versionCodes": {
+                "ARM64_V8A": 2496,
+                "ARMEABI_V7A": 2496,
+                "X86_64": 2496,
+                "X86": 2496
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "6.101.2",
+              "versionCodes": {
+                "ARM64_V8A": 2476,
+                "ARMEABI_V7A": 2476,
+                "X86_64": 2476,
+                "X86": 2476
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "6.101.1",
+              "versionCodes": null,
               "isExperimental": true,
               "minSdk": null,
               "description": null
@@ -215,9 +315,9 @@
       "options": []
     },
     {
-      "name": "Enable Super",
-      "description": "Auto-generated: unlocks Duolingo Super.",
-      "default": true,
+      "name": "Enable Video Calling",
+      "description": "Enables Duolingo video call (Max) features.",
+      "default": false,
       "category": null,
       "compatiblePackages": [
         {
@@ -228,6 +328,18 @@
           "appIconColor": "#57CB01",
           "signatures": null,
           "targets": [
+            {
+              "version": "6.105.1",
+              "versionCodes": {
+                "ARM64_V8A": 2496,
+                "ARMEABI_V7A": 2496,
+                "X86_64": 2496,
+                "X86": 2496
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            },
             {
               "version": "6.101.2",
               "versionCodes": {
@@ -491,6 +603,106 @@
                 "X86_64": 1660,
                 "X86": 1660
               },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Unlimited Energy",
+      "description": "Sets energy current to max by mirroring max into current.",
+      "default": false,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.duolingo",
+          "name": "Duolingo",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#57CB01",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "6.105.1",
+              "versionCodes": {
+                "ARM64_V8A": 2496,
+                "ARMEABI_V7A": 2496,
+                "X86_64": 2496,
+                "X86": 2496
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "6.101.2",
+              "versionCodes": {
+                "ARM64_V8A": 2476,
+                "ARMEABI_V7A": 2476,
+                "X86_64": 2476,
+                "X86": 2476
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "6.101.1",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Unlimited Timers",
+      "description": "Sets timer boost durations and free-boost flags to Integer.MAX_VALUE / true.",
+      "default": false,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.duolingo",
+          "name": "Duolingo",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#57CB01",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "6.105.1",
+              "versionCodes": {
+                "ARM64_V8A": 2496,
+                "ARMEABI_V7A": 2496,
+                "X86_64": 2496,
+                "X86": 2496
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "6.101.2",
+              "versionCodes": {
+                "ARM64_V8A": 2476,
+                "ARMEABI_V7A": 2476,
+                "X86_64": 2476,
+                "X86": 2476
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "6.101.1",
+              "versionCodes": null,
               "isExperimental": true,
               "minSdk": null,
               "description": null
@@ -775,6 +987,56 @@
           "values": {}
         }
       ]
+    },
+    {
+      "name": "Zero Gem Cost",
+      "description": "Sets every shop item gem price to 0.",
+      "default": false,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.duolingo",
+          "name": "Duolingo",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#57CB01",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "6.105.1",
+              "versionCodes": {
+                "ARM64_V8A": 2496,
+                "ARMEABI_V7A": 2496,
+                "X86_64": 2496,
+                "X86": 2496
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "6.101.2",
+              "versionCodes": {
+                "ARM64_V8A": 2476,
+                "ARMEABI_V7A": 2476,
+                "X86_64": 2476,
+                "X86": 2476
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "6.101.1",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
     }
   ]
 }
