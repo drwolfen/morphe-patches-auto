@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.461.0",
+  "version": "0.463.0",
   "patches": [
     {
       "name": "Bypass Play install check",
@@ -36,7 +36,7 @@
     {
       "name": "Disable Ads",
       "description": "Disables Duolingo ads by forcing AdsConfig.b() to false.",
-      "default": false,
+      "default": true,
       "category": null,
       "compatiblePackages": [
         {
@@ -317,7 +317,7 @@
     {
       "name": "Enable Video Calling",
       "description": "Enables Duolingo video call (Max) features.",
-      "default": false,
+      "default": true,
       "category": null,
       "compatiblePackages": [
         {
@@ -665,7 +665,7 @@
     {
       "name": "Unlimited Timers",
       "description": "Sets timer boost durations and free-boost flags to Integer.MAX_VALUE / true.",
-      "default": false,
+      "default": true,
       "category": null,
       "compatiblePackages": [
         {
@@ -991,7 +991,7 @@
     {
       "name": "Zero Gem Cost",
       "description": "Sets every shop item gem price to 0.",
-      "default": false,
+      "default": true,
       "category": null,
       "compatiblePackages": [
         {
