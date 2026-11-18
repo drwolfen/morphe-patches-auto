@@ -7,7 +7,7 @@ import standardrepo.morphe.compatibility.Compat
 val unlimitedTimersPatch = bytecodePatch(
     name = "Unlimited Timers",
     description = "Sets timer boost durations and free-boost flags to Integer.MAX_VALUE / true.",
-    default = false
+    default = true
 ) {
     compatibleWith(Compat.DUOLINGO)
 

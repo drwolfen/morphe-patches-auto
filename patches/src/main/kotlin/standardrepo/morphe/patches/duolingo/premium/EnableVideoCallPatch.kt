@@ -7,7 +7,7 @@ import standardrepo.morphe.compatibility.Compat
 val enableVideoCallPatch = bytecodePatch(
     name = "Enable Video Calling",
     description = "Enables Duolingo video call (Max) features.",
-    default = false
+    default = true
 ) {
     compatibleWith(Compat.DUOLINGO)
 

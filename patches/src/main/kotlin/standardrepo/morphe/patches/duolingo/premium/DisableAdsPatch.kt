@@ -7,7 +7,7 @@ import standardrepo.morphe.compatibility.Compat
 val disableAdsPatch = bytecodePatch(
     name = "Disable Ads",
     description = "Disables Duolingo ads by forcing AdsConfig.b() to false.",
-    default = false
+    default = true
 ) {
     compatibleWith(Compat.DUOLINGO)
 

@@ -8,7 +8,7 @@ import standardrepo.morphe.compatibility.Compat
 val zeroGemCostPatch = bytecodePatch(
     name = "Zero Gem Cost",
     description = "Sets every shop item gem price to 0.",
-    default = false
+    default = true
 ) {
     compatibleWith(Compat.DUOLINGO)
 
