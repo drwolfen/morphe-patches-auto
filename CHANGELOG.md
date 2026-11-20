@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.465.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.464.0...v0.465.0) (2026-11-20)
+
+### Features
+
+* **Duolingo:** Enable Max for 6.105.1 ([1773310](https://codeberg.org/StandardRepo/morphe-patches-auto/commit/1773310))
+
 [0.464.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.463.0...v0.464.0) (2026-11-19)
 
 ### Features
