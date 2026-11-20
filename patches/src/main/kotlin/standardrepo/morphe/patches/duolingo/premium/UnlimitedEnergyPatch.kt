@@ -7,7 +7,7 @@ import standardrepo.morphe.compatibility.Compat
 val unlimitedEnergyPatch = bytecodePatch(
     name = "Unlimited Energy",
     description = "Sets energy current to max by mirroring max into current.",
-    default = false
+    default = true
 ) {
     compatibleWith(Compat.DUOLINGO)
 

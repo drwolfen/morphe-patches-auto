@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.464.0",
+  "version": "0.465.0",
   "patches": [
     {
       "name": "Bypass Play install check",
@@ -615,7 +615,7 @@
     {
       "name": "Unlimited Energy",
       "description": "Sets energy current to max by mirroring max into current.",
-      "default": false,
+      "default": true,
       "category": null,
       "compatiblePackages": [
         {

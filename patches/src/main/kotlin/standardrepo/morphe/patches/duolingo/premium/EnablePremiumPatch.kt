@@ -8,6 +8,9 @@ package standardrepo.morphe.patches.duolingo.premium
 import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.patch.bytecodePatch
 import app.morphe.util.returnEarly
+import com.android.tools.smali.dexlib2.Opcode
+import com.android.tools.smali.dexlib2.builder.instruction.BuilderInstruction22c
+import com.android.tools.smali.dexlib2.iface.reference.FieldReference
 import standardrepo.morphe.compatibility.Compat
 
 val enablePremiumPatch = bytecodePatch(
@@ -17,14 +20,25 @@ val enablePremiumPatch = bytecodePatch(
     compatibleWith(Compat.DUOLINGO)
 
     execute {
-        MaxUserInitFingerprint.method.apply {
-            addInstructions(implementation!!.instructions.size - 1, """
-                sget-object v1, Lcom/duolingo/data/user/SubscriberLevel;->GOLD:Lcom/duolingo/data/user/SubscriberLevel;
-iput-object v1, p1, Lcom/duolingo/data/user/User;->D0:Lcom/duolingo/data/user/SubscriberLevel;
-            """)
-        }
-        for (fld in mutableClassDefBy("Lcom/duolingo/data/user/User;").fields) {
-            if (fld.name == "D0") fld.accessFlags = fld.accessFlags and 0x10.inv()
+        // Force User.D0 (subscriber level) to GOLD at every User constructor's D0 write.
+        // Inserting the sget-object right before the iput reuses the iput's own value
+        // register, so no extra register is needed (cfa0.<init>(User) only has 2).
+        for (method in mutableClassDefBy("Lcom/duolingo/data/user/User;").methods) {
+            if (method.name != "<init>" || method.returnType != "V") continue
+            val impl = method.implementation ?: continue
+            val idx = impl.instructions.indexOfFirst { insn ->
+                insn.opcode == Opcode.IPUT_OBJECT &&
+                    insn is BuilderInstruction22c &&
+                    (insn.reference as? FieldReference)?.let {
+                        it.name == "D0" && it.definingClass == "Lcom/duolingo/data/user/User;"
+                    } == true
+            }
+            if (idx < 0) continue
+            val reg = (impl.instructions[idx] as BuilderInstruction22c).registerA
+            method.addInstructions(
+                idx,
+                "sget-object v$reg, Lcom/duolingo/data/user/SubscriberLevel;->GOLD:Lcom/duolingo/data/user/SubscriberLevel;"
+            )
         }
         SubscriptionTenureInitFingerprint.method.addInstructions(0, """
             const/4 p1, 0x3
