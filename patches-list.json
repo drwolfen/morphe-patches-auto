@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.465.0",
+  "version": "0.466.0",
   "patches": [
     {
       "name": "Bypass Play install check",
@@ -47,6 +47,18 @@
           "appIconColor": "#57CB01",
           "signatures": null,
           "targets": [
+            {
+              "version": "6.105.2",
+              "versionCodes": {
+                "ARM64_V8A": 2497,
+                "ARMEABI_V7A": 2497,
+                "X86_64": 2497,
+                "X86": 2497
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            },
             {
               "version": "6.105.1",
               "versionCodes": {
@@ -128,6 +140,18 @@
           "appIconColor": "#57CB01",
           "signatures": null,
           "targets": [
+            {
+              "version": "6.105.2",
+              "versionCodes": {
+                "ARM64_V8A": 2497,
+                "ARMEABI_V7A": 2497,
+                "X86_64": 2497,
+                "X86": 2497
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            },
             {
               "version": "6.105.1",
               "versionCodes": {
@@ -328,6 +352,18 @@
           "appIconColor": "#57CB01",
           "signatures": null,
           "targets": [
+            {
+              "version": "6.105.2",
+              "versionCodes": {
+                "ARM64_V8A": 2497,
+                "ARMEABI_V7A": 2497,
+                "X86_64": 2497,
+                "X86": 2497
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            },
             {
               "version": "6.105.1",
               "versionCodes": {
@@ -627,6 +663,18 @@
           "signatures": null,
           "targets": [
             {
+              "version": "6.105.2",
+              "versionCodes": {
+                "ARM64_V8A": 2497,
+                "ARMEABI_V7A": 2497,
+                "X86_64": 2497,
+                "X86": 2497
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            },
+            {
               "version": "6.105.1",
               "versionCodes": {
                 "ARM64_V8A": 2496,
@@ -676,6 +724,18 @@
           "appIconColor": "#57CB01",
           "signatures": null,
           "targets": [
+            {
+              "version": "6.105.2",
+              "versionCodes": {
+                "ARM64_V8A": 2497,
+                "ARMEABI_V7A": 2497,
+                "X86_64": 2497,
+                "X86": 2497
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            },
             {
               "version": "6.105.1",
               "versionCodes": {
@@ -1002,6 +1062,18 @@
           "appIconColor": "#57CB01",
           "signatures": null,
           "targets": [
+            {
+              "version": "6.105.2",
+              "versionCodes": {
+                "ARM64_V8A": 2497,
+                "ARMEABI_V7A": 2497,
+                "X86_64": 2497,
+                "X86": 2497
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            },
             {
               "version": "6.105.1",
               "versionCodes": {
