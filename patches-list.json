@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.469.0",
+  "version": "0.470.0",
   "patches": [
     {
       "name": "Bypass Play install check",
@@ -607,6 +607,37 @@
                 "ARMEABI_V7A": 1660,
                 "X86_64": 1660,
                 "X86": 1660
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Remove Ads",
+      "description": "Auto-generated: unlocks Air Horn Premium (ads off, purchase owned).",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "apps.infinite.airhorn",
+          "name": "Airhorn",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#B4A6CE",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "3.11",
+              "versionCodes": {
+                "ARM64_V8A": 40,
+                "ARMEABI_V7A": 40,
+                "X86_64": 40,
+                "X86": 40
               },
               "isExperimental": true,
               "minSdk": null,

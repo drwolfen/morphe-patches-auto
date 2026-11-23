@@ -62,6 +62,13 @@ object Compat {
         targets = listOf(AppTarget("5.0.3", 2147102969, isExperimental = true))
     )
 
+    val AIRHORN = Compatibility(
+        name = "Airhorn",
+        packageName = "apps.infinite.airhorn",
+        appIconColor = 0xB4A6CE,
+        targets = listOf(AppTarget("3.11", 40, isExperimental = true))
+    )
+
     // Entries are appended by the crackpipe generator:
     // val APP_NAME = Compatibility(
     //     name = "App Name",
