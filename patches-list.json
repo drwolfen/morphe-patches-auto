@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.473.0",
+  "version": "0.474.0",
   "patches": [
     {
       "name": "Bypass Play install check",
@@ -339,6 +339,37 @@
       "options": []
     },
     {
+      "name": "Enable Pro",
+      "description": "Auto-generated: unlocks Smart Launcher Pro (all premium features, upsell banners gone).",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "ginlemon.flowerfree",
+          "name": "Smart Launcher",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#2E9E6B",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "6.6 build 026",
+              "versionCodes": {
+                "ARM64_V8A": 660260,
+                "ARMEABI_V7A": 660260,
+                "X86_64": 660260,
+                "X86": 660260
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
       "name": "Enable Video Calling",
       "description": "Enables Duolingo video call (Max) features.",
       "default": true,
@@ -545,6 +576,37 @@
                 "ARMEABI_V7A": 1660,
                 "X86_64": 1660,
                 "X86": 1660
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Force Pro License State",
+      "description": "Auto-generated: keeps the reactive/snapshot license status permanently Pro (no trial countdown, restore prompts or promo flow).",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "ginlemon.flowerfree",
+          "name": "Smart Launcher",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#2E9E6B",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "6.6 build 026",
+              "versionCodes": {
+                "ARM64_V8A": 660260,
+                "ARMEABI_V7A": 660260,
+                "X86_64": 660260,
+                "X86": 660260
               },
               "isExperimental": true,
               "minSdk": null,

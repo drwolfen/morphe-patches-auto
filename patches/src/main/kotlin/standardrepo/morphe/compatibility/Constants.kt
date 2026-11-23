@@ -69,6 +69,13 @@ object Compat {
         targets = listOf(AppTarget("3.11", 40, isExperimental = true))
     )
 
+    val SMARTLAUNCHER = Compatibility(
+        name = "Smart Launcher",
+        packageName = "ginlemon.flowerfree",
+        appIconColor = 0x2E9E6B,
+        targets = listOf(AppTarget("6.6 build 026", 660260, isExperimental = true))
+    )
+
     // Entries are appended by the crackpipe generator:
     // val APP_NAME = Compatibility(
     //     name = "App Name",
