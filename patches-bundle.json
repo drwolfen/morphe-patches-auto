@@ -1,7 +1,7 @@
 {
-  "created_at": "2026-11-23T23:28:04",
-  "description": "# 0.474.0\n\nEnable Premium for ginlemon.flowerfree v6.6 build 026 (auto-generated).",
-  "download_url": "https://github.com/drwolfen/morphe-patches-auto/releases/download/v0.474.0/patches-0.474.0.mpp",
+  "created_at": "2026-11-24T00:15:22",
+  "description": "# 0.475.0\n\nEnable Pro for ginlemon.flowerfree v6.6 build 026 (auto-generated).",
+  "download_url": "https://codeberg.org/StandardRepo/morphe-patches-auto/releases/download/v0.475.0/patches-0.475.0.mpp",
   "signature_download_url": "",
-  "version": "0.474.0"
+  "version": "0.475.0"
 }
