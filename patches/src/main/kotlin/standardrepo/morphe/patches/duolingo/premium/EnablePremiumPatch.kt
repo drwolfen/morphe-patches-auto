@@ -45,5 +45,25 @@ val enablePremiumPatch = bytecodePatch(
 sget-object p3, Lcom/duolingo/data/user/SubscriptionItemType;->IMMERSIVE_GOLD:Lcom/duolingo/data/user/SubscriptionItemType;
         """)
         HasSubscriptionFingerprint.method.returnEarly(true)
+
+        // Max (GOLD) must also satisfy every Super-tier predicate: the app compares
+        // User.D0 against SubscriberLevel.PREMIUM in several gates (e.g. video-call hook
+        // routing / subscription state flows). Alias PREMIUM to the GOLD instance inside
+        // <clinit> so `D0 == PREMIUM` is true while `== GOLD` stays true -> Max and Super
+        // features are unlocked together without losing the MAX badge.
+        val levelClass = mutableClassDefBy("Lcom/duolingo/data/user/SubscriberLevel;")
+        val clinitMethod = levelClass.methods.firstOrNull { it.name == "<clinit>" }
+        if (clinitMethod != null) {
+            val impl = clinitMethod.implementation
+            if (impl != null) {
+                val retIdx = impl.instructions.indexOfLast { insn -> insn.opcode == Opcode.RETURN_VOID }
+                if (retIdx >= 0) {
+                    clinitMethod.addInstructions(
+                        retIdx,
+                        "sget-object v0, Lcom/duolingo/data/user/SubscriberLevel;->GOLD:Lcom/duolingo/data/user/SubscriberLevel;\nsput-object v0, Lcom/duolingo/data/user/SubscriberLevel;->PREMIUM:Lcom/duolingo/data/user/SubscriberLevel;"
+                    )
+                }
+            }
+        }
     }
 }
