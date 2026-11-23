@@ -322,5 +322,13 @@ fun main(args: Array<String>) {
         exitProcess(10)
     }
 
+    // Optional dump of the patched dex for byte-level inspection by external scripts; the
+    // patcher deletes its own temp files, so nothing is inspectable after this process exits.
+    args.getOrNull(5)?.takeUnless { it.isBlank() }?.let { dir ->
+        val out = File(dir).apply { mkdirs() }
+        patched.forEach { (name, bytes) -> out.resolve(name).writeBytes(bytes) }
+        println("GATE dumped dex to ${out.absolutePath} files=${patched.size}")
+    }
+
     println("GATE PASS $changed dex file(s) mutated, ${applicable.size} patch(es) clean")
 }
