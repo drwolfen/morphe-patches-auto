@@ -6,6 +6,11 @@
 package standardrepo.morphe.patches.investing.premium
 
 import app.morphe.patcher.patch.bytecodePatch
+import standardrepo.morphe.patches.investing.features.unlockFairValue
+import standardrepo.morphe.patches.investing.features.unlockKeyStatistics
+import standardrepo.morphe.patches.investing.features.unlockIdeasData
+import standardrepo.morphe.patches.investing.features.unlockProTips
+import standardrepo.morphe.patches.investing.features.unlockProTipsCta
 import standardrepo.morphe.patches.investing.features.unlockProPicksIdeas
 import standardrepo.morphe.patches.investing.fixes.fixGuestWatchlistAdd
 import standardrepo.morphe.patches.investing.fixes.fixWinnersLosersEmpty
@@ -1049,5 +1054,15 @@ val enablePremiumPatch = bytecodePatch(
             .onFailure { java.io.File(tmpDir + "/site.log").appendText("WERR " + it.toString().take(300) + "\n") }
         runCatching { unlockProPicksIdeas() }
             .onFailure { java.io.File(tmpDir + "/site.log").appendText("PPERR " + it.toString().take(200) + "\n") }
+        runCatching { unlockFairValue() }
+            .onFailure { java.io.File(tmpDir + "/site.log").appendText("FVERR " + it.toString().take(200) + "\n") }
+        runCatching { unlockKeyStatistics() }
+            .onFailure { java.io.File(tmpDir + "/site.log").appendText("KSERR " + it.toString().take(300) + "\n") }
+        runCatching { unlockIdeasData() }
+            .onFailure { java.io.File(tmpDir + "/site.log").appendText("IDERR " + it.toString().take(200) + "\n") }
+        runCatching { unlockProTips() }
+            .onFailure { java.io.File(tmpDir + "/site.log").appendText("PTERR " + it.toString().take(300) + "\n") }
+        runCatching { unlockProTipsCta() }
+            .onFailure { java.io.File(tmpDir + "/site.log").appendText("PCERR " + it.toString().take(200) + "\n") }
     }
 }

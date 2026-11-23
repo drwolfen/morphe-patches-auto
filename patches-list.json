@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.471.0",
+  "version": "0.472.0",
   "patches": [
     {
       "name": "Bypass Play install check",
@@ -557,7 +557,7 @@
     },
     {
       "name": "Hide: See All Pro Data CTA",
-      "description": "Hides the orange See All Pro Data bar from the Ideas feed.",
+      "description": "Collapses the orange \"See All Pro Data\" promo WebView so the banner no longer renders.",
       "default": true,
       "category": null,
       "compatiblePackages": [

@@ -1,49 +1,52 @@
+/**
+ * Copyright 2026 crackpipe
+ */
 package standardrepo.morphe.patches.investing.features
 
-import app.morphe.patcher.extensions.InstructionExtensions.addInstruction
+import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.patch.bytecodePatch
 import standardrepo.morphe.compatibility.Compat
 
+/**
+ * The Ideas feed ("Stocks Picked by AI") appends an orange `See All Pro Data` banner.
+ *
+ * It is NOT a Compose card: the view hierarchy shows it as a native
+ * `com.fusionmedia.investing.feature.web.promo.ui.PromoWebView` hosted through a
+ * Compose `ViewFactoryHolder` (measured ~y1900-2054, inner WebView 154px tall).
+ * Hiding that WebView collapses the orange paint; no opaque overlay band is needed,
+ * so nothing darkens/clips other screens and no clicks are swallowed.
+ *
+ * The class has exactly one constructor `<init>(Context, Function1)`. After its
+ * super call completes we set visibility GONE on itself (`p0`) using `p1` as scratch.
+ */
 val hideSeeAllProDataCtaPatch = bytecodePatch(
     name = "Hide: See All Pro Data CTA",
-    description = "Hides the orange See All Pro Data bar from the Ideas feed.",
+    description = "Collapses the orange \"See All Pro Data\" promo WebView so the banner no longer renders.",
 ) {
     compatibleWith(Compat.INVESTING)
 
     execute {
-        // EXPERIMENT: mask disabled temporarily to inspect the raw CTA semantics node.
-        return@execute
-        val ca = mutableClassDefByOrNull("Lcom/fusionmedia/investing/feature/main/tabs/ui/ContentActivity;")
-        if (ca != null) {
-            for (mm in ca.methods) {
-                if (mm.name != "onCreate" || mm.implementation == null) continue
-                val at = minOf(106, mm.implementation!!.instructions.size - 2)
-                val ins = listOf(
-                    "new-instance v4, Landroid/widget/FrameLayout\$LayoutParams;",
-                    "const/4 v6, -1",
-                    "invoke-direct {v4, v6, v6}, Landroid/widget/FrameLayout\$LayoutParams;-><init>(II)V",
-                    "const/16 v6, 200",
-                    "iput v6, v4, Landroid/view/ViewGroup\$LayoutParams;->height:I",
-                    "const/16 v6, 80",
-                    "iput v6, v4, Landroid/widget/FrameLayout\$LayoutParams;->gravity:I",
-                    "const/16 v6, 240",
-                    "iput v6, v4, Landroid/view/ViewGroup\$MarginLayoutParams;->bottomMargin:I",
-                    "new-instance v5, Landroid/view/View;",
-                    "invoke-direct {v5, v7}, Landroid/view/View;-><init>(Landroid/content/Context;)V",
-                    "const v6, -16777216",
-                    "invoke-virtual {v5, v6}, Landroid/view/View;->setBackgroundColor(I)V",
-                    "const/4 v6, 0x0",
-                    "invoke-virtual {v5, v6}, Landroid/view/View;->setClickable(Z)V",
-                    "invoke-virtual {v5, v6}, Landroid/view/View;->setFocusable(Z)V",
-                    "invoke-virtual {v7}, Landroid/app/Activity;->getWindow()Landroid/view/Window;",
-                    "move-result-object v6",
-                    "invoke-virtual {v6}, Landroid/view/Window;->getDecorView()Landroid/view/View;",
-                    "move-result-object v6",
-                    "check-cast v6, Landroid/view/ViewGroup;",
-                    "invoke-virtual {v6, v5, v4}, Landroid/view/ViewGroup;->addView(Landroid/view/View;Landroid/view/ViewGroup\$LayoutParams;)V",
-                )
-                for ((i3, s3) in ins.withIndex()) mm.addInstruction(at + i3, s3)
-            }
+        val cls = mutableClassDefByOrNull("Lcom/fusionmedia/investing/feature/web/promo/ui/PromoWebView;")
+            ?: throw Exception("PromoWebView class missing")
+
+        var hooked = 0
+        for (m in cls.methods) {
+            if (m.name != "<init>") continue
+            val impl = m.implementation ?: continue
+            val retIdx = impl.instructions.toList().indexOfLast { it.opcode.name == "return-void" }
+            if (retIdx < 0) continue
+            // v3 = this, v4 = scratch (both already live in this constructor).
+            m.addInstructions(
+                retIdx,
+                """
+                    const/16 v4, 0x8
+                    invoke-virtual {v3, v4}, Landroid/view/View;->setVisibility(I)V
+                """.trimIndent(),
+            )
+            hooked++
         }
+
+        java.io.File(System.getProperty("java.io.tmpdir") ?: ".", "site.log")
+            .appendText("PROMOWEBVIEW_HIDE sites=$hooked\n")
     }
 }
