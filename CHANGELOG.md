@@ -1,5 +1,11 @@
 # Changelog
 
+[0.470.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.469.0...v0.470.0) (2026-11-23)
+
+### Features
+
+* **Airhorn:** Enable Premium for 3.11 ([8457eb2](https://codeberg.org/StandardRepo/morphe-patches-auto/commit/8457eb2))
+
 ## [0.469.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.468.0...v0.469.0) (2026-11-23)
 
 ### Features
@@ -4425,12 +4431,3 @@
 * **Bend:** Enable Premium for 7.8.0
 * **Duolingo:** Enable Premium for 6.101.2
 * **Investing:** Enable Premium for 6.52
-
-## [0.41.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.40.0...v0.41.0) (2026-10-17)
-
-### Features
-
-* **Duolingo:** Enable Premium for 6.101.2 ([94b95a1](https://codeberg.org/StandardRepo/morphe-patches-auto/commit/94b95a1))
-* **Bend:** Enable Premium for 7.8.0
-* **Investing:** Enable Premium for 6.52
-* **Sleep:** Enable Premium for 20261006
