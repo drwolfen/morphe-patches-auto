@@ -73,39 +73,11 @@ val hideSubscriptionActiveScreenPatch = bytecodePatch(
                     if (ins.opcode == Opcode.IPUT_BOOLEAN &&
                         (ins as? ReferenceInstruction)?.reference?.toString() == "Ly5o;->b:Z"
                     ) {
-                        m.addInstructions(i, "const/4 v2, 0x0")
+                        m.addInstructions(i, "const/4 v2, 0x1")
                         break
                     }
                 }
             }
         }
-        // The tab host still composes the subscription surface from b41.e whenever qpp.b() is
-        // true at runtime; nop that call site so the surface can never be composed there.
-        val b41 = mutableClassDefByOrNull("Lb41;")
-        val host = b41?.methods?.firstOrNull { it.name == "e" && it.implementation != null }
-        val log = java.io.File(System.getProperty("java.io.tmpdir") ?: ".", "site.log")
-        var nops = 0
-        for (cn in listOf("Lb41;", "Le22;", "Lng0;", "Luv4;")) {
-            val cls = mutableClassDefByOrNull(cn) ?: continue
-            for (m in cls.methods) {
-                val impl = m.implementation ?: continue
-                for (i in impl.instructions.indices.reversed()) {
-                    val r = (impl.instructions[i] as? ReferenceInstruction)?.reference?.toString()
-                    if (r != null && (r.startsWith("Lb41;->p") || r.startsWith("Lu31;->e") || (cn == "Le22;" && r.startsWith("Lu35;->r")))) {
-                        m.replaceInstruction(i, "nop")
-                        nops++
-                    }
-                    if (cn == "Le22;" && m.name == "invoke") {
-                        val op = impl.instructions[i].opcode
-                        val rr = (impl.instructions[i] as? ReferenceInstruction)?.reference?.toString()
-                        if ((op == Opcode.INVOKE_STATIC || op == Opcode.INVOKE_STATIC_RANGE) && rr != null && !rr.startsWith("Lceh;")) {
-                            m.replaceInstruction(i, "nop")
-                            nops++
-                        }
-                    }
-                }
-            }
-        }
-        log.appendText("SURNOP nops=$nops\n")
     }
 }
