@@ -6,7 +6,7 @@
 package standardrepo.morphe.patches.investing.premium
 
 import app.morphe.patcher.patch.bytecodePatch
-// import disabled for tap bisection
+import standardrepo.morphe.patches.investing.features.unlockProPicksIdeas
 import standardrepo.morphe.patches.investing.fixes.fixGuestWatchlistAdd
 import standardrepo.morphe.patches.investing.fixes.fixWinnersLosersEmpty
 import app.morphe.patcher.util.proxy.mutableTypes.encodedValue.MutableStringEncodedValue
@@ -303,10 +303,10 @@ val enablePremiumPatch = bytecodePatch(
             val bc = mutableClassDefByOrNull("Lb8h;")
             java.io.File(tmpDir + "/site.log").appendText("B8H " + (bc?.methods?.joinToString(";") { it.name + ":" + it.returnType } ?: "NULL") + "\n")
         }
-        // b8h isPro forcing disabled for tap bisection
         for (g in listOf("I", "K", "L")) {
             val bm = mutableClassDefByOrNull("Lb8h;")?.methods?.firstOrNull { it.name == g && it.returnType == "Z" }
             runCatching { java.io.File(tmpDir + "/site.log").appendText("B8H m=" + g + " found=" + (bm != null) + "\n") }
+            bm?.returnEarly(true)
         }
         // PairIP signature gate: the pinned cert hashes live in three static String
         // fields of SignatureCheck; the native VM reads them via JNI and crashes when
@@ -1047,7 +1047,7 @@ val enablePremiumPatch = bytecodePatch(
             .onFailure { java.io.File(tmpDir + "/site.log").appendText("WLERR " + it.toString().take(200) + "\n") }
         runCatching { fixWinnersLosersEmpty() }
             .onFailure { java.io.File(tmpDir + "/site.log").appendText("WERR " + it.toString().take(300) + "\n") }
-        // runCatching { unlockProPicksIdeas() }
+        runCatching { unlockProPicksIdeas() }
             .onFailure { java.io.File(tmpDir + "/site.log").appendText("PPERR " + it.toString().take(200) + "\n") }
     }
 }

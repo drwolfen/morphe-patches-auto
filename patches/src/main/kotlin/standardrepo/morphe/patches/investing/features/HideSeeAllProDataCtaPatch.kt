@@ -11,6 +11,8 @@ val hideSeeAllProDataCtaPatch = bytecodePatch(
     compatibleWith(Compat.INVESTING)
 
     execute {
+        // EXPERIMENT: mask disabled temporarily to inspect the raw CTA semantics node.
+        return@execute
         val ca = mutableClassDefByOrNull("Lcom/fusionmedia/investing/feature/main/tabs/ui/ContentActivity;")
         if (ca != null) {
             for (mm in ca.methods) {

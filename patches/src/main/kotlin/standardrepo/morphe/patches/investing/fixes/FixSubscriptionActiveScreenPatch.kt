@@ -53,7 +53,7 @@ val hideSubscriptionActiveScreenPatch = bytecodePatch(
                 for (i in impl.instructions.indices) {
                     val ins = impl.instructions[i]
                     if (ins.opcode == Opcode.SGET_OBJECT &&
-                        (ins as? ReferenceInstruction)?.reference?.toString()?.startsWith("Lvd8;->a") == true
+                        (ins as? ReferenceInstruction)?.reference?.toString() == "Lvd8;->a:Lvd8;"
                     ) {
                         val reg = (ins as? OneRegisterInstruction)?.registerA ?: continue
                         m.replaceInstruction(i, BuilderInstruction21c(Opcode.SGET_OBJECT, reg, target))
@@ -73,7 +73,7 @@ val hideSubscriptionActiveScreenPatch = bytecodePatch(
                     if (ins.opcode == Opcode.IPUT_BOOLEAN &&
                         (ins as? ReferenceInstruction)?.reference?.toString() == "Ly5o;->b:Z"
                     ) {
-                        m.addInstructions(i, "const/4 v2, 0x1")
+                        m.addInstructions(i, "const/4 v2, 0x0")
                         break
                     }
                 }
@@ -85,15 +85,23 @@ val hideSubscriptionActiveScreenPatch = bytecodePatch(
         val host = b41?.methods?.firstOrNull { it.name == "e" && it.implementation != null }
         val log = java.io.File(System.getProperty("java.io.tmpdir") ?: ".", "site.log")
         var nops = 0
-        for (cn in listOf("Lb41;", "Le22;")) {
+        for (cn in listOf("Lb41;", "Le22;", "Lng0;", "Luv4;")) {
             val cls = mutableClassDefByOrNull(cn) ?: continue
             for (m in cls.methods) {
                 val impl = m.implementation ?: continue
                 for (i in impl.instructions.indices.reversed()) {
                     val r = (impl.instructions[i] as? ReferenceInstruction)?.reference?.toString()
-                    if (r != null && (r.startsWith("Lb41;->p") || r.startsWith("Lu31;->e"))) {
+                    if (r != null && (r.startsWith("Lb41;->p") || r.startsWith("Lu31;->e") || (cn == "Le22;" && r.startsWith("Lu35;->r")))) {
                         m.replaceInstruction(i, "nop")
                         nops++
+                    }
+                    if (cn == "Le22;" && m.name == "invoke") {
+                        val op = impl.instructions[i].opcode
+                        val rr = (impl.instructions[i] as? ReferenceInstruction)?.reference?.toString()
+                        if ((op == Opcode.INVOKE_STATIC || op == Opcode.INVOKE_STATIC_RANGE) && rr != null && !rr.startsWith("Lceh;")) {
+                            m.replaceInstruction(i, "nop")
+                            nops++
+                        }
                     }
                 }
             }
