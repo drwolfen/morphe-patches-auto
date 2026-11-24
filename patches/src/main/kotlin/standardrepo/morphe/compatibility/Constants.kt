@@ -76,6 +76,13 @@ object Compat {
         targets = listOf(AppTarget("6.6 build 026", 660260, isExperimental = true))
     )
 
+    val ICONPACKSTUDIO = Compatibility(
+        name = "Icon Pack Studio",
+        packageName = "ginlemon.iconpackstudio",
+        appIconColor = 0x7C4DFF,
+        targets = listOf(AppTarget("2.5 build 003", 250030, isExperimental = true))
+    )
+
     // Entries are appended by the crackpipe generator:
     // val APP_NAME = Compatibility(
     //     name = "App Name",
