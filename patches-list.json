@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.475.0",
+  "version": "0.477.0",
   "patches": [
     {
       "name": "Bypass Play install check",
@@ -309,6 +309,37 @@
     },
     {
       "name": "Enable Pro",
+      "description": "Unlocks Icon Pack Studio Pro (all premium features).",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "ginlemon.iconpackstudio",
+          "name": "Icon Pack Studio",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#7C4DFF",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.5 build 003",
+              "versionCodes": {
+                "ARM64_V8A": 250030,
+                "ARMEABI_V7A": 250030,
+                "X86_64": 250030,
+                "X86": 250030
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Enable Pro",
       "description": "Auto-generated: unlocks Investing Pro.",
       "default": true,
       "category": null,
@@ -589,6 +620,37 @@
     {
       "name": "Force Pro License State",
       "description": "Auto-generated: keeps the reactive/snapshot license status permanently Pro (no trial countdown, restore prompts or promo flow).",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "ginlemon.flowerfree",
+          "name": "Smart Launcher",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#2E9E6B",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "6.6 build 026",
+              "versionCodes": {
+                "ARM64_V8A": 660260,
+                "ARMEABI_V7A": 660260,
+                "X86_64": 660260,
+                "X86": 660260
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Force Skip Onboarding",
+      "description": "Skips Smart Launcher's first-run onboarding wizard (WizardComplete gate).",
       "default": true,
       "category": null,
       "compatiblePackages": [
