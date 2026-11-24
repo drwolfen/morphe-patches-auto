@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.488.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.487.0...v0.488.0) (2026-11-25)
+
+### Features
+
+* **Icon Pack Studio:** Enable Pro for 2.5 build 003 ([3de3810](https://codeberg.org/StandardRepo/morphe-patches-auto/commit/3de3810))
+
 [0.487.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.486.0...v0.487.0) (2026-11-24)
 
 ### Features
