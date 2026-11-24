@@ -1,5 +1,11 @@
 # Changelog
 
+[0.487.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.486.0...v0.487.0) (2026-11-24)
+
+### Features
+
+* **Icon Pack Studio:** Enable Pro for 2.5 build 003 ([1a43519](https://codeberg.org/StandardRepo/morphe-patches-auto/commit/1a43519))
+
 ## [0.486.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.485.0...v0.486.0) (2026-11-24)
 
 ### Features
@@ -4443,12 +4449,3 @@
 * **Bend:** Enable Premium for 7.8.0
 * **Duolingo:** Enable Premium for 6.101.2
 * **Sleep:** Enable Premium for 20261006
-
-## [0.47.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.46.0...v0.47.0) (2026-10-18)
-
-### Features
-
-* **Sleep:** Enable Premium for 20261006 ([aa778bb](https://codeberg.org/StandardRepo/morphe-patches-auto/commit/aa778bb))
-* **Bend:** Enable Premium for 7.8.0
-* **Duolingo:** Enable Premium for 6.101.2
-* **Investing:** Enable Premium for 6.52
