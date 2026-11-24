@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.481.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.480.0...v0.481.0) (2026-11-24)
+
+### Features
+
+* **Smart Launcher:** Enable Pro for 6.6 build 026 ([53e9ec9](https://codeberg.org/StandardRepo/morphe-patches-auto/commit/53e9ec9))
+
 [0.477.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.476.0...v0.477.0) (2026-11-24)
 
 ### Features
