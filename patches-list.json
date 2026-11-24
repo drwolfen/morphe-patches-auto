@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.482.0",
+  "version": "0.484.0",
   "patches": [
     {
       "name": "Bypass Play install check",
@@ -762,6 +762,37 @@
                 "ARMEABI_V7A": 250030,
                 "X86_64": 250030,
                 "X86": 250030
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Play Billing Always OK",
+      "description": "Forces every Google Play Billing response code to OK(0): connect, query and purchase results all report success.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "ginlemon.flowerfree",
+          "name": "Smart Launcher",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#2E9E6B",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "6.6 build 026",
+              "versionCodes": {
+                "ARM64_V8A": 660260,
+                "ARMEABI_V7A": 660260,
+                "X86_64": 660260,
+                "X86": 660260
               },
               "isExperimental": true,
               "minSdk": null,
