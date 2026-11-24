@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.477.0",
+  "version": "0.481.0",
   "patches": [
     {
       "name": "Bypass Play install check",
@@ -762,6 +762,37 @@
                 "ARMEABI_V7A": 40,
                 "X86_64": 40,
                 "X86": 40
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Remove Ads and Promotions",
+      "description": "Removes Smart Launcher's upsell surfaces: Get Pro banner, periodic/seasonal promos and sponsored search row.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "ginlemon.flowerfree",
+          "name": "Smart Launcher",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#2E9E6B",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "6.6 build 026",
+              "versionCodes": {
+                "ARM64_V8A": 660260,
+                "ARMEABI_V7A": 660260,
+                "X86_64": 660260,
+                "X86": 660260
               },
               "isExperimental": true,
               "minSdk": null,
