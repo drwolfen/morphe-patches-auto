@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.481.0",
+  "version": "0.482.0",
   "patches": [
     {
       "name": "Bypass Play install check",
@@ -742,6 +742,37 @@
       "options": []
     },
     {
+      "name": "Play Billing Always OK",
+      "description": "Forces every Google Play Billing response code to OK(0): connect, query and purchase results all report success.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "ginlemon.iconpackstudio",
+          "name": "Icon Pack Studio",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#7C4DFF",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.5 build 003",
+              "versionCodes": {
+                "ARM64_V8A": 250030,
+                "ARMEABI_V7A": 250030,
+                "X86_64": 250030,
+                "X86": 250030
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
       "name": "Remove Ads",
       "description": "Auto-generated: unlocks Air Horn Premium (ads off, purchase owned).",
       "default": true,
@@ -762,6 +793,37 @@
                 "ARMEABI_V7A": 40,
                 "X86_64": 40,
                 "X86": 40
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Remove Ads and Promotions",
+      "description": "Removes Icon Pack Studio's upsell surfaces (GET PRO button, locked badges) and stops the aggressive-mode onboarding paywall.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "ginlemon.iconpackstudio",
+          "name": "Icon Pack Studio",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#7C4DFF",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.5 build 003",
+              "versionCodes": {
+                "ARM64_V8A": 250030,
+                "ARMEABI_V7A": 250030,
+                "X86_64": 250030,
+                "X86": 250030
               },
               "isExperimental": true,
               "minSdk": null,
