@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.485.0",
+  "version": "0.486.0",
   "patches": [
     {
       "name": "Bypass Play install check",
@@ -309,7 +309,7 @@
     },
     {
       "name": "Enable Pro",
-      "description": "Unlocks Icon Pack Studio Pro (all premium features). Use this instead of De-Vanced's 'Unlock pro' for 2.5 build 003: that patch only matches the pre-obfuscation IPSPurchaseRepository class.",
+      "description": "Unlocks Icon Pack Studio Pro (all premium features incl. Cloud Sync) and fixes Drive sign-in after re-signing via browser OAuth. Use this instead of De-Vanced's 'Unlock pro' for 2.5 build 003: that patch only matches the pre-obfuscation IPSPurchaseRepository class.",
       "default": true,
       "category": null,
       "compatiblePackages": [
