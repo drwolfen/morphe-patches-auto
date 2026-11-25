@@ -5,6 +5,7 @@
 ### Features
 
 * **Investing:** Enable Pro for 6.52 ([bd4d0b8](https://codeberg.org/StandardRepo/morphe-patches-auto/commit/bd4d0b8))
+* **Investing:** Hide the "Subscription is Active" window on every cold start again — startup falls through to the normal destination instead of re-emitting `FakeSignUpNavigationCommand` ([225b969](https://codeberg.org/StandardRepo/morphe-patches-auto/commit/225b969))
 
 ## [0.488.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.487.0...v0.488.0) (2026-11-25)
 
