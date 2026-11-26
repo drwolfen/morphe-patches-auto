@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.490.0",
+  "version": "0.491.0",
   "patches": [
     {
       "name": "Bypass Play install check",
@@ -360,7 +360,7 @@
                 "X86_64": 1660,
                 "X86": 1660
               },
-              "isExperimental": true,
+              "isExperimental": false,
               "minSdk": null,
               "description": null
             }
@@ -484,7 +484,7 @@
                 "X86_64": 1660,
                 "X86": 1660
               },
-              "isExperimental": true,
+              "isExperimental": false,
               "minSdk": null,
               "description": null
             }
@@ -515,7 +515,7 @@
                 "X86_64": 1660,
                 "X86": 1660
               },
-              "isExperimental": true,
+              "isExperimental": false,
               "minSdk": null,
               "description": null
             }
@@ -546,7 +546,7 @@
                 "X86_64": 1660,
                 "X86": 1660
               },
-              "isExperimental": true,
+              "isExperimental": false,
               "minSdk": null,
               "description": null
             }
@@ -577,7 +577,7 @@
                 "X86_64": 1660,
                 "X86": 1660
               },
-              "isExperimental": true,
+              "isExperimental": false,
               "minSdk": null,
               "description": null
             }
@@ -608,7 +608,7 @@
                 "X86_64": 1660,
                 "X86": 1660
               },
-              "isExperimental": true,
+              "isExperimental": false,
               "minSdk": null,
               "description": null
             }
@@ -701,7 +701,7 @@
                 "X86_64": 1660,
                 "X86": 1660
               },
-              "isExperimental": true,
+              "isExperimental": false,
               "minSdk": null,
               "description": null
             }
@@ -732,7 +732,7 @@
                 "X86_64": 1660,
                 "X86": 1660
               },
-              "isExperimental": true,
+              "isExperimental": false,
               "minSdk": null,
               "description": null
             }
@@ -949,7 +949,7 @@
                 "X86_64": 1660,
                 "X86": 1660
               },
-              "isExperimental": true,
+              "isExperimental": false,
               "minSdk": null,
               "description": null
             }
@@ -1166,7 +1166,7 @@
                 "X86_64": 1660,
                 "X86": 1660
               },
-              "isExperimental": true,
+              "isExperimental": false,
               "minSdk": null,
               "description": null
             }
@@ -1197,7 +1197,7 @@
                 "X86_64": 1660,
                 "X86": 1660
               },
-              "isExperimental": true,
+              "isExperimental": false,
               "minSdk": null,
               "description": null
             }
@@ -1228,7 +1228,7 @@
                 "X86_64": 1660,
                 "X86": 1660
               },
-              "isExperimental": true,
+              "isExperimental": false,
               "minSdk": null,
               "description": null
             }
@@ -1259,7 +1259,7 @@
                 "X86_64": 1660,
                 "X86": 1660
               },
-              "isExperimental": true,
+              "isExperimental": false,
               "minSdk": null,
               "description": null
             }
@@ -1290,7 +1290,7 @@
                 "X86_64": 1660,
                 "X86": 1660
               },
-              "isExperimental": true,
+              "isExperimental": false,
               "minSdk": null,
               "description": null
             }
