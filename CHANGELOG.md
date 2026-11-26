@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.492.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.491.0...v0.492.0) (2026-11-26)
+
+### Features
+
+* **The Washington Post:** Enable Premium for 7.20.1 (3247) ([a693cce](https://codeberg.org/StandardRepo/morphe-patches-auto/commit/a693cce))
+
 [0.491.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.490.0...v0.491.0) (2026-11-26)
 
 ### Features
