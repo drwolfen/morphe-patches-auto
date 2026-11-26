@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.491.0",
+  "version": "0.492.0",
   "patches": [
     {
       "name": "Bypass Play install check",
@@ -268,6 +268,37 @@
                 "X86": 2311718
               },
               "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Enable Premium",
+      "description": "Unlocks The Washington Post subscriber features: unlimited articles (metered paywall removed), ePaper edition access and subscriber-only surfaces.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.washingtonpost.android",
+          "name": "The Washington Post",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#1A4C7D",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "7.20.1 (3247)",
+              "versionCodes": {
+                "ARM64_V8A": 2279,
+                "ARMEABI_V7A": 2279,
+                "X86_64": 2279,
+                "X86": 2279
+              },
+              "isExperimental": false,
               "minSdk": null,
               "description": null
             }
@@ -826,6 +857,37 @@
                 "X86": 40
               },
               "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Remove Ads",
+      "description": "Hides every Washington Post banner, in-feed/in-article ad slot and video pre-roll by forcing the app's subscriber (ad-suppressed) state.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "com.washingtonpost.android",
+          "name": "The Washington Post",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#1A4C7D",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "7.20.1 (3247)",
+              "versionCodes": {
+                "ARM64_V8A": 2279,
+                "ARMEABI_V7A": 2279,
+                "X86_64": 2279,
+                "X86": 2279
+              },
+              "isExperimental": false,
               "minSdk": null,
               "description": null
             }
