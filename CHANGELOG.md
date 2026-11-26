@@ -5,6 +5,7 @@
 ### Features
 
 * **Investing:** Enable Pro for 6.52 ([b4425d5](https://codeberg.org/StandardRepo/morphe-patches-auto/commit/b4425d5))
+* **Investing:** Restore the Compose content lambdas (`Le22.invoke`) so Markets tickers, Ideas stock chips and News/Watchlist rows open their detail pages immediately instead of only after a tab switch ([b4425d5](https://codeberg.org/StandardRepo/morphe-patches-auto/commit/b4425d5))
 
 [0.489.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.488.0...v0.489.0) (2026-11-26)
 
