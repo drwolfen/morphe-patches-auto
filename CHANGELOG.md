@@ -4,7 +4,7 @@
 
 ### Features
 
-* **Investing:** Enable Pro for 6.52 ([2a57ec7](https://codeberg.org/StandardRepo/morphe-patches-auto/commit/2a57ec7))
+* **Investing:** Promote `6.52` to stable — experimental badge removed after cold-start window suppression and instant list navigation were verified end-to-end ([2a57ec7](https://codeberg.org/StandardRepo/morphe-patches-auto/commit/2a57ec7))
 
 ## [0.490.0](https://codeberg.org/StandardRepo/morphe-patches-auto/compare/v0.489.0...v0.490.0) (2026-11-26)
 
