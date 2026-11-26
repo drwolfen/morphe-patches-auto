@@ -1,7 +1,7 @@
 {
-  "created_at": "2026-11-26T09:41:28",
-  "description": "# 0.491.0\n\nEnable Pro for com.fusionmedia.investing v6.52 (auto-generated).",
-  "download_url": "https://codeberg.org/StandardRepo/morphe-patches-auto/releases/download/v0.491.0/patches-0.491.0.mpp",
+  "created_at": "2026-11-26T14:12:34",
+  "description": "# 0.492.0\n\nEnable Premium for com.washingtonpost.android v7.20.1 (3247) (auto-generated).",
+  "download_url": "https://codeberg.org/StandardRepo/morphe-patches-auto/releases/download/v0.492.0/patches-0.492.0.mpp",
   "signature_download_url": "",
-  "version": "0.491.0"
+  "version": "0.492.0"
 }
