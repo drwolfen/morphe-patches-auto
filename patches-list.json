@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "0.492.0",
+  "version": "0.493.0",
   "patches": [
     {
       "name": "Bypass Play install check",
@@ -86,6 +86,37 @@
             {
               "version": "6.101.1",
               "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Disable Ads",
+      "description": "Removes Flitsmeister's location-based advertisement notifications/cards for every user.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "nl.flitsmeister",
+          "name": "Flitsmeister",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#5C0115",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "15.2.0",
+              "versionCodes": {
+                "ARM64_V8A": 1295,
+                "ARMEABI_V7A": 1295,
+                "X86_64": 1295,
+                "X86": 1295
+              },
               "isExperimental": true,
               "minSdk": null,
               "description": null
@@ -328,6 +359,37 @@
                 "ARMEABI_V7A": 32,
                 "X86_64": 32,
                 "X86": 32
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Enable Pro",
+      "description": "Unlocks Flitsmeister Pro / Plus (V4 entitlements): speed-camera and incident alerts, faster routes, trip logging, Dash, pro pins/icons and sound packs.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "nl.flitsmeister",
+          "name": "Flitsmeister",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#5C0115",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "15.2.0",
+              "versionCodes": {
+                "ARM64_V8A": 1295,
+                "ARMEABI_V7A": 1295,
+                "X86_64": 1295,
+                "X86": 1295
               },
               "isExperimental": true,
               "minSdk": null,
@@ -742,6 +804,37 @@
       "options": []
     },
     {
+      "name": "Make purchases succeed",
+      "description": "Forces every Google Play Billing result to OK: setup, purchase callbacks and SKU/price queries never fail.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "nl.flitsmeister",
+          "name": "Flitsmeister",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#5C0115",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "15.2.0",
+              "versionCodes": {
+                "ARM64_V8A": 1295,
+                "ARMEABI_V7A": 1295,
+                "X86_64": 1295,
+                "X86": 1295
+              },
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
       "name": "PairIP manifest bypass",
       "description": "Replaces the PairIP Application class with com.fusionmedia.investing.InvestingApplication, drops LicenseActivity and CHECK_LICENSE.",
       "default": false,
@@ -764,6 +857,37 @@
                 "X86": 1660
               },
               "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "PairIP signature stub",
+      "description": "Feeds the actual signing certificate to PairIP's native VM check, skips Play licensing paywall/shutdown and defers VM startup until the signer digest is known.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "nl.flitsmeister",
+          "name": "Flitsmeister",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#5C0115",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "15.2.0",
+              "versionCodes": {
+                "ARM64_V8A": 1295,
+                "ARMEABI_V7A": 1295,
+                "X86_64": 1295,
+                "X86": 1295
+              },
+              "isExperimental": true,
               "minSdk": null,
               "description": null
             }
